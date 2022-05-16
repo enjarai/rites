@@ -1,0 +1,15 @@
+{
+  "circles": [
+    "rites:medium"
+  ],
+  "ingredients": {
+    "minecraft:dirt": 1,
+    "minecraft:coal": 32
+  },
+  "effects": [
+    {
+      "type": "rites:return_item",
+      "item": "minecraft:diamond"
+    }
+  ]
+}

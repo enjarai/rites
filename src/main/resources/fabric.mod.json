@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "rites",
+  "version": "${version}",
+
+  "name": "Example Mod",
+  "description": "This is an example description! Tell everyone what your mod is about!",
+  "authors": [
+    "enjarai"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "CC0-1.0",
+  "icon": "assets/rites/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "nl.enjarai.rites.RitesMod"
+      }
+    ]
+  },
+  "mixins": [
+    "rites.mixins.json"
+  ],
+  "accessWidener" : "rites.accesswidener",
+
+  "depends": {
+    "fabric": "*",
+    "minecraft": "1.18.x",
+    "fabric-language-kotlin": ">=1.7.4+kotlin.1.6.21"
+  }
+}
