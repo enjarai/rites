@@ -2,6 +2,7 @@ package nl.enjarai.rites.type
 
 import net.minecraft.entity.ItemEntity
 import net.minecraft.item.Item
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
@@ -78,5 +79,12 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
             }
         }
         return true
+    }
+
+    fun drawParticleEffects(world: World, pos: BlockPos) {
+        val serverWorld = world as? ServerWorld ?: return
+        circleTypes.forEach {
+            it.drawParticleCircle(serverWorld, pos)
+        }
     }
 }

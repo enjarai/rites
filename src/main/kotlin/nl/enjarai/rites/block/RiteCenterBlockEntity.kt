@@ -15,17 +15,18 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.Ritual
+import nl.enjarai.rites.util.Visuals
 
 class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlocks.RITE_CENTER_ENTITY, pos, state), PolymerObject
 {
     companion object {
-        val COOLDOWN = 20
+        val COOLDOWN = 30
     }
     var tickCooldown = 0
     var ritual: Ritual? = null
     var hadAllItems = false
-    var isRunning = false
+    var isActive = false
     var storedItems = arrayOf<ItemStack>()
 
     override fun readNbt(nbt: NbtCompound) {
@@ -33,7 +34,7 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
         tickCooldown = nbt.getInt("tickCooldown")
         ritual = Rituals.values[Identifier.tryParse(nbt.getString("ritual"))]
         hadAllItems = nbt.getBoolean("hadAllItems")
-        isRunning = nbt.getBoolean("isRunning")
+        isActive = nbt.getBoolean("isActive")
 
         storedItems = nbt.getList("storedItems", NbtList.COMPOUND_TYPE.toInt()).map {
             ItemStack.fromNbt(it as NbtCompound)
@@ -46,7 +47,7 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
         val ritualId = ritual?.id?.toString()
         if (ritualId != null) nbt.putString("ritual", ritualId)
         nbt.putBoolean("hadAllItems", hadAllItems)
-        nbt.putBoolean("isRunning", isRunning)
+        nbt.putBoolean("isActive", isActive)
 
         val items = NbtList()
         for (stack in storedItems) {
@@ -59,30 +60,37 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
 
     fun onUse(player: PlayerEntity) {
         if (ritual == null) {
-            startRitual()
+            val success = startRitual()
+            setPower(if (success) 15 else 7)
+            if (!success) {
+                Visuals.failParticles(getWorld() as ServerWorld, Vec3d.ofBottomCenter(getPos()))
+            }
         } else {
-            stopRitual()
+            stopRitual(isActive)
         }
     }
 
     fun tick() {
-        tickCooldown -= 1
-        if (getWorld() is ServerWorld && tickCooldown < 0) {
-            tickCooldown = COOLDOWN
+        if (ritual != null) {
+            ritual!!.drawParticleEffects(getWorld()!!, getPos())
 
-            if (ritual != null) {
+            tickCooldown -= 1
+            if (getWorld() is ServerWorld && tickCooldown < 0) {
+                tickCooldown = COOLDOWN
+
+
                 // Check validity of ritual circle
                 if (!ritual!!.isValid(getWorld()!!, getPos())) {
-                    stopRitual()
+                    stopRitual(false)
                     return
                 }
 
                 // If ritual hasn't activated yet, try absorbing new items
-                if (!isRunning) {
+                if (!isActive) {
                     val missingItems = getMissingItems()
                     if (missingItems.isNotEmpty()) {
                         if (!tryAbsorbMissing(missingItems)) {
-                            stopRitual()
+                            stopRitual(false)
                         }
                         return
                     }
@@ -92,14 +100,14 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
                 if (!hadAllItems) {
                     hadAllItems = true
                     if (!activateRitual() || !ritual!!.hasTickingEffects) {
-                        stopRitual()
+                        stopRitual(!ritual!!.hasTickingEffects)
                     }
                     return
                 }
 
                 // Tick rituals with lasting effects
                 if (!ritual!!.tick(getWorld()!!, getPos())) {
-                    stopRitual()
+                    stopRitual(false)
                     return
                 }
             }
@@ -113,7 +121,6 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
         Rituals.values.values.forEach { ritual ->
             if (ritual.isValid(getWorld()!!, getPos()) && ritual.requiredItemsNearby(getWorld()!!, getPos())) {
                 this.ritual = ritual
-                setPower(15)
                 tickCooldown = COOLDOWN
                 return true
             }
@@ -135,7 +142,11 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
     /**
      * Safely stops any running ritual
      */
-    private fun stopRitual() {
+    private fun stopRitual(success: Boolean) {
+        if (!success) {
+            Visuals.failParticles(getWorld() as ServerWorld, Vec3d.ofBottomCenter(getPos()))
+        }
+
         hadAllItems = false
         ritual = null
         setPower(0)

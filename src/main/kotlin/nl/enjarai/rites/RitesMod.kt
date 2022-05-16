@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
 import net.minecraft.server.MinecraftServer
 import net.minecraft.util.Identifier
 import nl.enjarai.rites.block.ModBlocks
+import nl.enjarai.rites.item.ModItems
 import nl.enjarai.rites.resource.ResourceLoaders
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import org.slf4j.Logger
@@ -20,7 +21,8 @@ object RitesMod : ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStarting)
 
         ModBlocks.register()
-        RitualEffect.register()
+        ModItems.register()
+        RitualEffect.registerAll()
         ResourceLoaders.register()
         Commands.register()
 

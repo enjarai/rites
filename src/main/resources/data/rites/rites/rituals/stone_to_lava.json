@@ -1,0 +1,14 @@
+{
+  "circles": [
+    "rites:medium_fire"
+  ],
+  "ingredients": {
+    "minecraft:stone": 1
+  },
+  "effects": [
+    {
+      "type": "rites:return_item",
+      "item": "minecraft:lava_bucket"
+    }
+  ]
+}

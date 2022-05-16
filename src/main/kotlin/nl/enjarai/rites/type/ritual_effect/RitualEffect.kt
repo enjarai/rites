@@ -28,7 +28,7 @@ abstract class RitualEffect(values: HashMap<String, Any>) {
             null
         )
 
-        fun register() {
+        fun registerAll() {
             Registry.register(REGISTRY, RitesMod.id("return_item")) { ReturnItemEffect(it) }
         }
 

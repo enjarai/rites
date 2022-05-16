@@ -7,6 +7,7 @@ import net.minecraft.command.argument.BlockArgumentParser
 import net.minecraft.state.property.Property
 import net.minecraft.tag.TagKey
 import net.minecraft.util.Identifier
+import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.CircleType
 import java.io.BufferedReader
 import java.io.InputStream
@@ -36,6 +37,8 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
     class CircleTypeFile : ResourceLoaders.TypeFile<CircleType> {
         val layout = arrayOf<Array<String>>()
         val keys = hashMapOf<String, String>()
+        val particle = "minecraft:soul_fire_flame"
+        val particle_cycles = 3
 
         override fun convert(): CircleType {
             return CircleType(
@@ -60,7 +63,10 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
                             blockArgumentParser.blockProperties.keys
                         )
                     }
-                }
+                },
+                Registry.PARTICLE_TYPE.get(Identifier.tryParse(particle)) ?:
+                    throw IllegalArgumentException("Invalid particle: $particle"),
+                particle_cycles
             )
         }
     }
