@@ -38,37 +38,44 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
         val layout = arrayOf<Array<String>>()
         val keys = hashMapOf<String, String>()
         val particle = "minecraft:soul_fire_flame"
-        val particle_cycles = 3
+        val particle_settings = ParticleSettings()
 
         override fun convert(): CircleType {
+            val predicates = keys.mapValues {
+                val blockArgumentParser = BlockArgumentParser(StringReader(it.value), true).parse(false)
+
+                if (blockArgumentParser.blockState == null) {
+                    if (blockArgumentParser.tagId == null) {
+                        throw IllegalArgumentException("Invalid block: ${it.value}")
+                    }
+                    return@mapValues TagPredicate(
+                        blockArgumentParser.tagId!!,
+                        blockArgumentParser.properties
+                    )
+                }
+                StatePredicate(
+                    blockArgumentParser.blockState!!,
+                    blockArgumentParser.blockProperties.keys
+                )
+            }
             return CircleType(
                 layout.map { row ->
                     row.map mapRow@{ block ->
-                        if (block.isEmpty()) return@mapRow null
-
-                        val stringId = keys[block]
-                        val blockArgumentParser = BlockArgumentParser(StringReader(stringId), true).parse(false)
-
-                        if (blockArgumentParser.blockState == null) {
-                            if (blockArgumentParser.tagId == null) {
-                                throw IllegalArgumentException("Invalid block: $stringId")
-                            }
-                            return@mapRow TagPredicate(
-                                blockArgumentParser.tagId!!,
-                                blockArgumentParser.properties
-                            )
-                        }
-                        StatePredicate(
-                            blockArgumentParser.blockState!!,
-                            blockArgumentParser.blockProperties.keys
-                        )
+                        if (block.isEmpty() || block == " ") return@mapRow null
+                        predicates[block]
                     }
                 },
                 Registry.PARTICLE_TYPE.get(Identifier.tryParse(particle)) ?:
                     throw IllegalArgumentException("Invalid particle: $particle"),
-                particle_cycles
+                particle_settings
             )
         }
+    }
+
+    class ParticleSettings() {
+        val cycles = 3
+        val arm_angle = -0.05
+        val arm_speed = 0.2
     }
 
     class StatePredicate(

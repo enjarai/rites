@@ -1,0 +1,16 @@
+{
+  "circles": [
+    "rites:small_air"
+  ],
+  "ingredients": {
+    "minecraft:phantom_membrane": 1
+  },
+  "effects": [
+    {
+      "type": "rites:give_potion_continuous",
+      "effect": "minecraft:levitation",
+      "show_particles": false,
+      "vertical_range": 5
+    }
+  ]
+}

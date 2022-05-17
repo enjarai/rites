@@ -30,6 +30,8 @@ abstract class RitualEffect(values: HashMap<String, Any>) {
 
         fun registerAll() {
             Registry.register(REGISTRY, RitesMod.id("return_item")) { ReturnItemEffect(it) }
+            Registry.register(REGISTRY, RitesMod.id("summon_entity")) { SummonEntityEffect(it) }
+            Registry.register(REGISTRY, RitesMod.id("give_potion_continuous")) { GivePotionContinuousEffect(it) }
         }
 
         fun fromHashMap(values: HashMap<String, Any>): RitualEffect? {

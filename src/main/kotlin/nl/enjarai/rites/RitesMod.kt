@@ -26,7 +26,7 @@ object RitesMod : ModInitializer {
         ResourceLoaders.register()
         Commands.register()
 
-        LOGGER.info("Hello Fabric world!")
+        LOGGER.info("Rites loaded")
     }
 
     private fun onServerStarting(server: MinecraftServer) {

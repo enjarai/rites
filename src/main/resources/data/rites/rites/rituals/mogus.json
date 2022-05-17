@@ -1,0 +1,16 @@
+{
+  "circles": [
+    "rites:medium_fire"
+  ],
+  "ingredients": {
+    "minecraft:red_wool": 1,
+    "minecraft:glass": 1,
+    "minecraft:bone": 1
+  },
+  "effects": [
+    {
+      "type": "rites:summon_entity",
+      "entity": "kotlin-testing:amogus"
+    }
+  ]
+}

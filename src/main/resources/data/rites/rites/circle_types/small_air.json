@@ -1,12 +1,13 @@
 {
   "keys": {
-    "c": "#minecraft:candles[lit=true]"
+    "c": "minecraft:light_blue_candle[lit=true]"
   },
   "layout": [
     [" ", "c", " "],
     ["c", " ", "c"],
     [" ", "c", " "]
   ],
+  "particle": "minecraft:cloud",
   "particle_settings": {
     "cycles": 2
   }

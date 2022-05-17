@@ -1,5 +1,6 @@
 package nl.enjarai.rites.type
 
+import net.minecraft.entity.Entity
 import net.minecraft.entity.ItemEntity
 import net.minecraft.item.Item
 import net.minecraft.server.world.ServerWorld
@@ -35,17 +36,27 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
         return true
     }
 
+    fun <T : Entity> getEntitiesInRangeByClass(world: World, pos: BlockPos, clazz: Class<T>, verticalRange: Int = 0): List<T> {
+        val range = pickupRange.toDouble()
+        val center = Vec3d.ofBottomCenter(pos)
+        var box = Box.of(center, range * 2, range * 2, range * 2)
+        box = box.withMaxY(box.maxY + verticalRange)
+
+        return world.getEntitiesByClass(
+            clazz,
+            box
+        ) { it.squaredDistanceTo(Vec3d(
+            center.getX(),
+            it.y.coerceAtLeast(center.getY()).coerceAtMost(center.getY() + verticalRange),
+            center.getZ()
+        )) < range * range }
+    }
+
     /**
      * Find all item entities within the ritual at a specific position
      */
     fun getItemsInRange(world: World, pos: BlockPos): List<ItemEntity> {
-        val range = pickupRange.toDouble()
-        val center = Vec3d.ofBottomCenter(pos)
-
-        return world.getEntitiesByClass(
-            ItemEntity::class.java,
-            Box.of(center, range * 2, 1.0, range * 2)
-        ) { it.squaredDistanceTo(center) < range * range }
+        return getEntitiesInRangeByClass(world, pos, ItemEntity::class.java)
     }
 
     /**
