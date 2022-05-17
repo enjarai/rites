@@ -7,7 +7,7 @@
     ["c", " ", "c"],
     [" ", "c", " "]
   ],
-  "particle": "minecraft:cloud",
+  "particle": "minecraft:scrape",
   "particle_settings": {
     "cycles": 2
   }
