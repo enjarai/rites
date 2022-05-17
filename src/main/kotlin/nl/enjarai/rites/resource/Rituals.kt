@@ -34,8 +34,7 @@ object Rituals : JsonResource<Ritual>("rituals") {
                         throw IllegalArgumentException("Invalid ingredient: ${it.key}")
                 },
                 effects.map {
-                    RitualEffect.fromHashMap(it) ?:
-                        throw IllegalArgumentException("Invalid ritual type: ${it["type"]}")
+                    RitualEffect.fromMap(it)
                 }
             )
         }

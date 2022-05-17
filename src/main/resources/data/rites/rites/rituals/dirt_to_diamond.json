@@ -8,7 +8,7 @@
   },
   "effects": [
     {
-      "type": "rites:return_item",
+      "type": "rites:drop_item",
       "item": "minecraft:diamond"
     }
   ]

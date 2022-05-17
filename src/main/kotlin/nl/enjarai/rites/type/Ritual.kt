@@ -11,9 +11,10 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
+import nl.enjarai.rites.util.RitualContext
 
 class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>, val effects: List<RitualEffect>) {
-    private val tickingEffects = effects.filter { ritualEffect -> ritualEffect.isContinuous() }
+    private val tickingEffects = effects.filter { ritualEffect -> ritualEffect.isTicking() }
     val hasTickingEffects = tickingEffects.isNotEmpty()
 
     val id: Identifier? get() {
@@ -36,15 +37,14 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
         return true
     }
 
-    fun <T : Entity> getEntitiesInRangeByClass(world: World, pos: BlockPos, clazz: Class<T>, verticalRange: Int = 0): List<T> {
+    fun <T : Entity> getEntitiesInRangeByClass(world: World, pos: BlockPos, clazz: Class<T>, verticalRange: Double = 0.0): List<T> {
         val range = pickupRange.toDouble()
         val center = Vec3d.ofBottomCenter(pos)
-        var box = Box.of(center, range * 2, range * 2, range * 2)
-        box = box.withMaxY(box.maxY + verticalRange)
+        val box = Box.of(center, range * 2, range * 2, range * 2)
 
         return world.getEntitiesByClass(
             clazz,
-            box
+            box.withMaxY(box.maxY + verticalRange)
         ) { it.squaredDistanceTo(Vec3d(
             center.getX(),
             it.y.coerceAtLeast(center.getY()).coerceAtMost(center.getY() + verticalRange),
@@ -76,18 +76,20 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
         }.filter { entry -> entry.value > 0 }.isEmpty()
     }
 
-    fun activate(world: World, pos: BlockPos): Boolean {
+    fun activate(ctx: RitualContext): Boolean {
         for (effect in effects) {
-            if (!effect.activate(world, pos, this)) return false
+            if (!effect.activate(this, ctx)) return false
         }
         return true
     }
 
-    fun tick(world: World, pos: BlockPos): Boolean {
-        if (hasTickingEffects) {
-            for (effect in tickingEffects) {
-                if (!effect.tick(world, pos, this)) return false
+    fun tick(ctx: RitualContext): Boolean {
+        for ((i, effect) in tickingEffects.withIndex()) {
+            if (ctx.tickCooldown[i] < 1) {
+                ctx.tickCooldown[i] = effect.getTickCooldown()
+                if (!effect.tick(this, ctx)) return false
             }
+            ctx.tickCooldown[i] -= 1
         }
         return true
     }

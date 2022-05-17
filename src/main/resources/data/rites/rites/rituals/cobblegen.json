@@ -1,0 +1,21 @@
+{
+  "circles": [
+    "rites:medium_fire"
+  ],
+  "ingredients": {
+    "minecraft:water_bucket": 1,
+    "minecraft:lava_bucket": 1
+  },
+  "effects": [
+    {
+      "type": "rites:ticking",
+      "cooldown": 20,
+      "effects": [
+        {
+          "type": "rites:drop_item",
+          "item": "minecraft:cobblestone"
+        }
+      ]
+    }
+  ]
+}

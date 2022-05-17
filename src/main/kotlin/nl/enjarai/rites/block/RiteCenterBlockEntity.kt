@@ -15,6 +15,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.Ritual
+import nl.enjarai.rites.util.RitualContext
 import nl.enjarai.rites.util.Visuals
 
 class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
@@ -23,11 +24,13 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
     companion object {
         val COOLDOWN = 30
     }
-    var tickCooldown = 0
-    var ritual: Ritual? = null
-    var hadAllItems = false
-    var isActive = false
-    var storedItems = arrayOf<ItemStack>()
+
+    private var tickCooldown = 0
+    private var ritual: Ritual? = null
+    private var hadAllItems = false
+    private var isActive = false
+    private var storedItems = arrayOf<ItemStack>()
+    private var ritualContext: RitualContext? = null
 
     override fun readNbt(nbt: NbtCompound) {
         super.readNbt(nbt)
@@ -39,6 +42,10 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
         storedItems = nbt.getList("storedItems", NbtList.COMPOUND_TYPE.toInt()).map {
             ItemStack.fromNbt(it as NbtCompound)
         }.toTypedArray()
+
+        if (ritual != null) {
+            ritualContext = RitualContext(getWorld()!!, getPos(), ritual!!, nbt.getCompound("ritualContext"))
+        }
     }
 
     override fun writeNbt(nbt: NbtCompound) {
@@ -56,6 +63,8 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
             items.add(entry)
         }
         nbt.put("storedItems", items)
+
+        if (ritualContext != null) nbt.put("ritualContext", ritualContext!!.toNbt())
     }
 
     fun onUse(player: PlayerEntity) {
@@ -71,11 +80,11 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     fun tick() {
-        if (ritual != null) {
+        if (getWorld() is ServerWorld && ritual != null) {
             ritual!!.drawParticleEffects(getWorld()!!, getPos())
 
             tickCooldown -= 1
-            if (getWorld() is ServerWorld && tickCooldown < 0) {
+            if (tickCooldown < 0) {
                 tickCooldown = COOLDOWN
 
 
@@ -104,12 +113,12 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
                     }
                     return
                 }
+            }
 
-                // Tick rituals with lasting effects
-                if (!ritual!!.tick(getWorld()!!, getPos())) {
-                    stopRitual(false)
-                    return
-                }
+            // Tick rituals with lasting effects
+            if (ritualContext != null && !ritual!!.tick(ritualContext!!)) {
+                stopRitual(false)
+                return
             }
         }
     }
@@ -132,9 +141,12 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
      * Runs when ritual is done absorbing items
      */
     private fun activateRitual(): Boolean {
-        val success = ritual?.activate(getWorld()!!, getPos()) ?: false
+        ritualContext = RitualContext(getWorld()!!, getPos(), ritual!!)
+        ritualContext!!.storedItems = storedItems
+        val success = ritual?.activate(ritualContext!!) ?: false
         if (success) {
             storedItems = arrayOf()
+            isActive = true
         }
         return success
     }
@@ -145,9 +157,13 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
     private fun stopRitual(success: Boolean) {
         if (!success) {
             Visuals.failParticles(getWorld() as ServerWorld, Vec3d.ofBottomCenter(getPos()))
+        } else {
+            storedItems += ritualContext!!.returnableItems
         }
 
+        ritualContext = null
         hadAllItems = false
+        isActive = false
         ritual = null
         setPower(0)
 

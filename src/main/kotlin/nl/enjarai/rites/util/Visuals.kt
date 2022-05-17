@@ -8,6 +8,7 @@ import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
+import nl.enjarai.rites.resource.CircleTypes
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -21,14 +22,17 @@ object Visuals {
     fun drawParticleCircleArm(
         world: ServerWorld, pos: Vec3d, cycleTicks: Int,
         cycleOffset: Double, radius: Double, particle: ParticleType<*>,
-        armAngle: Double, armSpeed: Double
+        particleSettings: CircleTypes.ParticleSettings
     ) {
+        val directionModifier = if (particleSettings.reverse_rotation) -1 else 1
         val currentTick = world.server.ticks
-        val animationPos = ((currentTick % cycleTicks / cycleTicks.toDouble()) + cycleOffset) * (2 * Math.PI)
-        val animationPosTo = ((currentTick % cycleTicks / cycleTicks.toDouble()) + cycleOffset + armAngle) * (2 * Math.PI)
+        val animationPos = ((currentTick % cycleTicks / cycleTicks.toDouble()) + cycleOffset) *
+                (2 * Math.PI) * directionModifier
+        val animationPosTo = ((currentTick % cycleTicks / cycleTicks.toDouble()) + cycleOffset + particleSettings.arm_angle) *
+                (2 * Math.PI) * directionModifier
         val particlePos = pos.add(radius * cos(animationPos), 0.0, radius * sin(animationPos))
         val particlePosTo = pos.add(radius / 2 * cos(animationPosTo), 0.0, radius / 2 * sin(animationPosTo))
-        val movementVector = particlePosTo.subtract(particlePos).multiply(armSpeed)
+        val movementVector = particlePosTo.subtract(particlePos).multiply(particleSettings.arm_speed)
         world.spawnParticles(
             particle as ParticleEffect,
             particlePos.getX(), particlePos.getY(), particlePos.getZ(), 0,

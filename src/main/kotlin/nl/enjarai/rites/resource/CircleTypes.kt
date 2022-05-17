@@ -72,10 +72,11 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
         }
     }
 
-    class ParticleSettings() {
+    class ParticleSettings {
         val cycles = 3
         val arm_angle = -0.05
         val arm_speed = 0.2
+        val reverse_rotation = false
     }
 
     class StatePredicate(

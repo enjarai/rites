@@ -9,6 +9,7 @@
   ],
   "particle": "minecraft:scrape",
   "particle_settings": {
-    "cycles": 2
+    "cycles": 2,
+    "arm_speed": 2
   }
 }

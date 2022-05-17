@@ -39,7 +39,7 @@ class CircleType(
             Visuals.drawParticleCircleArm(
                 world, Vec3d.ofBottomCenter(pos).add(0.0, 0.2, 0.0), cycle,
                 ((1.0 / particleSettings.cycles) * i), size.toDouble(), particle,
-                particleSettings.arm_angle, particleSettings.arm_speed
+                particleSettings
             )
         }
     }
