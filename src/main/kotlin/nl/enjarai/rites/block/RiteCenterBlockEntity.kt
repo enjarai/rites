@@ -145,6 +145,7 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
         ritualContext!!.storedItems = storedItems
         val success = ritual?.activate(ritualContext!!) ?: false
         if (success) {
+            Visuals.outwardsCircle(getWorld()!! as ServerWorld, getPos(), ritual!!.pickupRange.toDouble())
             storedItems = arrayOf()
             isActive = true
         }

@@ -14,6 +14,16 @@
         {
           "type": "rites:drop_item",
           "item": "minecraft:cobblestone"
+        },
+        {
+          "type": "rites:play_sound",
+          "sound": "minecraft:block.stone.break"
+        },
+        {
+          "type": "rites:spawn_particles",
+          "particle": "minecraft:smoke",
+          "delta": [0.2, 0.4, 0.2],
+          "count": 40
         }
       ]
     }

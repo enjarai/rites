@@ -45,6 +45,22 @@ object Visuals {
         )
     }
 
+    fun outwardsCircle(world: ServerWorld, pos: BlockPos, radius: Double) {
+        val dPos = Vec3d.ofBottomCenter(pos)
+        var i = .0
+        while (i <= 1) {
+            i += 0.04
+            val angle = i * (2 * Math.PI)
+            val particlePosTo = dPos.add(radius / 2 * cos(angle), 0.0, radius / 2 * sin(angle))
+            val movementVector = particlePosTo.subtract(dPos).multiply(0.1)
+            world.spawnParticles(
+                ParticleTypes.FIREWORK,
+                dPos.getX(), dPos.getY(), dPos.getZ(), 0,
+                movementVector.getX(), movementVector.getY(), movementVector.getZ(), 1.0
+            )
+        }
+    }
+
     fun failParticles(world: ServerWorld, pos: Vec3d) {
         world.playSound(
             null, pos.getX(), pos.getY(), pos.getZ(),

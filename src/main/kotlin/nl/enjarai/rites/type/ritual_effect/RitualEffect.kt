@@ -33,6 +33,8 @@ abstract class RitualEffect(values: Map<String, Any>) {
 
         fun registerAll() {
             Registry.register(REGISTRY, RitesMod.id("ticking")) { TickingEffect(it) }
+            Registry.register(REGISTRY, RitesMod.id("play_sound")) { PlaySoundEffect(it) }
+            Registry.register(REGISTRY, RitesMod.id("spawn_particles")) { SpawnParticlesEffect(it) }
             Registry.register(REGISTRY, RitesMod.id("drop_item")) { DropItemEffect(it) }
             Registry.register(REGISTRY, RitesMod.id("summon_entity")) { SummonEntityEffect(it) }
             Registry.register(REGISTRY, RitesMod.id("give_potion")) { GivePotionContinuousEffect(it) }
@@ -40,8 +42,8 @@ abstract class RitualEffect(values: Map<String, Any>) {
         }
 
         fun fromMap(values: Map<String, Any>): RitualEffect {
-            return REGISTRY.get(getIdNullSafe(getValue(values, "type")))?.invoke(values) ?:
-                throw IllegalArgumentException("Invalid ritual type: ${values["type"]}")
+            return REGISTRY.get(getIdNullSafe(getValue(values, "type")))?.invoke(values)
+                ?: throw IllegalArgumentException("Invalid ritual type: ${values["type"]}")
         }
 
         fun getIdNullSafe(string: String?): Identifier? {
