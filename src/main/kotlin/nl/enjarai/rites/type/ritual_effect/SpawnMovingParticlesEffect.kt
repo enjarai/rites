@@ -6,7 +6,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
-import nl.enjarai.rites.util.RitualContext
+import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.util.Visuals
 
 class SpawnMovingParticlesEffect(values: Map<String, Any>) : RitualEffect(values) {

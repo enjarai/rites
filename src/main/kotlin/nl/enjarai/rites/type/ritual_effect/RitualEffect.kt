@@ -7,7 +7,7 @@ import net.minecraft.util.registry.RegistryKey
 import net.minecraft.util.registry.SimpleRegistry
 import nl.enjarai.rites.RitesMod
 import nl.enjarai.rites.type.Ritual
-import nl.enjarai.rites.util.RitualContext
+import nl.enjarai.rites.type.RitualContext
 import java.util.*
 
 abstract class RitualEffect(values: Map<String, Any>) {

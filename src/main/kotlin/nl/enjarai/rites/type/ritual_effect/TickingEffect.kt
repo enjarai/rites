@@ -1,7 +1,7 @@
 package nl.enjarai.rites.type.ritual_effect
 
 import nl.enjarai.rites.type.Ritual
-import nl.enjarai.rites.util.RitualContext
+import nl.enjarai.rites.type.RitualContext
 
 class TickingEffect(values: Map<String, Any>) : RitualEffect(values) {
     val effects: List<RitualEffect> = getValue<List<Map<String, Any>>>(values, "effects").map {
@@ -14,8 +14,10 @@ class TickingEffect(values: Map<String, Any>) : RitualEffect(values) {
     }
 
     override fun activate(ritual: Ritual, ctx: RitualContext): Boolean {
-        effects.forEach {
-            if (!it.activate(ritual, ctx)) return false
+        if (ctx.checkCooldown(this)) {
+            effects.forEach {
+                if (!it.activate(ritual, ctx)) return false
+            }
         }
         return true
     }

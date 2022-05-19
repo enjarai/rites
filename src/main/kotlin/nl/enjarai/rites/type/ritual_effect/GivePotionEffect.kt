@@ -5,7 +5,7 @@ import net.minecraft.entity.effect.StatusEffectInstance
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
-import nl.enjarai.rites.util.RitualContext
+import nl.enjarai.rites.type.RitualContext
 
 class GivePotionEffect(values: Map<String, Any>) : RitualEffect(values) {
     private val effect: String = getValue(values, "effect")

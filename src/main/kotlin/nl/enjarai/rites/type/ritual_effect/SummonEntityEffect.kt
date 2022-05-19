@@ -7,7 +7,7 @@ import net.minecraft.nbt.StringNbtReader
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.type.Ritual
-import nl.enjarai.rites.util.RitualContext
+import nl.enjarai.rites.type.RitualContext
 
 class SummonEntityEffect(values: Map<String, Any>) : RitualEffect(values) {
     private val entity: String = getValue(values, "entity")

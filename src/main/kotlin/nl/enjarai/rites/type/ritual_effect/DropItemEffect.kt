@@ -7,7 +7,7 @@ import net.minecraft.nbt.StringNbtReader
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
-import nl.enjarai.rites.util.RitualContext
+import nl.enjarai.rites.type.RitualContext
 
 class DropItemEffect(values: Map<String, Any>) : RitualEffect(values) {
     private val item: String = getValue(values, "item")

@@ -11,7 +11,6 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
-import nl.enjarai.rites.util.RitualContext
 import nl.enjarai.rites.util.Visuals
 
 class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>, val effects: List<RitualEffect>) {
@@ -90,9 +89,7 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
 
     fun tick(ctx: RitualContext): Boolean {
         for (effect in tickingEffects) {
-            if (ctx.checkCooldown(effect)) {
-                if (!effect.activate(this, ctx)) return false
-            }
+            if (!effect.activate(this, ctx)) return false
         }
         return true
     }

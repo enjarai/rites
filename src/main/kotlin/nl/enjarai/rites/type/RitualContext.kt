@@ -1,14 +1,13 @@
-package nl.enjarai.rites.util
+package nl.enjarai.rites.type
 
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
-import net.minecraft.nbt.NbtInt
 import net.minecraft.nbt.NbtList
 import net.minecraft.nbt.NbtString
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
-import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
+import nl.enjarai.rites.util.PlaceholderFillerInner
 import java.util.*
 
 class RitualContext(val worldGetter: () -> World, val pos: BlockPos, val ritual: Ritual) {

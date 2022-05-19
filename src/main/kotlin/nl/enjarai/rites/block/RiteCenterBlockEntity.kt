@@ -15,7 +15,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.Ritual
-import nl.enjarai.rites.util.RitualContext
+import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.util.Visuals
 
 class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
