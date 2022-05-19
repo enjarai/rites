@@ -14,10 +14,6 @@ class TickingEffect(values: Map<String, Any>) : RitualEffect(values) {
     }
 
     override fun activate(ritual: Ritual, ctx: RitualContext): Boolean {
-        return true
-    }
-
-    override fun tick(ritual: Ritual, ctx: RitualContext): Boolean {
         effects.forEach {
             if (!it.activate(ritual, ctx)) return false
         }

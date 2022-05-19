@@ -8,14 +8,17 @@ import net.minecraft.nbt.NbtString
 import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import nl.enjarai.rites.type.Ritual
+import nl.enjarai.rites.type.ritual_effect.RitualEffect
+import java.util.*
 
-class RitualContext(val world: World, val pos: BlockPos, val ritual: Ritual) {
+class RitualContext(val worldGetter: () -> World, val pos: BlockPos, val ritual: Ritual) {
+    val world: World get() = worldGetter()
     var storedItems = arrayOf<ItemStack>()
     var returnableItems = arrayOf<ItemStack>()
     val variables = hashMapOf<String, String>()
-    var tickCooldown = Array(ritual.effects.size) { ritual.effects[it].getTickCooldown() }
+    val tickCooldown = hashMapOf<UUID, Int>()
 
-    constructor(world: World, pos: BlockPos, ritual: Ritual, nbtCompound: NbtCompound) : this(world, pos, ritual) {
+    constructor(worldGetter: () -> World, pos: BlockPos, ritual: Ritual, nbtCompound: NbtCompound) : this(worldGetter, pos, ritual) {
         storedItems = nbtCompound.getList("storedItems", NbtList.COMPOUND_TYPE.toInt()).map {
             ItemStack.fromNbt(it as NbtCompound)
         }.toTypedArray()
@@ -25,9 +28,10 @@ class RitualContext(val world: World, val pos: BlockPos, val ritual: Ritual) {
         nbtCompound.getCompound("variables").keys.forEach {
             variables[it] = nbtCompound.get(it)?.asString() ?: return@forEach
         }
-        tickCooldown = nbtCompound.getList("tickCooldown", NbtList.INT_TYPE.toInt()).map {
-            (it as NbtInt).intValue()
-        }.toTypedArray()
+        val cooldowns = nbtCompound.getCompound("tickCooldown")
+        cooldowns.keys.forEach {
+            tickCooldown[UUID.fromString(it)] = cooldowns.getInt(it)
+        }
     }
 
     fun toNbt(): NbtCompound {
@@ -53,9 +57,9 @@ class RitualContext(val world: World, val pos: BlockPos, val ritual: Ritual) {
         }
         nbt.put("variables", varsNbt)
 
-        val cooldowns = NbtList()
-        for (i in tickCooldown) {
-            cooldowns.add(NbtInt.of(i))
+        val cooldowns = NbtCompound()
+        for (i in tickCooldown.entries) {
+            cooldowns.putInt(i.key.toString(), i.value)
         }
         nbt.put("tickCooldown", cooldowns)
 
@@ -64,5 +68,12 @@ class RitualContext(val world: World, val pos: BlockPos, val ritual: Ritual) {
 
     fun parseVariables(string: String): String {
         return PlaceholderFillerInner.fillInPlaceholders(variables, string)
+    }
+
+    fun checkCooldown(ritualEffect: RitualEffect): Boolean {
+        val result = (tickCooldown[ritualEffect.uuid] ?: 0) < 1
+        if (result) tickCooldown[ritualEffect.uuid] = ritualEffect.getTickCooldown()
+        tickCooldown[ritualEffect.uuid]?.minus(1)?.let { tickCooldown.put(ritualEffect.uuid, it) }
+        return result
     }
 }

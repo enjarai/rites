@@ -7,10 +7,25 @@
   },
   "effects": [
     {
-      "type": "rites:give_potion_continuous",
-      "effect": "minecraft:levitation",
-      "show_particles": false,
-      "vertical_range": 5
+      "type": "rites:ticking",
+      "cooldown": 1,
+      "effects": [
+        {
+          "type": "rites:give_potion",
+          "effect": "minecraft:levitation",
+          "duration": 0.2,
+          "show_particles": false,
+          "vertical_range": 5
+        },
+        {
+          "type": "rites:spawn_moving_particles",
+          "particle": "minecraft:cloud",
+          "pos_offset": [0, 0, 0],
+          "delta": [0.3, 0, 0.3],
+          "direction_vector": [0, 0.4, 0],
+          "count": 1
+        }
+      ]
     }
   ]
 }

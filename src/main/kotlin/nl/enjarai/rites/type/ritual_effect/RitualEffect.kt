@@ -8,13 +8,12 @@ import net.minecraft.util.registry.SimpleRegistry
 import nl.enjarai.rites.RitesMod
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.util.RitualContext
+import java.util.*
 
 abstract class RitualEffect(values: Map<String, Any>) {
-    abstract fun activate(ritual: Ritual, ctx: RitualContext): Boolean
+    val uuid: UUID = UUID.randomUUID()
 
-    open fun tick(ritual: Ritual, ctx: RitualContext): Boolean {
-        return true
-    }
+    abstract fun activate(ritual: Ritual, ctx: RitualContext): Boolean
 
     open fun isTicking(): Boolean {
         return getTickCooldown() != 0
@@ -33,11 +32,13 @@ abstract class RitualEffect(values: Map<String, Any>) {
 
         fun registerAll() {
             Registry.register(REGISTRY, RitesMod.id("ticking")) { TickingEffect(it) }
+            Registry.register(REGISTRY, RitesMod.id("false")) { FalseEffect(it) }
             Registry.register(REGISTRY, RitesMod.id("play_sound")) { PlaySoundEffect(it) }
             Registry.register(REGISTRY, RitesMod.id("spawn_particles")) { SpawnParticlesEffect(it) }
+            Registry.register(REGISTRY, RitesMod.id("spawn_moving_particles")) { SpawnMovingParticlesEffect(it) }
             Registry.register(REGISTRY, RitesMod.id("drop_item")) { DropItemEffect(it) }
             Registry.register(REGISTRY, RitesMod.id("summon_entity")) { SummonEntityEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("give_potion")) { GivePotionContinuousEffect(it) }
+            Registry.register(REGISTRY, RitesMod.id("give_potion")) { GivePotionEffect(it) }
             Registry.register(REGISTRY, RitesMod.id("extract_nbt")) { ExtractItemNbtEffect(it) }
         }
 

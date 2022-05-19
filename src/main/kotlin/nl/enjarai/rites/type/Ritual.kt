@@ -12,8 +12,10 @@ import net.minecraft.world.World
 import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.RitualContext
+import nl.enjarai.rites.util.Visuals
 
 class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>, val effects: List<RitualEffect>) {
+    private val unTickingEffects = effects.filter { ritualEffect -> !ritualEffect.isTicking() }
     private val tickingEffects = effects.filter { ritualEffect -> ritualEffect.isTicking() }
     val hasTickingEffects = tickingEffects.isNotEmpty()
 
@@ -77,19 +79,20 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
     }
 
     fun activate(ctx: RitualContext): Boolean {
-        for (effect in effects) {
+        for (effect in unTickingEffects) {
             if (!effect.activate(this, ctx)) return false
+        }
+        for (circle in circleTypes) {
+            Visuals.outwardsCircle(ctx.world as ServerWorld, Vec3d.ofCenter(ctx.pos, .1), circle.size.toDouble())
         }
         return true
     }
 
     fun tick(ctx: RitualContext): Boolean {
-        for ((i, effect) in tickingEffects.withIndex()) {
-            if (ctx.tickCooldown[i] < 1) {
-                ctx.tickCooldown[i] = effect.getTickCooldown()
-                if (!effect.tick(this, ctx)) return false
+        for (effect in tickingEffects) {
+            if (ctx.checkCooldown(effect)) {
+                if (!effect.activate(this, ctx)) return false
             }
-            ctx.tickCooldown[i] -= 1
         }
         return true
     }
