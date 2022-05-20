@@ -31,11 +31,20 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
         return circleTypes.maxOf { it.size }
     }
 
-    fun isValid(world: World, pos: BlockPos): Boolean {
+    /**
+     * Constructs a list of circles that will be used for this ritual.
+     * If list returns empty, no ritual should be started.
+     */
+    fun isValid(world: World, pos: BlockPos, ctx: RitualContext?): List<CircleType> {
+        val result = mutableListOf<CircleType>()
         for (circle in circleTypes) {
-            if (!circle.isValid(world, pos)) return false
+            // ctx will not be null if this is a multi-rite setup,
+            // so we should check if that circle size isn't already occupied
+            if ((ctx != null) && !ctx.canAddCircle(circle.size)) return emptyList()
+
+            result += circle.isValid(world, pos) ?: return emptyList()
         }
-        return true
+        return result
     }
 
     fun <T : Entity> getEntitiesInRangeByClass(world: World, pos: BlockPos, clazz: Class<T>, verticalRange: Double = 0.0): List<T> {
@@ -77,6 +86,10 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
         }.filter { entry -> entry.value > 0 }.isEmpty()
     }
 
+    /**
+     * Triggers effects that only run once.
+     * This method should therefore only be activated once per initiated ritual.
+     */
     fun activate(ctx: RitualContext): Boolean {
         for (effect in unTickingEffects) {
             if (!effect.activate(this, ctx)) return false
@@ -87,17 +100,14 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
         return true
     }
 
+    /**
+     * Ticks ticking rituals.
+     * They handle tick counters themselves, so we should call this every tick once the ritual has started
+     */
     fun tick(ctx: RitualContext): Boolean {
         for (effect in tickingEffects) {
             if (!effect.activate(this, ctx)) return false
         }
         return true
-    }
-
-    fun drawParticleEffects(world: World, pos: BlockPos) {
-        val serverWorld = world as? ServerWorld ?: return
-        circleTypes.forEach {
-            it.drawParticleCircle(serverWorld, pos)
-        }
     }
 }

@@ -1,0 +1,18 @@
+{
+  "circles": [
+    "rites:medium_fire",
+    "rites:huge"
+  ],
+  "ingredients": {
+    "minecraft:rotten_flesh": 1
+  },
+  "effects": [
+    {
+      "type": "rites:ticking",
+      "cooldown": 100,
+      "effects": [
+
+      ]
+    }
+  ]
+}

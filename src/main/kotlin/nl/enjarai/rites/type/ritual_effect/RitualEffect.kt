@@ -44,7 +44,7 @@ abstract class RitualEffect(values: Map<String, Any>) {
 
         fun fromMap(values: Map<String, Any>): RitualEffect {
             return REGISTRY.get(getIdNullSafe(getValue(values, "type")))?.invoke(values)
-                ?: throw IllegalArgumentException("Invalid ritual type: ${values["type"]}")
+                ?: throw IllegalArgumentException("Invalid effect type: ${values["type"]}")
         }
 
         fun getIdNullSafe(string: String?): Identifier? {

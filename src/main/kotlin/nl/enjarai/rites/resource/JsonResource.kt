@@ -43,8 +43,18 @@ abstract class JsonResource<T>(
                 )
             }
         }
+        try {
+            after()
+        } catch (e: Exception) {
+            RitesMod.LOGGER.error(
+                "Error occurred while finalizing resource jsons",
+                e
+            )
+        }
         RitesMod.LOGGER.info("Loaded ${values.size} $resource")
     }
 
     abstract fun processStream(identifier: Identifier, stream: InputStream)
+
+    open fun after() {}
 }

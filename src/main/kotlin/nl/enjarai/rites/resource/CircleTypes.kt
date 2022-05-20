@@ -16,6 +16,8 @@ import java.nio.charset.StandardCharsets
 import java.util.function.Predicate
 
 object CircleTypes : JsonResource<CircleType>("circle_types") {
+    val tempValues = hashMapOf<Identifier, CircleTypeFile>()
+
     override fun processStream(identifier: Identifier, stream: InputStream) {
         val fileReader = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8))
         val circleTypeFile = ResourceLoaders.GSON.fromJson(fileReader, CircleTypeFile::class.java) ?:
@@ -31,7 +33,16 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
             }
         }
 
+        tempValues[identifier] = circleTypeFile
         values[identifier] = circleTypeFile.convert()
+    }
+
+    override fun after() {
+        for ((id, circle) in tempValues) {
+            values[id]?.alternatives = circle.alternatives.map {
+                values[Identifier.tryParse(it)] ?: throw IllegalArgumentException("Invalid alternative: $it")
+            }
+        }
     }
 
     class CircleTypeFile : ResourceLoaders.TypeFile<CircleType> {
@@ -39,6 +50,7 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
         val keys = hashMapOf<String, String>()
         val particle = "minecraft:soul_fire_flame"
         val particle_settings = ParticleSettings()
+        val alternatives = listOf<String>()
 
         override fun convert(): CircleType {
             val predicates = keys.mapValues {

@@ -68,22 +68,26 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
     }
 
     fun onUse(player: PlayerEntity) {
-        if (ritual == null) {
-            val success = startRitual()
-            setPower(if (success) 15 else 7)
-            if (!success) {
-                Visuals.failParticles(getWorld() as ServerWorld, Vec3d.ofBottomCenter(getPos()))
-            }
+        if (player.isSneaking) {
+            ritualContext?.cycleRituals()
         } else {
-            stopRitual(isActive)
+            if (ritual == null) {
+                val success = startRitual()
+                setPower(if (success) 15 else 7)
+                if (!success) {
+                    Visuals.failParticles(getWorld() as ServerWorld, Vec3d.ofBottomCenter(getPos()))
+                }
+            } else {
+                stopRitual(isActive)
+            }
         }
     }
 
     fun tick() {
-        if (getWorld() is ServerWorld && ritual != null) {
-            ritual!!.drawParticleEffects(getWorld()!!, getPos())
+        if (getWorld() is ServerWorld && ritual != null && ritualContext != null) {
+            ritualContext!!.drawParticleEffects(getWorld()!!, getPos())
             Visuals.hum(getWorld()!! as ServerWorld, getPos(),
-                if (isActive) 0.1f else 1.0f)
+                if (isActive) 0.2f else 1.0f)
 
             tickCooldown -= 1
             if (tickCooldown < 0) {
@@ -93,7 +97,7 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
                 markDirty()
 
                 // Check validity of ritual circle
-                if (!ritual!!.isValid(getWorld()!!, getPos())) {
+                if (!ritualContext!!.canMaintain(getWorld()!!, getPos())) {
                     stopRitual(false)
                     return
                 }
@@ -132,8 +136,10 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
      */
     private fun startRitual(): Boolean {
         Rituals.values.values.forEach { ritual ->
-            if (ritual.isValid(getWorld()!!, getPos()) && ritual.requiredItemsNearby(getWorld()!!, getPos())) {
+            val circles = ritual.isValid(getWorld()!!, getPos(), ritualContext)
+            if (circles.isNotEmpty() && ritual.requiredItemsNearby(getWorld()!!, getPos())) {
                 this.ritual = ritual
+                ritualContext = RitualContext({getWorld()!!}, getPos(), ritual)
                 tickCooldown = COOLDOWN
                 return true
             }
@@ -145,7 +151,6 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
      * Runs when ritual is done absorbing items
      */
     private fun activateRitual(): Boolean {
-        ritualContext = RitualContext({getWorld()!!}, getPos(), ritual!!)
         ritualContext!!.storedItems = storedItems
         val success = ritual?.activate(ritualContext!!) ?: false
         if (success) {
