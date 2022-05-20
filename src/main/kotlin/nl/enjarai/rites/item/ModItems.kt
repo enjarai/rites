@@ -21,8 +21,10 @@ object ModItems {
             return result
         }
     }
+    val WAYSTONE = WayStoneItem()
 
     fun register() {
         Registry.register(Registry.ITEM, RitesMod.id("rite_center"), RITE_CENTER)
+        Registry.register(Registry.ITEM, RitesMod.id("waystone"), WAYSTONE)
     }
 }

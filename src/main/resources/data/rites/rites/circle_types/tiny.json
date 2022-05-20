@@ -1,0 +1,16 @@
+{
+  "alternatives": [
+    "rites:small"
+  ],
+  "keys": {
+    "c": "#minecraft:candles[lit=true]"
+  },
+  "layout": [
+    [" ", "c", " "],
+    ["c", " ", "c"],
+    [" ", "c", " "]
+  ],
+  "particle_settings": {
+    "cycles": 2
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "keys": {
+    "c": "minecraft:purple_candle[lit=true]"
+  },
+  "layout": [
+    [" ", "c", " "],
+    ["c", " ", "c"],
+    [" ", "c", " "]
+  ],
+  "particle": "minecraft:portal",
+  "particle_settings": {
+    "cycles": 2
+  }
+}

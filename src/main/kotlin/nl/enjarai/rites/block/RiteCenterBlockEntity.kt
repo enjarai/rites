@@ -10,51 +10,41 @@ import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList
 import net.minecraft.server.world.ServerWorld
-import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.resource.Rituals
-import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.RitualResult
 import nl.enjarai.rites.util.Visuals
 
 class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlocks.RITE_CENTER_ENTITY, pos, state), PolymerObject
 {
     companion object {
-        val COOLDOWN = 30
+        const val COOLDOWN = 30
     }
 
     private var tickCooldown = 0
-    private var ritual: Ritual? = null
-    private var hadAllItems = false
-    private var isActive = false
     private var storedItems = arrayOf<ItemStack>()
     private var ritualContext: RitualContext? = null
 
     override fun readNbt(nbt: NbtCompound) {
         super.readNbt(nbt)
         tickCooldown = nbt.getInt("tickCooldown")
-        ritual = Rituals.values[Identifier.tryParse(nbt.getString("ritual"))]
-        hadAllItems = nbt.getBoolean("hadAllItems")
-        isActive = nbt.getBoolean("isActive")
 
         storedItems = nbt.getList("storedItems", NbtList.COMPOUND_TYPE.toInt()).map {
             ItemStack.fromNbt(it as NbtCompound)
         }.toTypedArray()
 
-        if (ritual != null) {
-            ritualContext = RitualContext({getWorld()!!}, getPos(), ritual!!, nbt.getCompound("ritualContext"))
+        val ritualNbt = nbt.getCompound("ritualContext")
+        if (!ritualNbt.isEmpty) {
+            ritualContext = RitualContext({ getWorld()!! }, getPos(), ritualNbt)
         }
     }
 
     override fun writeNbt(nbt: NbtCompound) {
         super.writeNbt(nbt)
         nbt.putInt("tickCooldown", tickCooldown)
-        val ritualId = ritual?.id?.toString()
-        if (ritualId != null) nbt.putString("ritual", ritualId)
-        nbt.putBoolean("hadAllItems", hadAllItems)
-        nbt.putBoolean("isActive", isActive)
 
         val items = NbtList()
         for (stack in storedItems) {
@@ -71,23 +61,23 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
         if (player.isSneaking) {
             ritualContext?.cycleRituals()
         } else {
-            if (ritual == null) {
+            if (ritualContext?.getSelectedRitual() == null) {
                 val success = startRitual()
                 setPower(if (success) 15 else 7)
                 if (!success) {
                     Visuals.failParticles(getWorld() as ServerWorld, Vec3d.ofBottomCenter(getPos()))
                 }
             } else {
-                stopRitual(isActive)
+                endAllRituals(!(ritualContext?.hasActivating() ?: true))
             }
         }
     }
 
     fun tick() {
-        if (getWorld() is ServerWorld && ritual != null && ritualContext != null) {
-            ritualContext!!.drawParticleEffects(getWorld()!!, getPos())
+        if (getWorld() is ServerWorld && ritualContext != null) {
+            ritualContext!!.drawParticleEffects()
             Visuals.hum(getWorld()!! as ServerWorld, getPos(),
-                if (isActive) 0.2f else 1.0f)
+                if (ritualContext!!.hasActivating()) 0.8f else 0.2f)
 
             tickCooldown -= 1
             if (tickCooldown < 0) {
@@ -97,49 +87,62 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
                 markDirty()
 
                 // Check validity of ritual circle
-                if (!ritualContext!!.canMaintain(getWorld()!!, getPos())) {
-                    stopRitual(false)
+                if (!ritualContext!!.canMaintain()) {
+                    endAllRituals(false)
                     return
                 }
 
                 // If ritual hasn't activated yet, try absorbing new items
-                if (!isActive) {
+                if (ritualContext!!.hasActivating()) {
                     val missingItems = getMissingItems()
                     if (missingItems.isNotEmpty()) {
                         if (!tryAbsorbMissing(missingItems)) {
-                            stopRitual(false)
+                            endAllRituals(false)
                         }
                         return
                     }
-                }
 
-                // Deactivate the ritual after activation if activation fails, or ritual has no lasting effects
-                if (!hadAllItems) {
-                    hadAllItems = true
-                    if (!activateRitual() || !ritual!!.hasTickingEffects) {
-                        stopRitual(!ritual!!.hasTickingEffects)
+                    // Deactivate the ritual after activation if activation fails, or ritual has no lasting effects
+                    if (ritualContext!!.activateRitual(storedItems) != RitualResult.FAIL) {
+                        storedItems = arrayOf()
+                    } else {
+                        endAllRituals(false)
+                        return
+                    }
+
+                    // Deactivate right away if the ritual we just activated isn't ticking
+                    if (!ritualContext!!.getSelectedRitual()!!.ritual.hasTickingEffects) {
+                        endAllRituals(true)
                     }
                     return
                 }
             }
 
             // Tick rituals with lasting effects
-            if (ritualContext != null && !ritual!!.tick(ritualContext!!)) {
-                stopRitual(false)
+            if (!ritualContext!!.hasActivating() && ritualContext!!.tickAll() == RitualResult.FAIL) {
+                endAllRituals(false)
                 return
             }
         }
     }
 
     /**
-     * Runs when a ritual is initiated, selects the ritual to be used based on nearby items and circles
+     * Runs when a ritual is initiated,
+     * selects the ritual to be used based on nearby
+     * items and circle and adds it to the stack
      */
     private fun startRitual(): Boolean {
         Rituals.values.values.forEach { ritual ->
             val circles = ritual.isValid(getWorld()!!, getPos(), ritualContext)
+
+            if (hasContext()) circles.forEach circles@{
+                if (this.ritualContext?.canAddCircle(it.size) == false) return@forEach
+            }
+
             if (circles.isNotEmpty() && ritual.requiredItemsNearby(getWorld()!!, getPos())) {
-                this.ritual = ritual
-                ritualContext = RitualContext({getWorld()!!}, getPos(), ritual)
+                initContext()
+                this.ritualContext?.appendRitual(ritual)
+                this.ritualContext?.appendCircles(circles)
                 tickCooldown = COOLDOWN
                 return true
             }
@@ -147,50 +150,37 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
         return false
     }
 
-    /**
-     * Runs when ritual is done absorbing items
-     */
-    private fun activateRitual(): Boolean {
-        ritualContext!!.storedItems = storedItems
-        val success = ritual?.activate(ritualContext!!) ?: false
-        if (success) {
-            Visuals.activate(getWorld()!! as ServerWorld, getPos())
-            storedItems = arrayOf()
-            isActive = true
-        }
-        return success
-    }
-
-    /**
-     * Safely stops any running ritual
-     */
-    private fun stopRitual(success: Boolean) {
-        if (!success) {
-            Visuals.failParticles(getWorld() as ServerWorld, Vec3d.ofBottomCenter(getPos()))
-        } else {
-            storedItems += ritualContext!!.returnableItems
-        }
+    private fun endAllRituals(success: Boolean) {
+        // Stop rituals and store results
+        storedItems = ritualContext?.stopAllRituals(success) ?: arrayOf()
 
         // Reset all state
         ritualContext = null
-        hadAllItems = false
-        isActive = false
-        ritual = null
         setPower(0)
 
         // Drop currently stored items, if available
         val pos = Vec3d.ofBottomCenter(getPos())
         storedItems.forEach {
-            getWorld()?.spawnEntity(ItemEntity(world, pos.x, pos.y, pos.z, it))
+            getWorld()?.spawnEntity(ItemEntity(getWorld(), pos.x, pos.y, pos.z, it))
         }
         storedItems = arrayOf()
 
-        // Save the fact that the ritual stopped
+        // Save the fact that the rituals have stopped
         markDirty()
     }
 
+    private fun hasContext(): Boolean {
+        return ritualContext != null
+    }
+
+    private fun initContext() {
+        if (!hasContext()) {
+            ritualContext = RitualContext({ getWorld()!! }, getPos())
+        }
+    }
+
     private fun getMissingItems(): Map<Item, Int> {
-        return ritual?.ingredients?.mapValues { entry ->
+        return ritualContext?.getSelectedRitual()?.ritual?.ingredients?.mapValues { entry ->
             var amountNeeded = entry.value
             storedItems.forEach {
                 if (it.isOf(entry.key)) amountNeeded -= it.count
@@ -201,7 +191,7 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
 
     private fun tryAbsorbMissing(missingItems: Map<Item, Int>): Boolean {
         // Find all item entities within the circle
-        ritual?.getItemsInRange(getWorld()!!, getPos())?.forEach { itemEntity ->
+        ritualContext?.getSelectedRitual()?.ritual?.getItemsInRange(getWorld()!!, getPos())?.forEach { itemEntity ->
 
             // Absorb if possible
             val stack = itemEntity.stack

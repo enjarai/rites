@@ -7,24 +7,33 @@ import net.minecraft.nbt.NbtString
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import nl.enjarai.rites.resource.CircleTypes
-import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.PlaceholderFillerInner
+import nl.enjarai.rites.util.Visuals
 import java.util.*
 
-class RitualContext(val worldGetter: () -> World, val pos: BlockPos, val ritual: Ritual) {
+class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
     val world: World get() = worldGetter()
+    val pos: BlockPos = realPos.mutableCopy()
     var storedItems = arrayOf<ItemStack>()
     var returnableItems = arrayOf<ItemStack>()
     val variables = hashMapOf<String, String>()
     val tickCooldown = hashMapOf<UUID, Int>()
-    var selectedRitual = 0
-    var rituals = arrayOf<Ritual>()
-    var circles = arrayOf<CircleType>()
+    private var selectedRitual = 0
+    private var rituals = arrayOf<RitualInstance>()
+    private var circles = arrayOf<CircleType>()
 
-    constructor(worldGetter: () -> World, pos: BlockPos, ritual: Ritual, nbtCompound: NbtCompound) : this(worldGetter, pos, ritual) {
+    val hasTickingEffects: Boolean get() {
+        rituals.forEach {
+            if (it.ritual.hasTickingEffects) return true
+        }
+        return false
+    }
+
+    constructor(worldGetter: () -> World, pos: BlockPos, nbtCompound: NbtCompound) : this(worldGetter, pos) {
         storedItems = nbtCompound.getList("storedItems", NbtList.COMPOUND_TYPE.toInt()).map {
             ItemStack.fromNbt(it as NbtCompound)
         }.toTypedArray()
@@ -39,11 +48,11 @@ class RitualContext(val worldGetter: () -> World, val pos: BlockPos, val ritual:
             tickCooldown[UUID.fromString(it)] = cooldowns.getInt(it)
         }
         selectedRitual = nbtCompound.getInt("selectedRitual")
-        for ((i, string) in nbtCompound.getList("rituals", NbtList.STRING_TYPE.toInt()).withIndex()) {
-            rituals[i] = Rituals.values [Identifier.tryParse(string.asString())] ?: continue
+        for (ritual in nbtCompound.getList("rituals", NbtList.COMPOUND_TYPE.toInt())) {
+            rituals += RitualInstance.fromNbt(ritual as NbtCompound) ?: continue
         }
-        for ((i, string) in nbtCompound.getList("circles", NbtList.STRING_TYPE.toInt()).withIndex()) {
-            circles[i] = CircleTypes.values [Identifier.tryParse(string.asString())] ?: continue
+        for (string in nbtCompound.getList("circles", NbtList.STRING_TYPE.toInt())) {
+            circles += CircleTypes.values [Identifier.tryParse(string.asString())] ?: continue
         }
     }
 
@@ -80,7 +89,7 @@ class RitualContext(val worldGetter: () -> World, val pos: BlockPos, val ritual:
 
         val rituals = NbtList()
         for (ritual in this.rituals) {
-            rituals.add(NbtString.of(ritual.id.toString()))
+            rituals.add(ritual.toNbt())
         }
         nbt.put("rituals", rituals)
 
@@ -104,9 +113,9 @@ class RitualContext(val worldGetter: () -> World, val pos: BlockPos, val ritual:
         return result
     }
 
-    fun canMaintain(world: World, pos: BlockPos): Boolean {
+    fun canMaintain(): Boolean {
         for (circle in circles) {
-            if (!circle.isSelfValid(world, pos)) return false
+            if (!circle.isSelfValid(world, realPos)) return false
         }
         return true
     }
@@ -118,37 +127,98 @@ class RitualContext(val worldGetter: () -> World, val pos: BlockPos, val ritual:
         return true
     }
 
-    fun drawParticleEffects(world: World, pos: BlockPos) {
+    fun drawParticleEffects() {
         val serverWorld = world as? ServerWorld ?: return
         circles.forEach {
-            it.drawParticleCircle(serverWorld, pos)
+            it.drawParticleCircle(serverWorld, realPos)
         }
     }
 
-    fun activateAll(): Boolean {
+    /**
+     * Activate the selected ritual
+     */
+    fun activateRitual(storedItems: Array<ItemStack>): RitualResult {
+        val ritual = getSelectedRitual()
+        if (ritual?.active == false) {
+            this.storedItems = storedItems
+            val success = ritual.activate(this)
+            if (success) {
+                Visuals.activate(world as ServerWorld, realPos)
+            }
+            return RitualResult.successFromBool(success)
+        }
+        return RitualResult.PASS
+    }
+
+    /**
+     * Safely stop the specified ritual.
+     * The success parameter specifies whether the ritual was considered a success or not.
+     */
+    fun stopRitual(ritual: RitualInstance, success: Boolean): Array<ItemStack> {
+        val ritualId = rituals.indexOf(ritual)
+        var returns = arrayOf<ItemStack>()
+
+        if (!success) {
+            Visuals.failParticles(world as ServerWorld, Vec3d.ofBottomCenter(realPos))
+        } else {
+            returns += returnableItems
+        }
+
+        ritual.active = false
+        rituals = rituals.drop(ritualId).toTypedArray()
+
+        return returns
+    }
+
+    fun stopAllRituals(success: Boolean): Array<ItemStack> {
+        var returns = arrayOf<ItemStack>()
         rituals.forEach {
-            if (!it.activate(this)) return false
+            returns += stopRitual(it, success)
         }
-        return true
+        return returns
     }
 
-    fun tickAll(): Boolean {
-        rituals.forEach {
-            if (!it.tick(this)) return false
-        }
-        return true
+    fun tickAll(): RitualResult {
+        return RitualResult.merge(rituals.map {
+            it.tick(this)
+        })
     }
 
-    fun getActiveRitual(): Ritual? {
+    fun getSelectedRitual(): RitualInstance? {
         return rituals.getOrNull(selectedRitual)
     }
 
+    /**
+     * Instances a ritual and adds it to the end of the stack,
+     * make sure the empty top of the stack is selected before calling
+     */
     fun appendRitual(ritual: Ritual) {
-        rituals += (ritual)
+        rituals += RitualInstance(ritual)
     }
 
+    fun appendCircles(circles: List<CircleType>) {
+        this.circles += circles
+    }
+
+    /**
+     * Safely cycles through rituals in the stack.
+     * Does nothing if a ritual is currently activating.
+     */
     fun cycleRituals() {
-        selectedRitual += 1
-        if (selectedRitual > rituals.size) selectedRitual = 0
+        if (!hasActivating()) {
+            selectedRitual += 1
+            if (selectedRitual > rituals.size) selectedRitual = 0
+        }
+    }
+
+    fun hasActivating(): Boolean {
+        rituals.forEach {
+            if (!it.active) return true
+        }
+        return false
+    }
+
+    fun hasRituals(): Boolean {
+        return rituals.isNotEmpty()
     }
 }

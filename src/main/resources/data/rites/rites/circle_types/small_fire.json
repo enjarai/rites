@@ -3,12 +3,14 @@
     "c": "minecraft:red_candle[lit=true]"
   },
   "layout": [
-    [" ", "c", " "],
-    ["c", " ", "c"],
-    [" ", "c", " "]
+    [" ", "c", "c", "c", " "],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    [" ", "c", "c", "c", " "]
   ],
   "particle": "minecraft:flame",
   "particle_settings": {
-    "cycles": 2
+    "cycles": 4
   }
 }
