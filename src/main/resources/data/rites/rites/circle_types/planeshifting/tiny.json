@@ -1,15 +1,13 @@
 {
-  "alternatives": [
-    "rites:small"
-  ],
   "keys": {
-    "c": "#minecraft:candles[lit=true]"
+    "c": "minecraft:purple_candle[lit=true]"
   },
   "layout": [
     [" ", "c", " "],
     ["c", " ", "c"],
     [" ", "c", " "]
   ],
+  "particle": "minecraft:reverse_portal",
   "particle_settings": {
     "cycles": 2
   }

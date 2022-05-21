@@ -1,6 +1,6 @@
 {
   "circles": [
-    "rites:small_fire"
+    "rites:fire/small"
   ],
   "ingredients": {
     "minecraft:red_wool": 1,

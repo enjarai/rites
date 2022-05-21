@@ -1,6 +1,6 @@
 {
   "circles": [
-    "rites:small"
+    "rites:normal/small"
   ],
   "ingredients": {
     "minecraft:dirt": 1,

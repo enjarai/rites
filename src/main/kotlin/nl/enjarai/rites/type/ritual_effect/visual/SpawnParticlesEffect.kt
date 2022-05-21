@@ -1,4 +1,4 @@
-package nl.enjarai.rites.type.ritual_effect
+package nl.enjarai.rites.type.ritual_effect.visual
 
 import net.minecraft.particle.ParticleEffect
 import net.minecraft.server.world.ServerWorld
@@ -7,6 +7,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
 class SpawnParticlesEffect(values: Map<String, Any>) : RitualEffect(values) {
     private val particle: String = getValue(values, "particle")

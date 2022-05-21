@@ -1,6 +1,6 @@
 {
   "circles": [
-    "rites:tiny_fire"
+    "rites:fire/tiny"
   ],
   "ingredients": {
     "minecraft:water_bucket": 1,

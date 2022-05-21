@@ -1,4 +1,4 @@
-package nl.enjarai.rites.type.ritual_effect
+package nl.enjarai.rites.type.ritual_effect.visual
 
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
@@ -6,6 +6,7 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
 class PlaySoundEffect(values: Map<String, Any>) : RitualEffect(values) {
     private val sound: String = getValue(values, "sound")

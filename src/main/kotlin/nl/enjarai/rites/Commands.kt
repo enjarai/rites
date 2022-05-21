@@ -34,7 +34,7 @@ object Commands {
     private fun checkCircleType(ctx: CommandContext<ServerCommandSource>): Int {
         val id = ctx.getArgument("name", Identifier::class.java)
         val pos = ctx.source.position
-        val valid = CircleTypes.values[id]?.isValid(ctx.source.world, BlockPos(pos.x, pos.y, pos.z))
+        val valid = CircleTypes.values[id]?.isValid(ctx.source.world, BlockPos(pos.x, pos.y, pos.z), null)
         ctx.source.sendFeedback(LiteralText("valid: $valid"), false)
         return 1
     }

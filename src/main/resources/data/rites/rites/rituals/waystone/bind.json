@@ -1,0 +1,13 @@
+{
+  "circles": [
+    "rites:planeshifting/tiny"
+  ],
+  "ingredients": {
+    "rites:waystone": 1
+  },
+  "effects": [
+    {
+      "type": "rites:bind_waystone"
+    }
+  ]
+}

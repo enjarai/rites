@@ -1,7 +1,8 @@
-package nl.enjarai.rites.type.ritual_effect
+package nl.enjarai.rites.type.ritual_effect.flow
 
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
 class TickingEffect(values: Map<String, Any>) : RitualEffect(values) {
     val effects: List<RitualEffect> = getValue<List<Map<String, Any>>>(values, "effects").map {

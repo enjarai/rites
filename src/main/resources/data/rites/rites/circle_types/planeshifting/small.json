@@ -1,0 +1,13 @@
+{
+  "keys": {
+    "c": "minecraft:purple_candle[lit=true]"
+  },
+  "layout": [
+    [" ", "c", "c", "c", " "],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    [" ", "c", "c", "c", " "]
+  ],
+  "particle": "minecraft:reverse_portal"
+}

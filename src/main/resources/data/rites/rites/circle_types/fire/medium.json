@@ -1,9 +1,9 @@
 {
   "alternatives": [
-    "rites:large"
+    "rites:fire/large"
   ],
   "keys": {
-    "c": "#minecraft:candles[lit=true]"
+    "c": "minecraft:red_candle[lit=true]"
   },
   "layout": [
     [" ", " ", "c", "c", "c", "c", "c", " ", " "],
@@ -16,6 +16,7 @@
     [" ", "c", " ", " ", " ", " ", " ", "c", " "],
     [" ", " ", "c", "c", "c", "c", "c", " ", " "]
   ],
+  "particle": "minecraft:flame",
   "particle_settings": {
     "cycles": 5,
     "arm_angle": -0.18,

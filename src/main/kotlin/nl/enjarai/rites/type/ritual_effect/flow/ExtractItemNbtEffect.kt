@@ -1,7 +1,8 @@
-package nl.enjarai.rites.type.ritual_effect
+package nl.enjarai.rites.type.ritual_effect.flow
 
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
 class ExtractItemNbtEffect(values: Map<String, Any>) : RitualEffect(values) {
     private val sourceIngredient: Int = getValue(values, "source_ingredient", 1.0).toInt()

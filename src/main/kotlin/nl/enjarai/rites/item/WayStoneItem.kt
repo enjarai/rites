@@ -6,6 +6,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
+import net.minecraft.nbt.NbtIntArray
 import net.minecraft.server.network.ServerPlayerEntity
 
 class WayStoneItem : Item(FabricItemSettings().group(ItemGroup.MISC)), PolymerItem {
@@ -15,8 +16,17 @@ class WayStoneItem : Item(FabricItemSettings().group(ItemGroup.MISC)), PolymerIt
         const val LINKED_DIM_KEY = "linkedDim"
     }
 
-    override fun getPolymerItem(itemStack: ItemStack?, player: ServerPlayerEntity?): Item {
+    override fun getPolymerItem(itemStack: ItemStack, player: ServerPlayerEntity?): Item {
         return Items.FIREWORK_STAR
+    }
+
+    override fun getPolymerItemStack(itemStack: ItemStack, player: ServerPlayerEntity?): ItemStack {
+        val stack = super.getPolymerItemStack(itemStack, player)
+        if (isLinked(itemStack)) {
+            val nbt = stack.getOrCreateSubNbt("Explosion")
+            nbt.putIntArray("Colors", listOf(0xffffff))
+        }
+        return stack
     }
 
 //    override fun appendTooltip(
@@ -34,11 +44,11 @@ class WayStoneItem : Item(FabricItemSettings().group(ItemGroup.MISC)), PolymerIt
 //        super.appendTooltip(stack, world, tooltip, context)
 //    }
 
-    override fun hasGlint(stack: ItemStack): Boolean {
-        return isLinked(stack)
-    }
+//    override fun hasGlint(stack: ItemStack): Boolean {
+//        return isLinked(stack)
+//    }
 
     private fun isLinked(stack: ItemStack): Boolean {
-        return stack.nbt?.getBoolean(LINKED_KEY) != false
+        return stack.nbt?.getBoolean(LINKED_KEY) == true
     }
 }

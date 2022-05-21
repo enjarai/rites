@@ -1,5 +1,7 @@
 package nl.enjarai.rites.type
 
+import net.minecraft.entity.Entity
+import net.minecraft.entity.ItemEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList
@@ -7,6 +9,7 @@ import net.minecraft.nbt.NbtString
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import nl.enjarai.rites.resource.CircleTypes
@@ -17,21 +20,22 @@ import java.util.*
 
 class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
     val world: World get() = worldGetter()
-    val pos: BlockPos = realPos.mutableCopy()
+    var pos: BlockPos = realPos.mutableCopy()
     var storedItems = arrayOf<ItemStack>()
     var returnableItems = arrayOf<ItemStack>()
     val variables = hashMapOf<String, String>()
     val tickCooldown = hashMapOf<UUID, Int>()
     private var selectedRitual = 0
     private var rituals = arrayOf<RitualInstance>()
-    private var circles = arrayOf<CircleType>()
+    var circles = arrayOf<CircleType>()
 
     val hasTickingEffects: Boolean get() {
         rituals.forEach {
-            if (it.ritual.hasTickingEffects) return true
+            if (it.ritual.shouldKeepRunning) return true
         }
         return false
     }
+    val range: Int get() = circles.maxOf { it.size }
 
     constructor(worldGetter: () -> World, pos: BlockPos, nbtCompound: NbtCompound) : this(worldGetter, pos) {
         storedItems = nbtCompound.getList("storedItems", NbtList.COMPOUND_TYPE.toInt()).map {
@@ -115,7 +119,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
 
     fun canMaintain(): Boolean {
         for (circle in circles) {
-            if (!circle.isSelfValid(world, realPos)) return false
+            if (!circle.isSelfValid(world, realPos, null)) return false
         }
         return true
     }
@@ -154,28 +158,22 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
      * Safely stop the specified ritual.
      * The success parameter specifies whether the ritual was considered a success or not.
      */
-    fun stopRitual(ritual: RitualInstance, success: Boolean): Array<ItemStack> {
+    fun stopRitual(ritual: RitualInstance, success: Boolean) {
         val ritualId = rituals.indexOf(ritual)
-        var returns = arrayOf<ItemStack>()
 
         if (!success) {
             Visuals.failParticles(world as ServerWorld, Vec3d.ofBottomCenter(realPos))
-        } else {
-            returns += returnableItems
         }
 
         ritual.active = false
         rituals = rituals.drop(ritualId).toTypedArray()
-
-        return returns
     }
 
     fun stopAllRituals(success: Boolean): Array<ItemStack> {
-        var returns = arrayOf<ItemStack>()
         rituals.forEach {
-            returns += stopRitual(it, success)
+            stopRitual(it, success)
         }
-        return returns
+        return returnableItems
     }
 
     fun tickAll(): RitualResult {
@@ -189,11 +187,12 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
     }
 
     /**
-     * Instances a ritual and adds it to the end of the stack,
-     * make sure the empty top of the stack is selected before calling
+     * Instances a ritual, adds it to the end of the stack and
+     * selects it.
      */
     fun appendRitual(ritual: Ritual) {
         rituals += RitualInstance(ritual)
+        selectedRitual = rituals.size - 1
     }
 
     fun appendCircles(circles: List<CircleType>) {
@@ -220,5 +219,41 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
 
     fun hasRituals(): Boolean {
         return rituals.isNotEmpty()
+    }
+
+
+    fun <T : Entity> getEntitiesInRangeByClass(clazz: Class<T>, verticalRange: Double = 0.0): List<T> {
+        return getEntitiesInRangeByClass(world, pos, circles.toList(), clazz, verticalRange)
+    }
+
+    /**
+     * Find all item entities within the ritual at a specific position
+     */
+    fun getItemsInRange(): List<ItemEntity> {
+        return getItemsInRange(world, realPos, circles.toList())
+    }
+
+    companion object {
+        fun <T : Entity> getEntitiesInRangeByClass(world: World, pos: BlockPos, circles: List<CircleType>, clazz: Class<T>, verticalRange: Double = 0.0): List<T> {
+            val range = circles.maxOf { it.size }.toDouble()
+            val center = Vec3d.ofBottomCenter(pos)
+            val box = Box.of(center, range * 2, range * 2, range * 2)
+
+            return world.getEntitiesByClass(
+                clazz,
+                box.withMaxY(box.maxY + verticalRange)
+            ) { it.squaredDistanceTo(Vec3d(
+                center.getX(),
+                it.y.coerceAtLeast(center.getY()).coerceAtMost(center.getY() + verticalRange),
+                center.getZ()
+            )) < range * range }
+        }
+
+        /**
+         * Find all item entities within the ritual at a specific position
+         */
+        fun getItemsInRange(world: World, pos: BlockPos, circles: List<CircleType>): List<ItemEntity> {
+            return getEntitiesInRangeByClass(world, pos, circles, ItemEntity::class.java)
+        }
     }
 }

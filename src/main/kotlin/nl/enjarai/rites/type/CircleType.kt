@@ -29,19 +29,23 @@ class CircleType(
         return null
     }
 
-    fun isValid(world: World, pos: BlockPos): CircleType? {
-        if (isSelfValid(world, pos)) return this
+    fun isValid(world: World, pos: BlockPos, ctx: RitualContext?): CircleType? {
+        if (isSelfValid(world, pos, ctx)) return this
 
         for (circle in alternatives) {
-            val result = circle.isValid(world, pos)
+            val result = circle.isValid(world, pos, ctx)
             if (result != null) return result
         }
 
         return null
     }
 
-    fun isSelfValid(world: World, pos: BlockPos): Boolean {
-        if (layout.isEmpty()) return false
+    /**
+     * Checks the validity of this circle only.
+     * If the circle might be added, ctx should be set, **otherwise it should always be null**.
+     */
+    fun isSelfValid(world: World, pos: BlockPos, ctx: RitualContext?): Boolean {
+        if (layout.isEmpty() || (ctx != null && !ctx.canAddCircle(size))) return false
 
         val offset = size
         val offsetPos = pos.add(-offset, 0, -offset)

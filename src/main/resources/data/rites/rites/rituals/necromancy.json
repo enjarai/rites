@@ -1,7 +1,7 @@
 {
   "circles": [
-    "rites:small_fire",
-    "rites:medium"
+    "rites:fire/small",
+    "rites:normal/medium"
   ],
   "ingredients": {
     "minecraft:rotten_flesh": 1,

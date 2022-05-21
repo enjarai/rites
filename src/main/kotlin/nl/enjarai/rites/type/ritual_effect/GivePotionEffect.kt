@@ -16,7 +16,7 @@ class GivePotionEffect(values: Map<String, Any>) : RitualEffect(values) {
 
     override fun activate(ritual: Ritual, ctx: RitualContext): Boolean {
         val effect = Registry.STATUS_EFFECT.get(Identifier.tryParse(ctx.parseVariables(effect))) ?: return false
-        ritual.getEntitiesInRangeByClass(ctx.world, ctx.pos, LivingEntity::class.java, verticalRange).forEach {
+        RitualContext.getEntitiesInRangeByClass(ctx.world, ctx.pos, ritual.circleTypes, LivingEntity::class.java, verticalRange).forEach {
             it.addStatusEffect(StatusEffectInstance(effect, duration, amplifier, !showParticles, showParticles, showParticles))
         }
         return true

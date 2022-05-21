@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " T ",
+    "TGT",
+    " T "
+  ],
+  "key": {
+    "T": {
+      "item": "minecraft:tuff"
+    },
+    "G": {
+      "item": "minecraft:raw_gold"
+    }
+  },
+  "result": {
+    "item": "rites:waystone"
+  }
+}

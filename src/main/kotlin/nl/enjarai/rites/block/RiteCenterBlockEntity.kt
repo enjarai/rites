@@ -59,16 +59,19 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
 
     fun onUse(player: PlayerEntity) {
         if (player.isSneaking) {
-            ritualContext?.cycleRituals()
+            endAllRituals(!(ritualContext?.hasActivating() ?: true))
         } else {
+            val success: Boolean
+
             if (ritualContext?.getSelectedRitual() == null) {
-                val success = startRitual()
+                success = startRitual()
                 setPower(if (success) 15 else 7)
-                if (!success) {
-                    Visuals.failParticles(getWorld() as ServerWorld, Vec3d.ofBottomCenter(getPos()))
-                }
             } else {
-                endAllRituals(!(ritualContext?.hasActivating() ?: true))
+                success = startRitual()
+            }
+
+            if (!success) {
+                Visuals.failParticles(getWorld() as ServerWorld, Vec3d.ofBottomCenter(getPos()))
             }
         }
     }
@@ -111,7 +114,7 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
                     }
 
                     // Deactivate right away if the ritual we just activated isn't ticking
-                    if (!ritualContext!!.getSelectedRitual()!!.ritual.hasTickingEffects) {
+                    if (!ritualContext!!.getSelectedRitual()!!.ritual.shouldKeepRunning) {
                         endAllRituals(true)
                     }
                     return
@@ -135,11 +138,11 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
         Rituals.values.values.forEach { ritual ->
             val circles = ritual.isValid(getWorld()!!, getPos(), ritualContext)
 
-            if (hasContext()) circles.forEach circles@{
-                if (this.ritualContext?.canAddCircle(it.size) == false) return@forEach
-            }
+//            if (hasContext()) circles.forEach circles@{
+//                if (this.ritualContext?.canAddCircle(it.size) == false) return@forEach
+//            }
 
-            if (circles.isNotEmpty() && ritual.requiredItemsNearby(getWorld()!!, getPos())) {
+            if (circles.isNotEmpty() && ritual.requiredItemsNearby(getWorld()!!, getPos(), circles)) {
                 initContext()
                 this.ritualContext?.appendRitual(ritual)
                 this.ritualContext?.appendCircles(circles)
@@ -191,7 +194,7 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
 
     private fun tryAbsorbMissing(missingItems: Map<Item, Int>): Boolean {
         // Find all item entities within the circle
-        ritualContext?.getSelectedRitual()?.ritual?.getItemsInRange(getWorld()!!, getPos())?.forEach { itemEntity ->
+        ritualContext?.getItemsInRange()?.forEach { itemEntity ->
 
             // Absorb if possible
             val stack = itemEntity.stack

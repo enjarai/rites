@@ -1,4 +1,7 @@
 {
+  "alternatives": [
+    "rites:fire/medium"
+  ],
   "keys": {
     "c": "minecraft:red_candle[lit=true]"
   },
