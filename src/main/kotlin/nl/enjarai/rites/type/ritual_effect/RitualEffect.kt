@@ -1,7 +1,11 @@
 package nl.enjarai.rites.type.ritual_effect
 
 import com.mojang.serialization.Lifecycle
+import com.mthaler.aparser.arithmetic.Expression
+import com.mthaler.aparser.arithmetic.tryEval
+import com.mthaler.aparser.util.Try
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.Registry
 import net.minecraft.util.registry.RegistryKey
 import net.minecraft.util.registry.SimpleRegistry
@@ -21,7 +25,7 @@ import java.util.*
 abstract class RitualEffect(values: Map<String, Any>) {
     val uuid: UUID = UUID.randomUUID()
 
-    abstract fun activate(ritual: Ritual, ctx: RitualContext): Boolean
+    abstract fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean
 
     open fun isTicking(): Boolean {
         return getTickCooldown() != 0
@@ -57,7 +61,7 @@ abstract class RitualEffect(values: Map<String, Any>) {
         }
 
         fun fromMap(values: Map<String, Any>): RitualEffect {
-            return REGISTRY.get(getIdNullSafe(getValue(values, "type")))?.invoke(values)
+            return REGISTRY.get(getIdNullSafe(getValue<String>(values, "type")(null)))?.invoke(values)
                 ?: throw IllegalArgumentException("Invalid effect type: ${values["type"]}")
         }
 
@@ -65,8 +69,21 @@ abstract class RitualEffect(values: Map<String, Any>) {
             return if (string == null) null else Identifier.tryParse(string)
         }
 
-        inline fun <reified T> getValue(values: Map<String, Any>, key: String, default: T? = null): T {
-            return values[key] as? T ?: default ?: throw IllegalArgumentException("Invalid $key/no $key given")
+        inline fun <reified T> getValue(values: Map<String, Any>, key: String, default: T? = null): (RitualContext?) -> T {
+            // If the value as T is a String, thus making T a String, parse only the variables
+            val asT = values[key] as? T
+            if (asT != null && asT is String) return {
+                it?.parseVariables(asT) as? T ?: asT
+            }
+
+            // If T is not a String, but the value can be cast to a String,
+            // parse variables, then math expressions, and cast to T
+            val parsable = values[key] as? String
+            if (parsable != null) return {
+                (Expression(it?.parseVariables(parsable) ?: parsable).tryEval() as Try.Success).value as T
+            }
+            val value = asT ?: default ?: throw IllegalArgumentException("Invalid $key/no $key given")
+            return { value }
         }
     }
 }
