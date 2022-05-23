@@ -3,6 +3,7 @@ package nl.enjarai.rites.type.ritual_effect.visual
 import net.minecraft.particle.ParticleEffect
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
@@ -16,10 +17,10 @@ class SpawnParticlesEffect(values: Map<String, Any>) : RitualEffect(values) {
     private val count: Int = getValue(values, "count", 1.0).toInt()
     private val speed: Double = getValue(values, "speed", .0)
 
-    override fun activate(ritual: Ritual, ctx: RitualContext): Boolean {
+    override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         if (posOffset.size != 3) return false
         if (delta.size != 3) return false
-        val dPos = Vec3d.ofBottomCenter(ctx.pos)
+        val dPos = Vec3d.ofBottomCenter(pos)
 
         (ctx.world as ServerWorld).spawnParticles(
             (Registry.PARTICLE_TYPE.get(

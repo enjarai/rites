@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.ItemEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
+import net.minecraft.nbt.NbtHelper
 import net.minecraft.nbt.NbtList
 import net.minecraft.nbt.NbtString
 import net.minecraft.server.world.ServerWorld
@@ -12,6 +13,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import nl.enjarai.rites.item.WayStoneItem
 import nl.enjarai.rites.resource.CircleTypes
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.PlaceholderFillerInner
@@ -58,6 +60,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         for (string in nbtCompound.getList("circles", NbtList.STRING_TYPE.toInt())) {
             circles += CircleTypes.values [Identifier.tryParse(string.asString())] ?: continue
         }
+        this.pos = NbtHelper.toBlockPos(nbtCompound.getCompound("pos"))
     }
 
     fun toNbt(): NbtCompound {
@@ -102,6 +105,8 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
             circles.add(NbtString.of(circle.id.toString()))
         }
         nbt.put("circles", circles)
+
+        nbt.put("pos", NbtHelper.fromBlockPos(pos))
 
         return nbt
     }

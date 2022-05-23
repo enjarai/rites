@@ -2,9 +2,7 @@ package nl.enjarai.rites
 
 import net.fabricmc.api.ModInitializer
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents
-import net.minecraft.advancement.AdvancementCriterion
 import net.minecraft.server.MinecraftServer
-import net.minecraft.sound.SoundEvents
 import net.minecraft.util.Identifier
 import nl.enjarai.rites.block.ModBlocks
 import nl.enjarai.rites.item.ModItems

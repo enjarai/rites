@@ -1,6 +1,5 @@
 package nl.enjarai.rites.util
 
-import net.fabricmc.loader.impl.lib.sat4j.core.Vec
 import net.minecraft.particle.ParticleEffect
 import net.minecraft.particle.ParticleType
 import net.minecraft.particle.ParticleTypes

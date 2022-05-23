@@ -1,5 +1,6 @@
 package nl.enjarai.rites.type.ritual_effect.flow
 
+import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
@@ -14,10 +15,10 @@ class TickingEffect(values: Map<String, Any>) : RitualEffect(values) {
         return cooldown
     }
 
-    override fun activate(ritual: Ritual, ctx: RitualContext): Boolean {
+    override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         if (ctx.checkCooldown(this)) {
             effects.forEach {
-                if (!it.activate(ritual, ctx)) return false
+                if (!it.activate(pos, ritual, ctx)) return false
             }
         }
         return true

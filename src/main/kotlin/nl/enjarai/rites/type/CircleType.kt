@@ -8,7 +8,6 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import nl.enjarai.rites.resource.CircleTypes
-import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.util.Visuals
 import java.util.function.Predicate
 

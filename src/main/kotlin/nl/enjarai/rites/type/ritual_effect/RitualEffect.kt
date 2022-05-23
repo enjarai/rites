@@ -2,6 +2,7 @@ package nl.enjarai.rites.type.ritual_effect
 
 import com.mojang.serialization.Lifecycle
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.registry.Registry
 import net.minecraft.util.registry.RegistryKey
 import net.minecraft.util.registry.SimpleRegistry
@@ -21,7 +22,7 @@ import java.util.*
 abstract class RitualEffect(values: Map<String, Any>) {
     val uuid: UUID = UUID.randomUUID()
 
-    abstract fun activate(ritual: Ritual, ctx: RitualContext): Boolean
+    abstract fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean
 
     open fun isTicking(): Boolean {
         return getTickCooldown() != 0

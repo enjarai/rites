@@ -6,6 +6,7 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import nl.enjarai.rites.RitesMod.LOGGER
 import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.Visuals
@@ -63,7 +64,12 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
      */
     fun activate(ctx: RitualContext): Boolean {
         for (effect in unTickingEffects) {
-            if (!effect.activate(this, ctx)) return false
+            try {
+                if (!effect.activate(ctx.pos, this, ctx)) return false
+            } catch (e: Exception) {
+                LOGGER.error("Error occurred while activating effect ${effect.uuid} on ritual $id:", e)
+                return false
+            }
         }
         for (circle in circleTypes) {
             Visuals.outwardsCircle(ctx.world as ServerWorld, Vec3d.ofCenter(ctx.realPos, .1), circle.size.toDouble())
@@ -77,7 +83,12 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
      */
     fun tick(ctx: RitualContext): Boolean {
         for (effect in tickingEffects) {
-            if (!effect.activate(this, ctx)) return false
+            try {
+                if (!effect.activate(ctx.pos, this, ctx)) return false
+            } catch (e: Exception) {
+                LOGGER.error("Error occurred while ticking effect ${effect.uuid} on ritual $id:", e)
+                return false
+            }
         }
         return true
     }

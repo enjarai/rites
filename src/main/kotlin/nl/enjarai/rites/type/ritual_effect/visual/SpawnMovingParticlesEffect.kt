@@ -3,6 +3,7 @@ package nl.enjarai.rites.type.ritual_effect.visual
 import net.minecraft.particle.ParticleEffect
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
+import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
@@ -17,11 +18,11 @@ class SpawnMovingParticlesEffect(values: Map<String, Any>) : RitualEffect(values
     private val directionVector: List<Double> = getValue(values, "direction_vector", listOf(.0, .0, .0))
     private val count: Int = getValue(values, "count", 1.0).toInt()
 
-    override fun activate(ritual: Ritual, ctx: RitualContext): Boolean {
+    override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         if (posOffset.size != 3) return false
         if (delta.size != 3) return false
         if (directionVector.size != 3) return false
-        val dPos = Vec3d.ofBottomCenter(ctx.pos).add(posOffset[0], posOffset[1], posOffset[2])
+        val dPos = Vec3d.ofBottomCenter(pos).add(posOffset[0], posOffset[1], posOffset[2])
 
         Visuals.movingParticleCloud(
             ctx.world as ServerWorld,

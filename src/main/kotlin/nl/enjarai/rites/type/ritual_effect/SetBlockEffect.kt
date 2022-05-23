@@ -4,10 +4,9 @@ import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 
-class BarrierEffect(values: Map<String, Any>) : RitualEffect(values) {
-    override fun isTicking(): Boolean {
-        return true
-    }
+class SetBlockEffect(values: Map<String, Any>) : RitualEffect(values) {
+    val block
+    val offset
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         TODO("Not yet implemented")
