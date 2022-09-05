@@ -12,7 +12,7 @@ import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class BindWaystoneEffect(values: Map<String, Any>) : RitualEffect(values) {
+class BindWaystoneEffect : RitualEffect() {
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val waystoneStack = ctx.storedItems.firstOrNull {
             it.isOf(ModItems.WAYSTONE)

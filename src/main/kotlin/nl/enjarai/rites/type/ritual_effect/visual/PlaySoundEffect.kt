@@ -7,20 +7,25 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.interpreted_value.ConstantNumber
+import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class PlaySoundEffect(values: Map<String, Any>) : RitualEffect(values) {
-    private val sound: String = getValue(values, "sound")
-    private val pitch: Float = getValue(values, "pitch", 10.0).toFloat()
-    private val volume: Float = getValue(values, "volume", 1.0).toFloat()
+class PlaySoundEffect : RitualEffect() {
+    @FromJson
+    private lateinit var sound: Identifier
+    @FromJson
+    private val pitch: InterpretedNumber = ConstantNumber(10.0)
+    @FromJson
+    private val volume: InterpretedNumber = ConstantNumber(1.0)
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val sPos = Vec3d.ofBottomCenter(pos)
         ctx.world.playSound(
             null, sPos.x, sPos.y, sPos.z,
-            Registry.SOUND_EVENT.get(Identifier.tryParse(ctx.parseVariables(sound))) ?: return false,
+            Registry.SOUND_EVENT.get(sound) ?: return false,
             SoundCategory.BLOCKS,
-            volume, pitch - 0.2f + ctx.world.getRandom().nextFloat() * 0.4f
+            volume.interpret(ctx).toFloat(), pitch.interpret(ctx).toFloat() - 0.2f + ctx.world.getRandom().nextFloat() * 0.4f
         )
         return true
     }

@@ -10,7 +10,7 @@ import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class UseWaystoneEffect(values: Map<String, Any>) : RitualEffect(values) {
+class UseWaystoneEffect : RitualEffect() {
     override fun shouldKeepRitualRunning(): Boolean {
         return true
     }

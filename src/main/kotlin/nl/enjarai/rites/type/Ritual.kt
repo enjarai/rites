@@ -12,9 +12,9 @@ import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.Visuals
 
 class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>, val effects: List<RitualEffect>) {
-    private val unTickingEffects = effects.filter { ritualEffect -> !ritualEffect.isTicking() }
-    private val tickingEffects = effects.filter { ritualEffect -> ritualEffect.isTicking() }
-    val shouldKeepRunning = effects.filter { ritualEffect -> ritualEffect.shouldKeepRitualRunning() }.isNotEmpty()
+    @Transient private val unTickingEffects = effects.filter { ritualEffect -> !ritualEffect.isTicking() }
+    @Transient private val tickingEffects = effects.filter { ritualEffect -> ritualEffect.isTicking() }
+    @Transient val shouldKeepRunning = effects.any { ritualEffect -> ritualEffect.shouldKeepRitualRunning() }
 
     val id: Identifier? get() {
         Rituals.values.entries.forEach {
@@ -67,7 +67,7 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
             try {
                 if (!effect.activate(ctx.pos, this, ctx)) return false
             } catch (e: Exception) {
-                LOGGER.error("Error occurred while activating effect ${effect.uuid} on ritual $id:", e)
+                LOGGER.error("Error occurred while activating effect ${effect.id}(${effect.uuid}) on ritual $id:", e)
                 return false
             }
         }
@@ -86,7 +86,7 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
             try {
                 if (!effect.activate(ctx.pos, this, ctx)) return false
             } catch (e: Exception) {
-                LOGGER.error("Error occurred while ticking effect ${effect.uuid} on ritual $id:", e)
+                LOGGER.error("Error occurred while ticking effect ${effect.id}(${effect.uuid}) on ritual $id:", e)
                 return false
             }
         }

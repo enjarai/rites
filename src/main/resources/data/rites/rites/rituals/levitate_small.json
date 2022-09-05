@@ -8,7 +8,6 @@
   "effects": [
     {
       "type": "rites:ticking",
-      "cooldown": 1,
       "effects": [
         {
           "type": "rites:give_potion",

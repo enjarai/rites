@@ -8,25 +8,35 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.interpreted_value.ConstantNumber
+import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class SpawnParticlesEffect(values: Map<String, Any>) : RitualEffect(values) {
-    private val particle: String = getValue(values, "particle")
-    private val posOffset: List<Double> = getValue(values, "pos_offset", listOf(.0, .0, .0))
-    private val delta: List<Double> = getValue(values, "delta", listOf(.0, .0, .0))
-    private val count: Int = getValue(values, "count", 1.0).toInt()
-    private val speed: Double = getValue(values, "speed", .0)
+class SpawnParticlesEffect : RitualEffect() {
+    @FromJson
+    private lateinit var particle: Identifier
+    @FromJson
+    private val pos_offset: List<InterpretedNumber> = listOf(ConstantNumber(.0), ConstantNumber(.0), ConstantNumber(.0))
+    @FromJson
+    private val delta: List<InterpretedNumber> = listOf(ConstantNumber(.0), ConstantNumber(.0), ConstantNumber(.0))
+    @FromJson
+    private val count: InterpretedNumber = ConstantNumber(1)
+    @FromJson
+    private val speed: InterpretedNumber = ConstantNumber(.0)
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
-        if (posOffset.size != 3) return false
+        if (pos_offset.size != 3) return false
         if (delta.size != 3) return false
         val dPos = Vec3d.ofBottomCenter(pos)
 
         (ctx.world as ServerWorld).spawnParticles(
-            (Registry.PARTICLE_TYPE.get(
-                Identifier.tryParse(ctx.parseVariables(particle))) as? ParticleEffect) ?: return false,
-            dPos.getX() + posOffset[0], dPos.getY() + posOffset[1], dPos.getZ() + posOffset[2],
-            count, delta[0], delta[1], delta[2], speed
+            (Registry.PARTICLE_TYPE.get(particle) as? ParticleEffect) ?: return false,
+            dPos.getX() + pos_offset[0].interpret(ctx),
+            dPos.getY() + pos_offset[1].interpret(ctx),
+            dPos.getZ() + pos_offset[2].interpret(ctx),
+            count.interpretAsInt(ctx),
+            delta[0].interpret(ctx), delta[1].interpret(ctx), delta[2].interpret(ctx),
+            speed.interpret(ctx)
         )
 
         return true

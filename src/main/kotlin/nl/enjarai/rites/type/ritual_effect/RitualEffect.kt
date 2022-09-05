@@ -1,5 +1,8 @@
 package nl.enjarai.rites.type.ritual_effect
 
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonObject
+import com.google.gson.JsonParseException
 import com.mojang.serialization.Lifecycle
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
@@ -9,7 +12,6 @@ import net.minecraft.util.registry.SimpleRegistry
 import nl.enjarai.rites.RitesMod
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
-import nl.enjarai.rites.type.ritual_effect.flow.ExtractItemNbtEffect
 import nl.enjarai.rites.type.ritual_effect.flow.FalseEffect
 import nl.enjarai.rites.type.ritual_effect.flow.TickingEffect
 import nl.enjarai.rites.type.ritual_effect.visual.PlaySoundEffect
@@ -17,18 +19,23 @@ import nl.enjarai.rites.type.ritual_effect.visual.SpawnMovingParticlesEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnParticlesEffect
 import nl.enjarai.rites.type.ritual_effect.waystone.BindWaystoneEffect
 import nl.enjarai.rites.type.ritual_effect.waystone.UseWaystoneEffect
+import java.lang.reflect.ParameterizedType
 import java.util.*
 
-abstract class RitualEffect(values: Map<String, Any>) {
+abstract class RitualEffect {
     val uuid: UUID = UUID.randomUUID()
+
+    val id: Identifier? get() {
+        return REGISTRY.getId(this.javaClass)
+    }
 
     abstract fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean
 
     open fun isTicking(): Boolean {
-        return getTickCooldown() != 0
+        return false
     }
 
-    open fun getTickCooldown(): Int {
+    open fun getTickCooldown(ctx: RitualContext): Int {
         return 0
     }
 
@@ -36,38 +43,64 @@ abstract class RitualEffect(values: Map<String, Any>) {
         return isTicking()
     }
 
+    @Target(AnnotationTarget.FIELD)
+    annotation class FromJson
+
     companion object {
-        val REGISTRY = SimpleRegistry<(Map<String, Any>) -> RitualEffect>(
+        private val REGISTRY = SimpleRegistry<Class<out RitualEffect>>(
             RegistryKey.ofRegistry(RitesMod.id("ritual_effects")),
             Lifecycle.experimental(),
             null
         )
 
         fun registerAll() {
-            Registry.register(REGISTRY, RitesMod.id("ticking")) { TickingEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("false")) { FalseEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("bind_waystone")) { BindWaystoneEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("use_waystone")) { UseWaystoneEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("play_sound")) { PlaySoundEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("spawn_particles")) { SpawnParticlesEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("spawn_moving_particles")) { SpawnMovingParticlesEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("drop_item")) { DropItemEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("summon_entity")) { SummonEntityEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("give_potion")) { GivePotionEffect(it) }
-            Registry.register(REGISTRY, RitesMod.id("extract_nbt")) { ExtractItemNbtEffect(it) }
+            Registry.register(REGISTRY, RitesMod.id("ticking"), TickingEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("false"), FalseEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("bind_waystone"), BindWaystoneEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("use_waystone"), UseWaystoneEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("play_sound"), PlaySoundEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("spawn_particles"), SpawnParticlesEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("spawn_moving_particles"), SpawnMovingParticlesEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("drop_item"), DropItemEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("summon_entity"), SummonEntityEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("give_potion"), GivePotionEffect::class.java)
         }
 
-        fun fromMap(values: Map<String, Any>): RitualEffect {
-            return REGISTRY.get(getIdNullSafe(getValue(values, "type")))?.invoke(values)
-                ?: throw IllegalArgumentException("Invalid effect type: ${values["type"]}")
-        }
+        fun deserialize(id: Identifier, json: JsonObject, context: JsonDeserializationContext): RitualEffect {
+            val clazz = REGISTRY.get(id) ?: throw JsonParseException("Unknown ritual effect $id")
+            val instance = clazz.getConstructor().newInstance()
 
-        fun getIdNullSafe(string: String?): Identifier? {
-            return if (string == null) null else Identifier.tryParse(string)
-        }
+            // fill in fields from the json object
+            for (field in clazz.declaredFields) {
+                if (field.isAnnotationPresent(FromJson::class.java)) {
+                    val annotation = field.getAnnotation(FromJson::class.java)
+                    val name = field.name
 
-        inline fun <reified T> getValue(values: Map<String, Any>, key: String, default: T? = null): T {
-            return values[key] as? T ?: default ?: throw IllegalArgumentException("Invalid $key/no $key given")
+                    field.isAccessible = true
+                    try {
+                        val jsonValue = json.get(name)
+
+                        // manual array handling to make sure everything gets deserialized correctly
+                        if (jsonValue?.isJsonArray == true) {
+                            val jsonArray = jsonValue.asJsonArray
+                            val arrayType = field.genericType as ParameterizedType
+                            val array = jsonArray.map { context.deserialize<Any>(it, arrayType.actualTypeArguments[0]) }
+                            field.set(instance, array)
+                            continue
+                        }
+
+                        context.deserialize<Any>(jsonValue, field.type)?.let { field.set(instance, it) }
+                    } catch (e: Exception) {
+                        throw JsonParseException("Error deserializing field $name in $clazz", e)
+                    }
+
+                    if (field.get(instance) == null) {
+                        throw JsonParseException("Missing required property $name for ritual effect $id")
+                    }
+                }
+            }
+
+            return instance
         }
     }
 }

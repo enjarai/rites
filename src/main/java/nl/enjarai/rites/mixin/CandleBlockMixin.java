@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.minecraft.block.CandleBlock.CANDLES;
-import static net.minecraft.block.CandleBlock.WATERLOGGED;
 
 @Mixin(CandleBlock.class)
 public abstract class CandleBlockMixin extends AbstractCandleBlock {

@@ -8,30 +8,37 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.interpreted_value.ConstantNumber
+import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.Visuals
 
-class SpawnMovingParticlesEffect(values: Map<String, Any>) : RitualEffect(values) {
-    private val particle: String = getValue(values, "particle")
-    private val posOffset: List<Double> = getValue(values, "pos_offset", listOf(.0, .0, .0))
-    private val delta: List<Double> = getValue(values, "delta", listOf(.0, .0, .0))
-    private val directionVector: List<Double> = getValue(values, "direction_vector", listOf(.0, .0, .0))
-    private val count: Int = getValue(values, "count", 1.0).toInt()
+class SpawnMovingParticlesEffect : RitualEffect() {
+    @FromJson
+    private lateinit var particle: Identifier
+    @FromJson
+    private val pos_offset: List<InterpretedNumber> = listOf(ConstantNumber(.0), ConstantNumber(.0), ConstantNumber(.0))
+    @FromJson
+    private val delta: List<InterpretedNumber> = listOf(ConstantNumber(.0), ConstantNumber(.0), ConstantNumber(.0))
+    @FromJson
+    private val direction_vector: List<InterpretedNumber> = listOf(ConstantNumber(.0), ConstantNumber(.0), ConstantNumber(.0))
+    @FromJson
+    private val count: InterpretedNumber = ConstantNumber(1)
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
-        if (posOffset.size != 3) return false
+        if (pos_offset.size != 3) return false
         if (delta.size != 3) return false
-        if (directionVector.size != 3) return false
-        val dPos = Vec3d.ofBottomCenter(pos).add(posOffset[0], posOffset[1], posOffset[2])
+        if (direction_vector.size != 3) return false
+        val dPos = Vec3d.ofBottomCenter(pos).add(
+            pos_offset[0].interpret(ctx), pos_offset[1].interpret(ctx), pos_offset[2].interpret(ctx))
 
         Visuals.movingParticleCloud(
             ctx.world as ServerWorld,
-            (Registry.PARTICLE_TYPE.get(
-                Identifier.tryParse(ctx.parseVariables(particle))) as? ParticleEffect) ?: return false,
+            (Registry.PARTICLE_TYPE.get(particle) as? ParticleEffect) ?: return false,
             dPos,
-            Vec3d(delta[0], delta[1], delta[2]),
-            Vec3d(directionVector[0], directionVector[1], directionVector[2]),
-            count
+            Vec3d(delta[0].interpret(ctx), delta[1].interpret(ctx), delta[2].interpret(ctx)),
+            Vec3d(direction_vector[0].interpret(ctx), direction_vector[1].interpret(ctx), direction_vector[2].interpret(ctx)),
+            count.interpretAsInt(ctx)
         )
 
         return true

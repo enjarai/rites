@@ -4,7 +4,7 @@ import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 
-class BarrierEffect(values: Map<String, Any>) : RitualEffect(values) {
+class BarrierEffect : RitualEffect() {
     override fun isTicking(): Boolean {
         return true
     }

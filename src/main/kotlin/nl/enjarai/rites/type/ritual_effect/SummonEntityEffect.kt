@@ -5,23 +5,26 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
 import net.minecraft.nbt.StringNbtReader
 import net.minecraft.server.world.ServerWorld
+import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 
-class SummonEntityEffect(values: Map<String, Any>) : RitualEffect(values) {
-    private val entity: String = getValue(values, "entity")
-    private val nbt: String = getValue(values, "nbt", "{}")
+class SummonEntityEffect : RitualEffect() {
+    @FromJson
+    private lateinit var entity: Identifier
+    @FromJson
+    private val nbt: String = "{}"
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val entityPos = Vec3d.ofBottomCenter(pos).add(.0, .01, .0)
         val entityNbt = try {
-            StringNbtReader.parse(ctx.parseVariables(nbt))
+            StringNbtReader.parse(nbt)
         } catch (e: CommandSyntaxException) {
             return false
         }
-        entityNbt.putString("id", ctx.parseVariables(entity))
+        entityNbt.putString("id", entity.toString())
 
         val entityObj = EntityType.loadEntityWithPassengers(
             entityNbt, ctx.world

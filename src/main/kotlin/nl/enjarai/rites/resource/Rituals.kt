@@ -12,30 +12,28 @@ import java.nio.charset.StandardCharsets
 object Rituals : JsonResource<Ritual>("rituals") {
     override fun processStream(identifier: Identifier, stream: InputStream) {
         val fileReader = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8))
-        val ritualFile = ResourceLoaders.GSON.fromJson(fileReader, RitualFile::class.java) ?:
+        val ritualFile = ResourceLoader.GSON.fromJson(fileReader, RitualFile::class.java) ?:
             throw IllegalArgumentException("File format invalid")
 
         values[identifier] = ritualFile.convert()
     }
 
-    class RitualFile : ResourceLoaders.TypeFile<Ritual> {
-        val circles = arrayOf<String>()
-        val ingredients = hashMapOf<String, Int>()
-        val effects = arrayOf<HashMap<String, Any>>()
+    class RitualFile : ResourceLoader.TypeFile<Ritual> {
+        val circles = arrayOf<Identifier>()
+        val ingredients = hashMapOf<Identifier, Int>()
+        val effects = listOf<RitualEffect>()
 
         override fun convert(): Ritual {
             return Ritual(
                 circles.map {
-                    CircleTypes.values[Identifier.tryParse(it)] ?:
+                    CircleTypes.values[it] ?:
                         throw IllegalArgumentException("Invalid circle type: $it")
                 },
                 ingredients.mapKeys {
-                    Registry.ITEM.get(Identifier.tryParse(it.key)) ?:
+                    Registry.ITEM.get(it.key) ?:
                         throw IllegalArgumentException("Invalid ingredient: ${it.key}")
                 },
-                effects.map {
-                    RitualEffect.fromMap(it)
-                }
+                effects
             )
         }
     }

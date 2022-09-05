@@ -111,13 +111,9 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         return nbt
     }
 
-    fun parseVariables(string: String): String {
-        return PlaceholderFillerInner.fillInPlaceholders(variables, string)
-    }
-
     fun checkCooldown(ritualEffect: RitualEffect): Boolean {
         val result = (tickCooldown[ritualEffect.uuid] ?: 0) < 1
-        if (result) tickCooldown[ritualEffect.uuid] = ritualEffect.getTickCooldown()
+        if (result) tickCooldown[ritualEffect.uuid] = ritualEffect.getTickCooldown(this)
         tickCooldown[ritualEffect.uuid]?.minus(1)?.let { tickCooldown.put(ritualEffect.uuid, it) }
         return result
     }

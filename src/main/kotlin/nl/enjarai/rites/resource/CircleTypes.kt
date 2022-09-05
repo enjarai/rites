@@ -4,6 +4,7 @@ import com.mojang.brigadier.StringReader
 import net.minecraft.block.Block
 import net.minecraft.block.BlockState
 import net.minecraft.command.argument.BlockArgumentParser
+import net.minecraft.particle.ParticleTypes
 import net.minecraft.state.property.Property
 import net.minecraft.tag.TagKey
 import net.minecraft.util.Identifier
@@ -20,7 +21,7 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
 
     override fun processStream(identifier: Identifier, stream: InputStream) {
         val fileReader = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8))
-        val circleTypeFile = ResourceLoaders.GSON.fromJson(fileReader, CircleTypeFile::class.java) ?:
+        val circleTypeFile = ResourceLoader.GSON.fromJson(fileReader, CircleTypeFile::class.java) ?:
         throw IllegalArgumentException("File format invalid")
 
         if (circleTypeFile.layout.size % 2 == 0) {
@@ -40,17 +41,17 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
     override fun after() {
         for ((id, circle) in tempValues) {
             values[id]?.alternatives = circle.alternatives.map {
-                values[Identifier.tryParse(it)] ?: throw IllegalArgumentException("Invalid alternative: $it")
+                values[it] ?: throw IllegalArgumentException("Invalid alternative: $it")
             }
         }
     }
 
-    class CircleTypeFile : ResourceLoaders.TypeFile<CircleType> {
+    class CircleTypeFile : ResourceLoader.TypeFile<CircleType> {
         val layout = arrayOf<Array<String>>()
         val keys = hashMapOf<String, String>()
-        val particle = "minecraft:soul_fire_flame"
+        val particle: Identifier = Registry.PARTICLE_TYPE.getId(ParticleTypes.SOUL_FIRE_FLAME)!!
         val particle_settings = ParticleSettings()
-        val alternatives = listOf<String>()
+        val alternatives = listOf<Identifier>()
 
         override fun convert(): CircleType {
             val predicates = keys.mapValues {
@@ -73,11 +74,11 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
             return CircleType(
                 layout.map { row ->
                     row.map mapRow@{ block ->
-                        if (block.isEmpty() || block == " ") return@mapRow null
+                        if (block.isBlank()) return@mapRow null
                         predicates[block]
                     }
                 },
-                Registry.PARTICLE_TYPE.get(Identifier.tryParse(particle)) ?:
+                Registry.PARTICLE_TYPE.get(particle) ?:
                     throw IllegalArgumentException("Invalid particle: $particle"),
                 particle_settings
             )
@@ -94,8 +95,8 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
     class StatePredicate(
         private val state: BlockState,
         private val properties: Set<Property<*>>
-    ) :
-        Predicate<BlockState> {
+    ) : Predicate<BlockState> {
+
         override fun test(blockState: BlockState): Boolean {
             if (!blockState.isOf(state.block)) {
                 return false
@@ -111,8 +112,8 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
     class TagPredicate(
         private val tag: TagKey<Block>,
         private val properties: Map<String, String>
-    ) :
-        Predicate<BlockState> {
+    ) : Predicate<BlockState> {
+
         override fun test(blockState: BlockState): Boolean {
             if (!blockState.isIn(tag)) {
                 return false

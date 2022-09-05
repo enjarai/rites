@@ -16,6 +16,14 @@ abstract class JsonResource<T>(
     val values = hashMapOf<Identifier, T>()
     private val resourceLocation = "rites/$resource"
 
+    fun getById(id: Identifier): T? {
+        return values[id]
+    }
+
+    fun getIdOf(value: T): Identifier? {
+        return values.entries.firstOrNull { it.value == value }?.key
+    }
+
     override fun getFabricId(): Identifier {
         return RitesMod.id(resource)
     }
