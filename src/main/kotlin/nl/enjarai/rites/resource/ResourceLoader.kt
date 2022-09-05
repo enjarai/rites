@@ -3,12 +3,10 @@ package nl.enjarai.rites.resource
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
+import net.minecraft.block.BlockState
 import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
-import nl.enjarai.rites.resource.serialization.BlockStatePredicateDeserializer
-import nl.enjarai.rites.resource.serialization.IdentifierDeserializer
-import nl.enjarai.rites.resource.serialization.InterpretedNumberDeserializer
-import nl.enjarai.rites.resource.serialization.RitualEffectDeserializer
+import nl.enjarai.rites.resource.serialization.*
 import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
@@ -21,6 +19,7 @@ object ResourceLoader {
         .registerTypeAdapter(InterpretedNumber::class.java, InterpretedNumberDeserializer)
         .registerTypeAdapter(RitualEffect::class.java, RitualEffectDeserializer)
         .registerTypeAdapter(CircleTypes.BlockStatePredicate::class.java, BlockStatePredicateDeserializer)
+        .registerTypeAdapter(BlockState::class.java, BlockStateDeserializer)
         .create()
 
     fun register() {

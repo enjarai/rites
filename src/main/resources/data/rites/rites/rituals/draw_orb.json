@@ -1,0 +1,58 @@
+{
+  "circles": [
+    "rites:normal/small"
+  ],
+  "ingredients": {
+    "minecraft:ender_eye": 1
+  },
+  "effects": [
+    {
+      "type": "rites:variable",
+      "variable": "size",
+      "expression": 4
+    },
+    {
+      "type": "rites:variable",
+      "variable": "resolution",
+      "expression": 20
+    },
+    {
+      "type": "rites:tick",
+      "cooldown": 10,
+      "effects": [
+        {
+          "type": "rites:loop",
+          "iterations": "$resolution",
+          "effects": [
+            {
+              "type": "rites:variable",
+              "variable": "horizontal",
+              "expression": "$i * $pi * 2 / $resolution"
+            },
+            {
+              "type": "rites:loop",
+              "iterations": "$resolution",
+              "counter_variable": "j",
+              "effects": [
+                {
+                  "type": "rites:variable",
+                  "variable": "vertical",
+                  "expression": "$j * $pi * 2 / $resolution"
+                },
+                {
+                  "type": "rites:spawn_particles",
+                  "particle": "minecraft:flame",
+                  "pos_offset": [
+                    "sin($horizontal) * cos($vertical) * $size / 2",
+                    "cos($horizontal) * $size / 2 + $size / 2 + 1",
+                    "sin($horizontal) * sin($vertical) * $size / 2"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

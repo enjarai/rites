@@ -73,6 +73,7 @@ abstract class RitualEffect {
             Registry.register(REGISTRY, RitesMod.id("summon_entity"), SummonEntityEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("give_potion"), GivePotionEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("match_block"), MatchBlockEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("set_block"), SetBlockEffect::class.java)
         }
 
         fun deserialize(id: Identifier, json: JsonObject, context: JsonDeserializationContext): RitualEffect {

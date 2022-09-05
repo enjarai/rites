@@ -87,25 +87,29 @@ class Expression(private val str: String) {
         } else if (ch >= 'a'.code && ch <= 'z'.code) { // functions
             while (ch >= 'a'.code && ch <= 'z'.code) nextChar()
             val func: String = str.substring(startPos, pos)
+            val a: (Map<String, Double>) -> Double
             if (eat('('.code)) {
-                val a = parseExpression()
+                a = parseExpression()
                 if (!eat(')'.code)) throw RuntimeException("Missing ')' after argument to $func")
-                x = when (func) {
-                    "sqrt" -> { it -> sqrt(a(it)) }
-                    "sin" -> { it -> sin(a(it)) }
-                    "cos" -> { it -> cos(a(it)) }
-                    "tan" -> { it -> tan(a(it)) }
-                    "asin" -> { it -> asin(a(it)) }
-                    "acos" -> { it -> acos(a(it)) }
-                    "atan" -> { it -> atan(a(it)) }
-                    "abs" -> { it -> abs(a(it)) }
-                    "exp" -> { it -> exp(a(it)) }
-                    else -> throw RuntimeException("Unknown function: $func")
-                }
             } else {
-                x = { it[func] ?: throw RuntimeException("Unknown variable: $func") }
+                throw RuntimeException("Missing '(' after function name $func")
             }
-
+            x = when (func) {
+                "sqrt" -> { it -> sqrt(a(it)) }
+                "sin" -> { it -> sin(a(it)) }
+                "cos" -> { it -> cos(a(it)) }
+                "tan" -> { it -> tan(a(it)) }
+                "asin" -> { it -> asin(a(it)) }
+                "acos" -> { it -> acos(a(it)) }
+                "atan" -> { it -> atan(a(it)) }
+                "abs" -> { it -> abs(a(it)) }
+                "exp" -> { it -> exp(a(it)) }
+                else -> throw RuntimeException("Unknown function: $func")
+            }
+        } else if (eat('$'.code)) {
+            while (ch >= 'a'.code && ch <= 'z'.code || ch == '-'.code || ch == '_'.code) nextChar()
+            val variable: String = str.substring(startPos + 1, pos)
+            x = { it[variable] ?: throw RuntimeException("Unknown variable: $variable") }
         } else {
             throw RuntimeException("Unexpected: " + ch.toChar())
         }
