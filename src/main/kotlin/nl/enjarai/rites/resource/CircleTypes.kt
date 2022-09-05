@@ -48,34 +48,17 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
 
     class CircleTypeFile : ResourceLoader.TypeFile<CircleType> {
         val layout = arrayOf<Array<String>>()
-        val keys = hashMapOf<String, String>()
+        val keys = hashMapOf<String, BlockStatePredicate>()
         val particle: Identifier = Registry.PARTICLE_TYPE.getId(ParticleTypes.SOUL_FIRE_FLAME)!!
         val particle_settings = ParticleSettings()
         val alternatives = listOf<Identifier>()
 
         override fun convert(): CircleType {
-            val predicates = keys.mapValues {
-                val blockArgumentParser = BlockArgumentParser(StringReader(it.value), true).parse(false)
-
-                if (blockArgumentParser.blockState == null) {
-                    if (blockArgumentParser.tagId == null) {
-                        throw IllegalArgumentException("Invalid block: ${it.value}")
-                    }
-                    return@mapValues TagPredicate(
-                        blockArgumentParser.tagId!!,
-                        blockArgumentParser.properties
-                    )
-                }
-                StatePredicate(
-                    blockArgumentParser.blockState!!,
-                    blockArgumentParser.blockProperties.keys
-                )
-            }
             return CircleType(
                 layout.map { row ->
                     row.map mapRow@{ block ->
                         if (block.isBlank()) return@mapRow null
-                        predicates[block]
+                        keys[block]
                     }
                 },
                 Registry.PARTICLE_TYPE.get(particle) ?:
@@ -92,10 +75,12 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
         val reverse_rotation = false
     }
 
+    interface BlockStatePredicate : Predicate<BlockState>
+
     class StatePredicate(
         private val state: BlockState,
         private val properties: Set<Property<*>>
-    ) : Predicate<BlockState> {
+    ) : BlockStatePredicate {
 
         override fun test(blockState: BlockState): Boolean {
             if (!blockState.isOf(state.block)) {
@@ -112,7 +97,7 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
     class TagPredicate(
         private val tag: TagKey<Block>,
         private val properties: Map<String, String>
-    ) : Predicate<BlockState> {
+    ) : BlockStatePredicate {
 
         override fun test(blockState: BlockState): Boolean {
             if (!blockState.isIn(tag)) {

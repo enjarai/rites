@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
 import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
+import nl.enjarai.rites.resource.serialization.BlockStatePredicateDeserializer
 import nl.enjarai.rites.resource.serialization.IdentifierDeserializer
 import nl.enjarai.rites.resource.serialization.InterpretedNumberDeserializer
 import nl.enjarai.rites.resource.serialization.RitualEffectDeserializer
@@ -19,6 +20,7 @@ object ResourceLoader {
         .registerTypeAdapter(Identifier::class.java, IdentifierDeserializer)
         .registerTypeAdapter(InterpretedNumber::class.java, InterpretedNumberDeserializer)
         .registerTypeAdapter(RitualEffect::class.java, RitualEffectDeserializer)
+        .registerTypeAdapter(CircleTypes.BlockStatePredicate::class.java, BlockStatePredicateDeserializer)
         .create()
 
     fun register() {

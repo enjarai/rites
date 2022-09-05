@@ -1,6 +1,5 @@
 package nl.enjarai.rites.type
 
-import net.minecraft.block.BlockState
 import net.minecraft.particle.ParticleType
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
@@ -9,10 +8,9 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import nl.enjarai.rites.resource.CircleTypes
 import nl.enjarai.rites.util.Visuals
-import java.util.function.Predicate
 
 class CircleType(
-    private val layout: List<List<Predicate<BlockState>?>>,
+    private val layout: List<List<CircleTypes.BlockStatePredicate?>>,
     private val particle: ParticleType<*>,
     private val particleSettings: CircleTypes.ParticleSettings
 ) {

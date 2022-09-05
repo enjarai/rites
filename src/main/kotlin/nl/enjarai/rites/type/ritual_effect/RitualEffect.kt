@@ -61,6 +61,7 @@ abstract class RitualEffect {
             Registry.register(REGISTRY, RitesMod.id("and"), AndEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("or"), OrEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("not"), NotEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("variable"), VariableEffect::class.java)
 
             // effects that actually do stuff
             Registry.register(REGISTRY, RitesMod.id("bind_waystone"), BindWaystoneEffect::class.java)
@@ -71,6 +72,7 @@ abstract class RitualEffect {
             Registry.register(REGISTRY, RitesMod.id("drop_item"), DropItemEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("summon_entity"), SummonEntityEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("give_potion"), GivePotionEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("match_block"), MatchBlockEffect::class.java)
         }
 
         fun deserialize(id: Identifier, json: JsonObject, context: JsonDeserializationContext): RitualEffect {
