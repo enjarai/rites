@@ -1,0 +1,38 @@
+{
+  "circles": [
+    "rites:normal/small"
+  ],
+  "ingredients": {
+    "minecraft:ender_eye": 1
+  },
+  "effects": [
+    {
+      "type": "rites:tick",
+      "cooldown": 10,
+      "effects": [
+        {
+          "type": "rites:loop",
+          "iterations": 10,
+          "effects": [
+            {
+              "type": "rites:loop",
+              "iterations": 5,
+              "counter_variable": "j",
+              "effects": [
+                {
+                  "type": "rites:spawn_particles",
+                  "particle": "minecraft:flame",
+                  "pos_offset": [
+                    "sin(i * pi / 5)",
+                    "j * 0.6 + 1",
+                    "cos(i * pi / 5)"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

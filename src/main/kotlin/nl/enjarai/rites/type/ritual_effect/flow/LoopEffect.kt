@@ -3,32 +3,26 @@ package nl.enjarai.rites.type.ritual_effect.flow
 import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
-import nl.enjarai.rites.type.interpreted_value.ConstantNumber
 import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class TickingEffect : RitualEffect() {
+class LoopEffect : RitualEffect() {
     @FromJson
     private lateinit var effects: List<RitualEffect>
     @FromJson
-    private val cooldown: InterpretedNumber = ConstantNumber(1)
+    private lateinit var iterations: InterpretedNumber
     @FromJson
-    private val counter_variable: String = "t"
-
-    override fun isTicking(): Boolean {
-        return true
-    }
-
-    override fun getTickCooldown(ctx: RitualContext): Int {
-        return cooldown.interpretAsInt(ctx)
-    }
+    private val counter_variable: String = "i"
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
-        if (ctx.checkCooldown(this)) {
-            ctx.variables[counter_variable] = (ctx.variables[counter_variable] ?: 0.0) + 1.0
-            return effects.all {
+        val count = iterations.interpretAsInt(ctx)
+        for (i in 0 until count) {
+            ctx.variables[counter_variable] = i.toDouble()
+            val success = effects.all {
                 it.activate(pos, ritual, ctx)
             }
+
+            if (!success) return false
         }
         return true
     }

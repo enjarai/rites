@@ -3,10 +3,7 @@ package nl.enjarai.rites.type
 import net.minecraft.entity.Entity
 import net.minecraft.entity.ItemEntity
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.nbt.NbtHelper
-import net.minecraft.nbt.NbtList
-import net.minecraft.nbt.NbtString
+import net.minecraft.nbt.*
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
@@ -25,7 +22,12 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
     var pos: BlockPos = realPos.mutableCopy()
     var storedItems = arrayOf<ItemStack>()
     var returnableItems = arrayOf<ItemStack>()
-    val variables = hashMapOf<String, String>()
+    val variables = hashMapOf(
+        "pi" to Math.PI,
+        "x" to pos.x.toDouble(),
+        "y" to pos.y.toDouble(),
+        "z" to pos.z.toDouble()
+    )
     val tickCooldown = hashMapOf<UUID, Int>()
     private var selectedRitual = 0
     private var rituals = arrayOf<RitualInstance>()
@@ -47,7 +49,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
             ItemStack.fromNbt(it as NbtCompound)
         }.toTypedArray()
         nbtCompound.getCompound("variables").keys.forEach {
-            variables[it] = nbtCompound.get(it)?.asString() ?: return@forEach
+            variables[it] = nbtCompound.getDouble(it)
         }
         val cooldowns = nbtCompound.getCompound("tickCooldown")
         cooldowns.keys.forEach {
@@ -82,7 +84,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
 
         val varsNbt = NbtCompound()
         variables.forEach {
-            nbt.put(it.key, NbtString.of(it.value))
+            nbt.put(it.key, NbtDouble.of(it.value))
         }
         nbt.put("variables", varsNbt)
 

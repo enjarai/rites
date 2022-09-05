@@ -8,7 +8,7 @@
   },
   "effects": [
     {
-      "type": "rites:ticking",
+      "type": "rites:tick",
       "cooldown": 100,
       "effects": [
 

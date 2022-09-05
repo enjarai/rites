@@ -7,7 +7,7 @@
   },
   "effects": [
     {
-      "type": "rites:ticking",
+      "type": "rites:tick",
       "effects": [
         {
           "type": "rites:give_potion",

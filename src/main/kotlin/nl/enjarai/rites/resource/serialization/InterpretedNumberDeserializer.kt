@@ -13,7 +13,7 @@ object InterpretedNumberDeserializer : JsonDeserializer<InterpretedNumber> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): InterpretedNumber {
         try {
             return ConstantNumber(json.asDouble)
-        } catch (_: ClassCastException) { }
+        } catch (_: NumberFormatException) { }
 
         return ExpressionNumber(json.asString)
     }

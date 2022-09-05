@@ -12,8 +12,7 @@ import net.minecraft.util.registry.SimpleRegistry
 import nl.enjarai.rites.RitesMod
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
-import nl.enjarai.rites.type.ritual_effect.flow.FalseEffect
-import nl.enjarai.rites.type.ritual_effect.flow.TickingEffect
+import nl.enjarai.rites.type.ritual_effect.flow.*
 import nl.enjarai.rites.type.ritual_effect.visual.PlaySoundEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnMovingParticlesEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnParticlesEffect
@@ -54,8 +53,16 @@ abstract class RitualEffect {
         )
 
         fun registerAll() {
-            Registry.register(REGISTRY, RitesMod.id("ticking"), TickingEffect::class.java)
+            // control flow effects
+            Registry.register(REGISTRY, RitesMod.id("tick"), TickingEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("loop"), LoopEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("true"), TrueEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("false"), FalseEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("and"), AndEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("or"), OrEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("not"), NotEffect::class.java)
+
+            // effects that actually do stuff
             Registry.register(REGISTRY, RitesMod.id("bind_waystone"), BindWaystoneEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("use_waystone"), UseWaystoneEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("play_sound"), PlaySoundEffect::class.java)
