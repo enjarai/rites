@@ -13,6 +13,6 @@ object BlockStateDeserializer : JsonDeserializer<BlockState> {
         val stringReader = StringReader(json.asString)
         val parser = BlockArgumentParser(stringReader, false).parse(false)
 
-        return parser.blockState
+        return parser.blockState ?: throw IllegalArgumentException("Invalid block state: ${json.asString}")
     }
 }
