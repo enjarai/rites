@@ -9,11 +9,10 @@ import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
+import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
-import nl.enjarai.rites.item.WayStoneItem
 import nl.enjarai.rites.resource.CircleTypes
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
-import nl.enjarai.rites.util.PlaceholderFillerInner
 import nl.enjarai.rites.util.Visuals
 import java.util.*
 
@@ -148,6 +147,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         val ritual = getSelectedRitual()
         if (ritual?.active == false) {
             this.storedItems = storedItems
+            variables.putAll(storedItems.map { Registry.ITEM.getId(it.item).toString() to it.count.toDouble() })
             val success = ritual.activate(this)
             if (success) {
                 Visuals.activate(world as ServerWorld, realPos)

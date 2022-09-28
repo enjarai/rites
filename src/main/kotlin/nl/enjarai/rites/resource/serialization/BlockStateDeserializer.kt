@@ -3,6 +3,7 @@ package nl.enjarai.rites.resource.serialization
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
 import com.mojang.brigadier.StringReader
 import net.minecraft.block.BlockState
 import net.minecraft.command.argument.BlockArgumentParser
@@ -13,6 +14,6 @@ object BlockStateDeserializer : JsonDeserializer<BlockState> {
         val stringReader = StringReader(json.asString)
         val parser = BlockArgumentParser(stringReader, false).parse(false)
 
-        return parser.blockState ?: throw IllegalArgumentException("Invalid block state: ${json.asString}")
+        return parser.blockState ?: throw JsonParseException("Invalid block state: ${json.asString}")
     }
 }

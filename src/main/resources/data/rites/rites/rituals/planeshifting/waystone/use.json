@@ -3,7 +3,8 @@
     "rites:planeshifting/small"
   ],
   "ingredients": {
-    "rites:waystone": 1
+    "rites:waystone": 1,
+    "minecraft:redstone_dust": 1
   },
   "effects": [
     {

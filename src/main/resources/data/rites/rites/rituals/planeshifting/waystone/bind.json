@@ -3,7 +3,8 @@
     "rites:planeshifting/tiny"
   ],
   "ingredients": {
-    "rites:waystone": 1
+    "rites:waystone": 1,
+    "minecraft:glowstone_dust": 1
   },
   "effects": [
     {

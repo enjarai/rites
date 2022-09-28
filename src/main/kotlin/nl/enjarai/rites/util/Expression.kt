@@ -104,10 +104,13 @@ class Expression(private val str: String) {
                 "atan" -> { it -> atan(a(it)) }
                 "abs" -> { it -> abs(a(it)) }
                 "exp" -> { it -> exp(a(it)) }
+                "ceil" -> { it -> ceil(a(it)) }
+                "floor" -> { it -> floor(a(it)) }
+                "round" -> { it -> round(a(it)) }
                 else -> throw RuntimeException("Unknown function: $func")
             }
         } else if (eat('$'.code)) {
-            while (ch >= 'a'.code && ch <= 'z'.code || ch == '-'.code || ch == '_'.code) nextChar()
+            while ((ch >= 'a'.code && ch <= 'z'.code) || ch == '-'.code || ch == '_'.code || ch == ':'.code) nextChar()
             val variable: String = str.substring(startPos + 1, pos)
             x = { it[variable] ?: throw RuntimeException("Unknown variable: $variable") }
         } else {

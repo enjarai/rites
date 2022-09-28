@@ -17,7 +17,7 @@ class SetBlockEffect : RitualEffect() {
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val world = ctx.world
-        val blockPos = ctx.pos.add(pos_offset[0].interpretAsInt(ctx), pos_offset[1].interpretAsInt(ctx), pos_offset[2].interpretAsInt(ctx))
+        val blockPos = pos.add(pos_offset[0].interpretAsInt(ctx), pos_offset[1].interpretAsInt(ctx), pos_offset[2].interpretAsInt(ctx))
 
         world.breakBlock(blockPos, drop_items)
         world.setBlockState(blockPos, block)

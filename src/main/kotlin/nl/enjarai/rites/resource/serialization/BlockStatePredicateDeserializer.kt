@@ -6,11 +6,13 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
 import com.mojang.brigadier.StringReader
 import net.minecraft.command.argument.BlockArgumentParser
-import nl.enjarai.rites.resource.CircleTypes
+import nl.enjarai.rites.type.predicate.BlockStatePredicate
+import nl.enjarai.rites.type.predicate.StatePredicate
+import nl.enjarai.rites.type.predicate.TagPredicate
 import java.lang.reflect.Type
 
-object BlockStatePredicateDeserializer : JsonDeserializer<CircleTypes.BlockStatePredicate> {
-    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): CircleTypes.BlockStatePredicate {
+object BlockStatePredicateDeserializer : JsonDeserializer<BlockStatePredicate> {
+    override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BlockStatePredicate {
         val string = json.asString
         val blockArgumentParser = BlockArgumentParser(StringReader(string), true).parse(false)
 
@@ -18,12 +20,12 @@ object BlockStatePredicateDeserializer : JsonDeserializer<CircleTypes.BlockState
             if (blockArgumentParser.tagId == null) {
                 throw JsonParseException("Invalid block: $string")
             }
-            return CircleTypes.TagPredicate(
+            return TagPredicate(
                 blockArgumentParser.tagId!!,
                 blockArgumentParser.properties
             )
         }
-        return CircleTypes.StatePredicate(
+        return StatePredicate(
             blockArgumentParser.blockState!!,
             blockArgumentParser.blockProperties.keys
         )

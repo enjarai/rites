@@ -1,20 +1,14 @@
 package nl.enjarai.rites.resource
 
-import com.mojang.brigadier.StringReader
-import net.minecraft.block.Block
-import net.minecraft.block.BlockState
-import net.minecraft.command.argument.BlockArgumentParser
 import net.minecraft.particle.ParticleTypes
-import net.minecraft.state.property.Property
-import net.minecraft.tag.TagKey
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.CircleType
+import nl.enjarai.rites.type.predicate.BlockStatePredicate
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
-import java.util.function.Predicate
 
 object CircleTypes : JsonResource<CircleType>("circle_types") {
     val tempValues = hashMapOf<Identifier, CircleTypeFile>()
@@ -75,41 +69,4 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
         val reverse_rotation = false
     }
 
-    interface BlockStatePredicate : Predicate<BlockState>
-
-    class StatePredicate(
-        private val state: BlockState,
-        private val properties: Set<Property<*>>
-    ) : BlockStatePredicate {
-
-        override fun test(blockState: BlockState): Boolean {
-            if (!blockState.isOf(state.block)) {
-                return false
-            }
-            for (property in properties) {
-                if (blockState[property] == state[property]) continue
-                return false
-            }
-            return true
-        }
-    }
-
-    class TagPredicate(
-        private val tag: TagKey<Block>,
-        private val properties: Map<String, String>
-    ) : BlockStatePredicate {
-
-        override fun test(blockState: BlockState): Boolean {
-            if (!blockState.isIn(tag)) {
-                return false
-            }
-            for ((key, value) in properties) {
-                val property = blockState.block.stateManager.getProperty(key) ?: return false
-                val comparable = property.parse(value).orElse(null) ?: return false
-                if (blockState[property] === comparable) continue
-                return false
-            }
-            return true
-        }
-    }
 }

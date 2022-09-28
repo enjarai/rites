@@ -7,10 +7,11 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import nl.enjarai.rites.resource.CircleTypes
+import nl.enjarai.rites.type.predicate.BlockStatePredicate
 import nl.enjarai.rites.util.Visuals
 
 class CircleType(
-    private val layout: List<List<CircleTypes.BlockStatePredicate?>>,
+    private val layout: List<List<BlockStatePredicate?>>,
     private val particle: ParticleType<*>,
     private val particleSettings: CircleTypes.ParticleSettings
 ) {

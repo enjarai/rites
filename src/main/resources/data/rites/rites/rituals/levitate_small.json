@@ -1,6 +1,6 @@
 {
   "circles": [
-    "rites:tiny_movement"
+    "rites:wind/tiny"
   ],
   "ingredients": {
     "minecraft:phantom_membrane": 1

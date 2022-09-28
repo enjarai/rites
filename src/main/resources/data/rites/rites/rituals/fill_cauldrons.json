@@ -1,0 +1,74 @@
+{
+  "circles": [
+    "rites:normal/medium"
+  ],
+  "ingredients": {
+    "minecraft:water_bucket": 2
+  },
+  "effects": [
+    {
+      "type": "rites:variable",
+      "variable": "size",
+      "expression": 11
+    },
+    {
+      "type": "rites:variable",
+      "variable": "height",
+      "expression": 5
+    },
+    {
+      "type": "rites:loop",
+      "iterations": "$size",
+      "counter_variable": "xc",
+      "effects": [
+        {
+          "type": "rites:variable",
+          "variable": "x",
+          "expression": "$xc - $size / 2"
+        },
+        {
+          "type": "rites:loop",
+          "iterations": "$height",
+          "counter_variable": "y",
+          "effects": [
+            {
+              "type": "rites:loop",
+              "iterations": "$size",
+              "counter_variable": "zc",
+              "effects": [
+                {
+                  "type": "rites:variable",
+                  "variable": "z",
+                  "expression": "$zc - $size / 2"
+                },
+                {
+                  "type": "rites:if",
+                  "condition": {
+                    "type": "rites:match_block",
+                    "block": "minecraft:cauldron",
+                    "pos_offset": ["$x", "$y", "$z"]
+                  },
+                  "then": [
+                    {
+                      "type": "rites:set_block",
+                      "block": "minecraft:water_cauldron[level=3]",
+                      "show_particles": false,
+                      "pos_offset": ["$x", "$y", "$z"]
+                    },
+                    {
+                      "type": "rites:spawn_particles",
+                      "particle": "minecraft:splash",
+                      "pos_offset": ["$x", "$y + 0.5", "$z"],
+                      "delta": [0.5, 0.5, 0.5],
+                      "count": 50
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

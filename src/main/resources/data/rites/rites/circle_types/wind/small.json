@@ -1,9 +1,9 @@
 {
   "alternatives": [
-    "rites:planeshifting/medium"
+    "rites:wind/medium"
   ],
   "keys": {
-    "c": "minecraft:purple_candle[lit=true]"
+    "c": "minecraft:light_blue_candle[lit=true]"
   },
   "layout": [
     [" ", "c", "c", "c", " "],
@@ -12,5 +12,8 @@
     ["c", " ", " ", " ", "c"],
     [" ", "c", "c", "c", " "]
   ],
-  "particle": "minecraft:reverse_portal"
+  "particle": "minecraft:scrape",
+  "particle_settings": {
+    "arm_speed": 2
+  }
 }
