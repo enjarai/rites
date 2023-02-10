@@ -3,10 +3,14 @@
     "rites:fire/small",
     "rites:normal/medium"
   ],
-  "ingredients": {
-    "minecraft:rotten_flesh": 1,
-    "minecraft:bone": 1
-  },
+  "ingredients": [
+    {
+      "item": "minecraft:rotten_flesh"
+    },
+    {
+      "item": "minecraft:bone"
+    }
+  ],
   "effects": [
     {
       "type": "rites:summon_entity",

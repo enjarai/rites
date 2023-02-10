@@ -2,9 +2,11 @@
   "circles": [
     "rites:fire/small"
   ],
-  "ingredients": {
-    "minecraft:stone": 1
-  },
+  "ingredients": [
+    {
+      "item": "minecraft:stone"
+    }
+  ],
   "effects": [
     {
       "type": "rites:drop_item",

@@ -15,7 +15,9 @@ import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.RitualResult
+import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.util.Visuals
+import java.util.function.Predicate
 
 class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
     BlockEntity(ModBlocks.RITE_CENTER_ENTITY, pos, state), PolymerObject
@@ -182,24 +184,28 @@ class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) :
         }
     }
 
-    private fun getMissingItems(): Map<Item, Int> {
-        return ritualContext?.getSelectedRitual()?.ritual?.ingredients?.mapValues { entry ->
+    private fun getMissingItems(): Map<Ingredient, Int> {
+        return ritualContext?.getSelectedRitual()?.ritual?.ingredients?.associate {
+            it to it.amount
+        }?.mapValues { entry ->
             var amountNeeded = entry.value
             storedItems.forEach {
-                if (it.isOf(entry.key)) amountNeeded -= it.count
+                if (entry.key.test(it)) {
+                    amountNeeded -= it.count
+                }
             }
-            return@mapValues amountNeeded.coerceAtLeast(0)
+            return@mapValues amountNeeded
         }?.filter { entry -> entry.value > 0 } ?: mapOf()
     }
 
-    private fun tryAbsorbMissing(missingItems: Map<Item, Int>): Boolean {
+    private fun tryAbsorbMissing(missingItems: Map<Ingredient, Int>): Boolean {
         // Find all item entities within the circle
         ritualContext?.getItemsInRange()?.forEach { itemEntity ->
 
             // Absorb if possible
             val stack = itemEntity.stack
             missingItems.forEach {
-                if (it.key == stack.item) {
+                if (it.key.test(stack)) {
                     Visuals.absorb(getWorld()!! as ServerWorld, itemEntity.pos)
 
                     val absorbAmount = it.value.coerceAtMost(stack.count)

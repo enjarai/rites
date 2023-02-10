@@ -1,6 +1,5 @@
 package nl.enjarai.rites.type
 
-import net.minecraft.item.Item
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
@@ -8,10 +7,13 @@ import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import nl.enjarai.rites.RitesMod.LOGGER
 import nl.enjarai.rites.resource.Rituals
+import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.Visuals
 
-class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>, val effects: List<RitualEffect>) {
+class Ritual(val circleTypes: List<CircleType>,
+             val ingredients: List<Ingredient>,
+             val effects: List<RitualEffect>) {
     @Transient private val unTickingEffects = effects.filter { ritualEffect -> !ritualEffect.isTicking() }
     @Transient private val tickingEffects = effects.filter { ritualEffect -> ritualEffect.isTicking() }
     @Transient val shouldKeepRunning = effects.any { ritualEffect -> ritualEffect.shouldKeepRitualRunning() }
@@ -46,16 +48,16 @@ class Ritual(val circleTypes: List<CircleType>, val ingredients: Map<Item, Int>,
      */
     fun requiredItemsNearby(world: World, pos: BlockPos, circles: List<CircleType>): Boolean {
         val inCircle = RitualContext.getItemsInRange(world, pos, circles)
-        return ingredients.mapValues { entry ->
-            var requiredAmount = entry.value
+        return ingredients.map { entry ->
+            var requiredAmount = entry.amount
             inCircle.forEach {
                 val stack = it.stack
-                if (stack.isOf(entry.key)) {
+                if (entry.test(stack)) {
                     requiredAmount -= stack.count
                 }
             }
             requiredAmount
-        }.filter { entry -> entry.value > 0 }.isEmpty()
+        }.none { entry -> entry > 0 }
     }
 
     /**

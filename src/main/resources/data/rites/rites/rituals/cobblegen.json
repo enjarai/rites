@@ -2,10 +2,14 @@
   "circles": [
     "rites:fire/tiny"
   ],
-  "ingredients": {
-    "minecraft:water_bucket": 1,
-    "minecraft:lava_bucket": 1
-  },
+  "ingredients": [
+    {
+      "item": "minecraft:water_bucket"
+    },
+    {
+      "item": "minecraft:lava_bucket"
+    }
+  ],
   "effects": [
     {
       "type": "rites:tick",

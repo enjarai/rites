@@ -9,6 +9,7 @@ import net.minecraft.util.Identifier
 import nl.enjarai.rites.resource.serialization.*
 import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.predicate.BlockStatePredicate
+import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.type.predicate.Range
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
@@ -23,6 +24,7 @@ object ResourceLoader {
         .registerTypeAdapter(BlockStatePredicate::class.java, BlockStatePredicateDeserializer)
         .registerTypeAdapter(BlockState::class.java, BlockStateDeserializer)
         .registerTypeAdapter(Range::class.java, RangeDeserializer)
+        .registerTypeAdapter(Ingredient::class.java, IngredientDeserializer)
         .create()
 
     fun register() {

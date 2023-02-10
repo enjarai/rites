@@ -20,30 +20,30 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
     val world: World get() = worldGetter()
     var pos: BlockPos = realPos.mutableCopy()
     var storedItems = arrayOf<ItemStack>()
+    var addressableItems: MutableMap<String, ItemStack> = hashMapOf()
     var returnableItems = arrayOf<ItemStack>()
     val variables = hashMapOf(
         "pi" to Math.PI,
+        "e" to Math.E,
         "x" to pos.x.toDouble(),
         "y" to pos.y.toDouble(),
-        "z" to pos.z.toDouble()
+        "z" to pos.z.toDouble(),
     )
     val tickCooldown = hashMapOf<UUID, Int>()
     private var selectedRitual = 0
     private var rituals = arrayOf<RitualInstance>()
     var circles = arrayOf<CircleType>()
 
-    val hasTickingEffects: Boolean get() {
-        rituals.forEach {
-            if (it.ritual.shouldKeepRunning) return true
-        }
-        return false
-    }
+    val hasTickingEffects: Boolean get() = rituals.any { it.ritual.shouldKeepRunning }
     val range: Int get() = circles.maxOf { it.size }
 
     constructor(worldGetter: () -> World, pos: BlockPos, nbtCompound: NbtCompound) : this(worldGetter, pos) {
         storedItems = nbtCompound.getList("storedItems", NbtList.COMPOUND_TYPE.toInt()).map {
             ItemStack.fromNbt(it as NbtCompound)
         }.toTypedArray()
+        addressableItems = nbtCompound.getCompound("addressableItems").keys.associateWith {
+            ItemStack.fromNbt(nbtCompound.getCompound("addressableItems").getCompound(it))
+        }.toMutableMap()
         returnableItems = nbtCompound.getList("returnableItems", NbtList.COMPOUND_TYPE.toInt()).map {
             ItemStack.fromNbt(it as NbtCompound)
         }.toTypedArray()
@@ -73,6 +73,12 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
             items.add(stack.writeNbt(entry))
         }
         nbt.put("storedItems", items)
+
+        val items1 = NbtCompound()
+        for (i in addressableItems.entries) {
+            items1.put(i.key, i.value.writeNbt(NbtCompound()))
+        }
+        nbt.put("addressableItems", items1)
 
         val items2 = NbtList()
         for (stack in returnableItems) {
@@ -148,6 +154,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         if (ritual?.active == false) {
             this.storedItems = storedItems
             variables.putAll(storedItems.map { Registry.ITEM.getId(it.item).toString() to it.count.toDouble() })
+            loadAddressableItems(storedItems)
             val success = ritual.activate(this)
             if (success) {
                 Visuals.activate(world as ServerWorld, realPos)
@@ -155,6 +162,19 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
             return RitualResult.successFromBool(success)
         }
         return RitualResult.PASS
+    }
+
+    private fun loadAddressableItems(storedItems: Array<ItemStack>) {
+        val items = storedItems.toMutableList()
+        getSelectedRitual()?.ritual?.ingredients?.forEach { ingredient ->
+            if (ingredient.ref != null) {
+                val item = items.find { ingredient.test(it) && it.count == ingredient.amount }
+                if (item != null) {
+                    addressableItems[ingredient.ref] = item
+                    items.remove(item)
+                }
+            }
+        }
     }
 
     /**

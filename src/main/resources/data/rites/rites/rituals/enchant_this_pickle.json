@@ -1,0 +1,26 @@
+{
+  "circles": [
+    "rites:normal/small"
+  ],
+  "ingredients": [
+    {
+      "item": "minecraft:sea_pickle",
+      "ref": "pickle"
+    },
+    {
+      "item": "minecraft:enchanted_book",
+      "count": 4
+    }
+  ],
+  "effects": [
+    {
+      "type": "rites:merge_item_nbt",
+      "ref": "pickle",
+      "nbt": "{display:{Name:'{\"text\":\"Enchanted! Sea Pickle\",\"italic\":false}'},Enchantments:[{}]}"
+    },
+    {
+      "type": "rites:drop_item_ref",
+      "ref": "pickle"
+    }
+  ]
+}

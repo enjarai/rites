@@ -3,6 +3,7 @@ package nl.enjarai.rites.resource
 import net.minecraft.util.Identifier
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
+import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import java.io.BufferedReader
 import java.io.InputStream
@@ -20,7 +21,7 @@ object Rituals : JsonResource<Ritual>("rituals") {
 
     class RitualFile : ResourceLoader.TypeFile<Ritual> {
         val circles = arrayOf<Identifier>()
-        val ingredients = hashMapOf<Identifier, Int>()
+        val ingredients = listOf<Ingredient>()
         val effects = listOf<RitualEffect>()
 
         override fun convert(): Ritual {
@@ -29,10 +30,7 @@ object Rituals : JsonResource<Ritual>("rituals") {
                     CircleTypes.values[it] ?:
                         throw IllegalArgumentException("Invalid circle type: $it")
                 },
-                ingredients.mapKeys {
-                    Registry.ITEM.get(it.key) ?:
-                        throw IllegalArgumentException("Invalid ingredient: ${it.key}")
-                },
+                ingredients,
                 effects
             )
         }

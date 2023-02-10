@@ -2,10 +2,15 @@
   "circles": [
     "rites:normal/small"
   ],
-  "ingredients": {
-    "minecraft:dirt": 1,
-    "minecraft:coal": 32
-  },
+  "ingredients": [
+    {
+      "item": "minecraft:dirt"
+    },
+    {
+      "item": "minecraft:coal",
+      "count": 32
+    }
+  ],
   "effects": [
     {
       "type": "rites:drop_item",

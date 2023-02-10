@@ -2,10 +2,14 @@
   "circles": [
     "rites:planeshifting/tiny"
   ],
-  "ingredients": {
-    "rites:waystone": 1,
-    "minecraft:glowstone_dust": 1
-  },
+  "ingredients": [
+    {
+      "item": "rites:waystone"
+    },
+    {
+      "item": "minecraft:glowstone_dust"
+    }
+  ],
   "effects": [
     {
       "type": "rites:bind_waystone"

@@ -2,9 +2,11 @@
   "circles": [
     "rites:normal/small"
   ],
-  "ingredients": {
-    "minecraft:bread": 1
-  },
+  "ingredients": [
+    {
+      "item": "minecraft:bread"
+    }
+  ],
   "effects": [
     {
       "type": "rites:tick",

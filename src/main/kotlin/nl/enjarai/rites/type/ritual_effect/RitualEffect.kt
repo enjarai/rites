@@ -13,6 +13,9 @@ import nl.enjarai.rites.RitesMod
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.flow.*
+import nl.enjarai.rites.type.ritual_effect.item.DropItemEffect
+import nl.enjarai.rites.type.ritual_effect.item.DropItemRefEffect
+import nl.enjarai.rites.type.ritual_effect.item.MergeItemNbtEffect
 import nl.enjarai.rites.type.ritual_effect.visual.PlaySoundEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnMovingParticlesEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnParticlesEffect
@@ -70,6 +73,8 @@ abstract class RitualEffect {
             Registry.register(REGISTRY, RitesMod.id("spawn_particles"), SpawnParticlesEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("spawn_moving_particles"), SpawnMovingParticlesEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("drop_item"), DropItemEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("drop_item_ref"), DropItemRefEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("merge_item_nbt"), MergeItemNbtEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("summon_entity"), SummonEntityEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("give_potion"), GivePotionEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("match_block"), MatchBlockEffect::class.java)

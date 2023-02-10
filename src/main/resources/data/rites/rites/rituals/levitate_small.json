@@ -2,9 +2,11 @@
   "circles": [
     "rites:wind/tiny"
   ],
-  "ingredients": {
-    "minecraft:phantom_membrane": 1
-  },
+  "ingredients": [
+    {
+      "item": "minecraft:phantom_membrane"
+    }
+  ],
   "effects": [
     {
       "type": "rites:tick",

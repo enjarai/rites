@@ -1,4 +1,4 @@
-package nl.enjarai.rites.type.ritual_effect
+package nl.enjarai.rites.type.ritual_effect.item
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException
 import net.minecraft.entity.ItemEntity
@@ -12,6 +12,7 @@ import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.interpreted_value.ConstantNumber
 import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
+import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
 class DropItemEffect : RitualEffect() {
     @FromJson

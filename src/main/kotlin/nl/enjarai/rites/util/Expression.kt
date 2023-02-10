@@ -2,22 +2,7 @@ package nl.enjarai.rites.util
 
 import kotlin.math.*
 
-class Expression(private val str: String) {
-    private var pos = -1
-    private var ch: Int = 0
-
-    private fun nextChar() {
-        ch = if (++pos < str.length) str[pos].code else -1
-    }
-
-    private fun eat(charToEat: Int): Boolean {
-        while (ch == ' '.code) nextChar()
-        if (ch == charToEat) {
-            nextChar()
-            return true
-        }
-        return false
-    }
+class Expression(str: String) : Parser(str) {
 
     fun build(): (Map<String, Double>) -> Double {
         nextChar()
@@ -35,12 +20,12 @@ class Expression(private val str: String) {
     private fun parseExpression(): (Map<String, Double>) -> Double {
         var x = parseTerm()
         while (true) {
-            if (eat('+'.code)) { // addition
+            if (weat('+'.code)) { // addition
                 val a = x
                 val b = parseTerm()
                 x = { a(it) + b(it) }
             }
-            else if (eat('-'.code)) { // subtraction
+            else if (weat('-'.code)) { // subtraction
                 val a = x
                 val b = parseTerm()
                 x = { a(it) - b(it) }
@@ -52,12 +37,12 @@ class Expression(private val str: String) {
     private fun parseTerm(): (Map<String, Double>) -> Double {
         var x = parseFactor()
         while (true) {
-            if (eat('*'.code)) { // addition
+            if (weat('*'.code)) { // addition
                 val a = x
                 val b = parseFactor()
                 x = { a(it) * b(it) }
             }
-            else if (eat('/'.code)) { // subtraction
+            else if (weat('/'.code)) { // subtraction
                 val a = x
                 val b = parseFactor()
                 x = { a(it) / b(it) }
@@ -67,19 +52,19 @@ class Expression(private val str: String) {
     }
 
     private fun parseFactor(): (Map<String, Double>) -> Double {
-        if (eat('+'.code)) { // unary plus
+        if (weat('+'.code)) { // unary plus
             val a = parseFactor()
             return { +a(it) }
         }
-        if (eat('-'.code)) { // unary minus
+        if (weat('-'.code)) { // unary minus
             val a = parseFactor()
             return { -a(it) }
         }
         var x: (Map<String, Double>) -> Double
         val startPos = pos
-        if (eat('('.code)) { // parentheses
+        if (weat('('.code)) { // parentheses
             x = parseExpression()
-            if (!eat(')'.code)) throw RuntimeException("Missing ')'")
+            if (!weat(')'.code)) throw RuntimeException("Missing ')'")
         } else if (ch >= '0'.code && ch <= '9'.code || ch == '.'.code) { // numbers
             while (ch >= '0'.code && ch <= '9'.code || ch == '.'.code) nextChar()
             val a = str.substring(startPos, pos).toDouble()
@@ -88,9 +73,9 @@ class Expression(private val str: String) {
             while (ch >= 'a'.code && ch <= 'z'.code) nextChar()
             val func: String = str.substring(startPos, pos)
             val a: (Map<String, Double>) -> Double
-            if (eat('('.code)) {
+            if (weat('('.code)) {
                 a = parseExpression()
-                if (!eat(')'.code)) throw RuntimeException("Missing ')' after argument to $func")
+                if (!weat(')'.code)) throw RuntimeException("Missing ')' after argument to $func")
             } else {
                 throw RuntimeException("Missing '(' after function name $func")
             }
@@ -109,14 +94,14 @@ class Expression(private val str: String) {
                 "round" -> { it -> round(a(it)) }
                 else -> throw RuntimeException("Unknown function: $func")
             }
-        } else if (eat('$'.code)) {
-            while ((ch >= 'a'.code && ch <= 'z'.code) || ch == '-'.code || ch == '_'.code || ch == ':'.code) nextChar()
+        } else if (weat('$'.code)) {
+            while (isVariableChar()) nextChar()
             val variable: String = str.substring(startPos + 1, pos)
             x = { it[variable] ?: throw RuntimeException("Unknown variable: $variable") }
         } else {
             throw RuntimeException("Unexpected: " + ch.toChar())
         }
-        if (eat('^'.code)) { // exponentiation
+        if (weat('^'.code)) { // exponentiation
             val a = x
             val b = parseFactor()
             x = { a(it).pow(b(it)) }

@@ -2,9 +2,12 @@
   "circles": [
     "rites:normal/medium"
   ],
-  "ingredients": {
-    "minecraft:water_bucket": 2
-  },
+  "ingredients": [
+    {
+      "item": "minecraft:water_bucket",
+      "count": 2
+    }
+  ],
   "effects": [
     {
       "type": "rites:variable",
@@ -46,20 +49,36 @@
                   "condition": {
                     "type": "rites:match_block",
                     "block": "minecraft:cauldron",
-                    "pos_offset": ["$x", "$y", "$z"]
+                    "pos_offset": [
+                      "$x",
+                      "$y",
+                      "$z"
+                    ]
                   },
                   "then": [
                     {
                       "type": "rites:set_block",
                       "block": "minecraft:water_cauldron[level=3]",
                       "show_particles": false,
-                      "pos_offset": ["$x", "$y", "$z"]
+                      "pos_offset": [
+                        "$x",
+                        "$y",
+                        "$z"
+                      ]
                     },
                     {
                       "type": "rites:spawn_particles",
                       "particle": "minecraft:splash",
-                      "pos_offset": ["$x", "$y + 0.5", "$z"],
-                      "delta": [0.5, 0.5, 0.5],
+                      "pos_offset": [
+                        "$x",
+                        "$y + 0.5",
+                        "$z"
+                      ],
+                      "delta": [
+                        0.5,
+                        0.5,
+                        0.5
+                      ],
                       "count": 50
                     }
                   ]
