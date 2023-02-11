@@ -58,7 +58,8 @@ abstract class RitualEffect {
         fun registerAll() {
             // control flow effects
             Registry.register(REGISTRY, RitesMod.id("tick"), TickingEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("loop"), LoopEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("for_i"), ForIEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("if"), IfEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("true"), TrueEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("false"), FalseEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("and"), AndEffect::class.java)

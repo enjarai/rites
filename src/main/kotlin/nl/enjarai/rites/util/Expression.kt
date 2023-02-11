@@ -1,8 +1,12 @@
 package nl.enjarai.rites.util
 
+import java.util.*
 import kotlin.math.*
 
 class Expression(str: String) : Parser(str) {
+    companion object {
+        private val RANDOM = Random()
+    }
 
     fun build(): (Map<String, Double>) -> Double {
         nextChar()
@@ -92,6 +96,7 @@ class Expression(str: String) : Parser(str) {
                 "ceil" -> { it -> ceil(a(it)) }
                 "floor" -> { it -> floor(a(it)) }
                 "round" -> { it -> round(a(it)) }
+                "randint" -> { it -> RANDOM.nextInt(a(it).toInt()).toDouble() }
                 else -> throw RuntimeException("Unknown function: $func")
             }
         } else if (weat('$'.code)) {

@@ -6,7 +6,7 @@ import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class LoopEffect : RitualEffect() {
+class ForIEffect : RitualEffect() {
     @FromJson
     private lateinit var effects: List<RitualEffect>
     @FromJson

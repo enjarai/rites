@@ -1,0 +1,34 @@
+{
+  "circles": [
+    "rites:fire/medium",
+    "rites:planeshifting/large"
+  ],
+  "ingredients": [
+    {
+      "item": "minecraft:tnt",
+      "count": 10
+    }
+  ],
+  "effects": [
+    {
+      "type": "rites:variable",
+      "variable": "size",
+      "expression": 100
+    },
+    {
+      "type": "rites:tick",
+      "effects": [
+        {
+          "type": "rites:summon_entity",
+          "entity": "minecraft:tnt",
+          "nbt": "{Fuse:100}",
+          "pos_offset": [
+            "randint($size) - $size / 2",
+            60,
+            "randint($size) - $size / 2"
+          ]
+        }
+      ]
+    }
+  ]
+}

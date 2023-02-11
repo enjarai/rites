@@ -1,6 +1,18 @@
 package nl.enjarai.rites.util
 
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
+import java.util.*
+
 class StringInterpolator(str: String) : Parser(str) {
+    companion object {
+        // Magical number formatter
+        private val df = DecimalFormat("0", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        init {
+            df.maximumFractionDigits = 340
+        }
+    }
+
     fun build(): (Map<String, Double>) -> String {
         nextChar()
         val x = parse()
@@ -21,13 +33,13 @@ class StringInterpolator(str: String) : Parser(str) {
                     val aa = s
                     val bb = parseExpression()
                     if (!eat('}'.code)) throw RuntimeException("Expected }")
-                    s = { aa(it) + bb(it).toString() }
+                    s = { aa(it) + df.format(bb(it)) }
                 } else {
                     val startVarPos = pos
                     while (isVariableChar()) nextChar()
                     val variableName = str.substring(startVarPos, pos)
                     val aa = s
-                    s = { aa(it) + it[variableName].toString() }
+                    s = { aa(it) + df.format(it[variableName]) }
                 }
             } else {
                 return s

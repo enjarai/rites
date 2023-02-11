@@ -8,6 +8,7 @@ import net.minecraft.resource.ResourceType
 import net.minecraft.util.Identifier
 import nl.enjarai.rites.resource.serialization.*
 import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
+import nl.enjarai.rites.type.interpreted_value.InterpretedString
 import nl.enjarai.rites.type.predicate.BlockStatePredicate
 import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.type.predicate.Range
@@ -20,6 +21,7 @@ object ResourceLoader {
         .disableHtmlEscaping() // We'll be able to use custom chars without them being saved differently
         .registerTypeAdapter(Identifier::class.java, IdentifierDeserializer)
         .registerTypeAdapter(InterpretedNumber::class.java, InterpretedNumberDeserializer)
+        .registerTypeAdapter(InterpretedString::class.java, InterpretedStringDeserializer)
         .registerTypeAdapter(RitualEffect::class.java, RitualEffectDeserializer)
         .registerTypeAdapter(BlockStatePredicate::class.java, BlockStatePredicateDeserializer)
         .registerTypeAdapter(BlockState::class.java, BlockStateDeserializer)

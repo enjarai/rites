@@ -20,7 +20,7 @@
       "expression": 5
     },
     {
-      "type": "rites:loop",
+      "type": "rites:for_i",
       "iterations": "$size",
       "counter_variable": "xc",
       "effects": [
@@ -30,12 +30,12 @@
           "expression": "$xc - $size / 2"
         },
         {
-          "type": "rites:loop",
+          "type": "rites:for_i",
           "iterations": "$height",
           "counter_variable": "y",
           "effects": [
             {
-              "type": "rites:loop",
+              "type": "rites:for_i",
               "iterations": "$size",
               "counter_variable": "zc",
               "effects": [

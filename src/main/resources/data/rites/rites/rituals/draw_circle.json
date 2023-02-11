@@ -13,11 +13,11 @@
       "cooldown": 10,
       "effects": [
         {
-          "type": "rites:loop",
+          "type": "rites:for_i",
           "iterations": 10,
           "effects": [
             {
-              "type": "rites:loop",
+              "type": "rites:for_i",
               "iterations": 5,
               "counter_variable": "j",
               "effects": [

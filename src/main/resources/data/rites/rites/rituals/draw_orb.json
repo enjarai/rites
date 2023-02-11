@@ -23,7 +23,7 @@
       "cooldown": 10,
       "effects": [
         {
-          "type": "rites:loop",
+          "type": "rites:for_i",
           "iterations": "$resolution",
           "effects": [
             {
@@ -32,7 +32,7 @@
               "expression": "$i * $pi * 2 / $resolution"
             },
             {
-              "type": "rites:loop",
+              "type": "rites:for_i",
               "iterations": "$resolution",
               "counter_variable": "j",
               "effects": [
