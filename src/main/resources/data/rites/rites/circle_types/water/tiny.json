@@ -1,0 +1,14 @@
+{
+  "keys": {
+    "c": "minecraft:blue_candle[lit=true]"
+  },
+  "layout": [
+    [" ", "c", " "],
+    ["c", " ", "c"],
+    [" ", "c", " "]
+  ],
+  "particle": "minecraft:scrape",
+  "particle_settings": {
+    "cycles": 2
+  }
+}

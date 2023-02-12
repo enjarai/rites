@@ -1,5 +1,6 @@
 {
-  "block.rites.rite_center": "Ritual Focus",
+  "block.rites.rite_center": "Ritual Core",
+  "block.rites.rite_focus": "Ritual Focus",
   "item.rites.waystone": "Waystone",
   "item.rites.waystone.tooltip": "Bound to %d, %d, %d"
 }

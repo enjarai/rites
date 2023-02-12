@@ -1,0 +1,16 @@
+{
+  "alternatives": [
+    "rites:normal/medium"
+  ],
+  "keys": {
+    "c": "minecraft:blue_candle[lit=true]"
+  },
+  "layout": [
+    [" ", "c", "c", "c", " "],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    [" ", "c", "c", "c", " "]
+  ],
+  "particle": "minecraft:scrape"
+}

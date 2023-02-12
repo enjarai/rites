@@ -12,7 +12,11 @@ import net.minecraft.util.registry.SimpleRegistry
 import nl.enjarai.rites.RitesMod
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.ritual_effect.entity.SummonEntityEffect
 import nl.enjarai.rites.type.ritual_effect.flow.*
+import nl.enjarai.rites.type.ritual_effect.flow.logic.*
+import nl.enjarai.rites.type.ritual_effect.flow.loop.ForAreaEffect
+import nl.enjarai.rites.type.ritual_effect.flow.loop.ForIEffect
 import nl.enjarai.rites.type.ritual_effect.item.DropItemEffect
 import nl.enjarai.rites.type.ritual_effect.item.DropItemRefEffect
 import nl.enjarai.rites.type.ritual_effect.item.MergeItemNbtEffect
@@ -49,9 +53,9 @@ abstract class RitualEffect {
     annotation class FromJson
 
     companion object {
-        private val REGISTRY = SimpleRegistry<Class<out RitualEffect>>(
+        val REGISTRY = SimpleRegistry<Class<out RitualEffect>>(
             RegistryKey.ofRegistry(RitesMod.id("ritual_effects")),
-            Lifecycle.experimental(),
+            Lifecycle.stable(),
             null
         )
 
@@ -59,6 +63,7 @@ abstract class RitualEffect {
             // control flow effects
             Registry.register(REGISTRY, RitesMod.id("tick"), TickingEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("for_i"), ForIEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("for_area"), ForAreaEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("if"), IfEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("true"), TrueEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("false"), FalseEffect::class.java)
@@ -80,6 +85,7 @@ abstract class RitualEffect {
             Registry.register(REGISTRY, RitesMod.id("give_potion"), GivePotionEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("match_block"), MatchBlockEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("set_block"), SetBlockEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("run_function"), RunFunctionEffect::class.java)
         }
 
         fun deserialize(id: Identifier, json: JsonObject, context: JsonDeserializationContext): RitualEffect {

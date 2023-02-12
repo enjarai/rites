@@ -20,70 +20,44 @@
       "expression": 5
     },
     {
-      "type": "rites:for_i",
-      "iterations": "$size",
-      "counter_variable": "xc",
+      "type": "rites:for_area",
+      "first_corner_offset": [
+        "-$size / 2",
+        0,
+        "-$size / 2"
+      ],
+      "second_corner_offset": [
+        "$size / 2",
+        "$height",
+        "$size / 2"
+      ],
       "effects": [
         {
-          "type": "rites:variable",
-          "variable": "x",
-          "expression": "$xc - $size / 2"
-        },
-        {
-          "type": "rites:for_i",
-          "iterations": "$height",
-          "counter_variable": "y",
-          "effects": [
+          "type": "rites:if",
+          "condition": {
+            "type": "rites:match_block",
+            "block": "minecraft:cauldron"
+          },
+          "then": [
             {
-              "type": "rites:for_i",
-              "iterations": "$size",
-              "counter_variable": "zc",
-              "effects": [
-                {
-                  "type": "rites:variable",
-                  "variable": "z",
-                  "expression": "$zc - $size / 2"
-                },
-                {
-                  "type": "rites:if",
-                  "condition": {
-                    "type": "rites:match_block",
-                    "block": "minecraft:cauldron",
-                    "pos_offset": [
-                      "$x",
-                      "$y",
-                      "$z"
-                    ]
-                  },
-                  "then": [
-                    {
-                      "type": "rites:set_block",
-                      "block": "minecraft:water_cauldron[level=3]",
-                      "show_particles": false,
-                      "pos_offset": [
-                        "$x",
-                        "$y",
-                        "$z"
-                      ]
-                    },
-                    {
-                      "type": "rites:spawn_particles",
-                      "particle": "minecraft:splash",
-                      "pos_offset": [
-                        "$x",
-                        "$y + 0.5",
-                        "$z"
-                      ],
-                      "delta": [
-                        0.5,
-                        0.5,
-                        0.5
-                      ],
-                      "count": 50
-                    }
-                  ]
-                }
-              ]
+              "type": "rites:set_block",
+              "block": "minecraft:water_cauldron[level=3]",
+              "show_particles": false
+            },
+            {
+              "type": "rites:spawn_particles",
+              "particle": "minecraft:splash",
+              "pos_offset": [
+                0,
+                0.5,
+                0
+              ],
+              "delta": [
+                0.5,
+                0.5,
+                0.5
+              ],
+              "count": 50
             }
           ]
         }

@@ -1,4 +1,4 @@
-package nl.enjarai.rites.type.ritual_effect
+package nl.enjarai.rites.type.ritual_effect.entity
 
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityType
@@ -12,6 +12,7 @@ import nl.enjarai.rites.type.interpreted_value.ConstantNumber
 import nl.enjarai.rites.type.interpreted_value.ConstantString
 import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.interpreted_value.InterpretedString
+import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
 class SummonEntityEffect : RitualEffect() {
     @FromJson

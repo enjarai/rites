@@ -1,4 +1,4 @@
-package nl.enjarai.rites.type.ritual_effect.flow
+package nl.enjarai.rites.type.ritual_effect.flow.loop
 
 import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual

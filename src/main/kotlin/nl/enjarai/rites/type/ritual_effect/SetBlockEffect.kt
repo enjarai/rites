@@ -14,12 +14,14 @@ class SetBlockEffect : RitualEffect() {
     private val pos_offset: List<InterpretedNumber> = listOf(ConstantNumber(.0), ConstantNumber(.0), ConstantNumber(.0))
     @FromJson
     private val drop_items: Boolean = false
+    @FromJson
+    private val show_particles: Boolean = true
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val world = ctx.world
         val blockPos = pos.add(pos_offset[0].interpretAsInt(ctx), pos_offset[1].interpretAsInt(ctx), pos_offset[2].interpretAsInt(ctx))
 
-        world.breakBlock(blockPos, drop_items)
+        if (show_particles) world.breakBlock(blockPos, drop_items)
         world.setBlockState(blockPos, block)
 
         return true

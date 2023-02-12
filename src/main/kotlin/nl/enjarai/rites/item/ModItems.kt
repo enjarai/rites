@@ -19,10 +19,19 @@ object ModItems {
             return result
         }
     }
+    val RITE_FOCUS = object : PolymerBlockItem(ModBlocks.RITE_FOCUS, FabricItemSettings().group(ItemGroup.MISC), Items.CONDUIT) {
+        override fun place(context: ItemPlacementContext): ActionResult {
+            val result = super.place(context)
+            if (result != ActionResult.FAIL)
+                context.player?.swingHand(context.hand, true)
+            return result
+        }
+    }
     val WAYSTONE = WayStoneItem()
 
     fun register() {
         Registry.register(Registry.ITEM, RitesMod.id("rite_center"), RITE_CENTER)
+        Registry.register(Registry.ITEM, RitesMod.id("rite_focus"), RITE_FOCUS)
         Registry.register(Registry.ITEM, RitesMod.id("waystone"), WAYSTONE)
     }
 }

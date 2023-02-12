@@ -3,13 +3,18 @@ package nl.enjarai.rites.mixin;
 import net.minecraft.block.AbstractCandleBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CandleBlock;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.Items;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -28,7 +33,7 @@ public abstract class CandleBlockMixin extends AbstractCandleBlock {
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private void modifyLitState(ItemPlacementContext ctx, CallbackInfoReturnable<BlockState> cir) {
+    private void rites$modifyLitState(ItemPlacementContext ctx, CallbackInfoReturnable<BlockState> cir) {
         if (
             ctx.getHand() == Hand.MAIN_HAND &&
             ctx.getPlayer() != null
@@ -61,5 +66,14 @@ public abstract class CandleBlockMixin extends AbstractCandleBlock {
                 cir.setReturnValue(super.getPlacementState(ctx).with(LIT, true));
             }
         }
+    }
+
+    @Inject(
+            method = "onUse",
+            at = @At(value = "HEAD"),
+            cancellable = true
+    )
+    private void rites$changeCandleColor(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
+        // TODO
     }
 }

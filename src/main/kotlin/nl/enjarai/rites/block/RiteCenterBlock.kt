@@ -9,6 +9,7 @@ import net.minecraft.entity.player.PlayerEntity
 import net.minecraft.sound.SoundCategory
 import net.minecraft.sound.SoundEvents
 import net.minecraft.state.StateManager
+import net.minecraft.state.property.IntProperty
 import net.minecraft.state.property.Properties
 import net.minecraft.util.ActionResult
 import net.minecraft.util.Hand
@@ -21,8 +22,8 @@ import net.minecraft.world.World
 
 class RiteCenterBlock(settings: Settings) : BlockWithEntity(settings), PolymerBlock {
     companion object {
-        val POWER = Properties.POWER
-        val SHAPE = createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 13.0)
+        val POWER: IntProperty = Properties.POWER
+        val SHAPE: VoxelShape = createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 13.0)
     }
 
     init {
