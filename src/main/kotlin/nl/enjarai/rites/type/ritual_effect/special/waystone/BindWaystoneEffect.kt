@@ -1,4 +1,4 @@
-package nl.enjarai.rites.type.ritual_effect.waystone
+package nl.enjarai.rites.type.ritual_effect.special.waystone
 
 import net.minecraft.nbt.NbtElement
 import net.minecraft.nbt.NbtHelper

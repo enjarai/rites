@@ -17,15 +17,7 @@ class Ritual(val circleTypes: List<CircleType>,
     @Transient private val unTickingEffects = effects.filter { ritualEffect -> !ritualEffect.isTicking() }
     @Transient private val tickingEffects = effects.filter { ritualEffect -> ritualEffect.isTicking() }
     @Transient val shouldKeepRunning = effects.any { ritualEffect -> ritualEffect.shouldKeepRitualRunning() }
-
-    val id: Identifier? get() {
-        Rituals.values.entries.forEach {
-            if (it.value === this) {
-                return it.key
-            }
-        }
-        return null
-    }
+    @Transient lateinit var id: Identifier
 
     fun getPickupRange(circles: List<CircleType>): Int {
         return circles.maxOf { it.size }

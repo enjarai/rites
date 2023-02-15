@@ -1,6 +1,6 @@
 {
   "alternatives": [
-    "rites:wind/large"
+    "rites:dynamism/large"
   ],
   "keys": {
     "c": "minecraft:light_blue_candle[lit=true]"

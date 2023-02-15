@@ -31,7 +31,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
     )
     val tickCooldown = hashMapOf<UUID, Int>()
     private var selectedRitual = 0
-    private var rituals = arrayOf<RitualInstance>()
+    var rituals = arrayOf<RitualInstance>()
     var circles = arrayOf<CircleType>()
 
     val hasTickingEffects: Boolean get() = rituals.any { it.ritual.shouldKeepRunning }

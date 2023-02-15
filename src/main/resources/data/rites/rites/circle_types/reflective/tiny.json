@@ -1,14 +1,15 @@
 {
   "keys": {
-    "c": "minecraft:blue_candle[lit=true]"
+    "c": "minecraft:yellow_candle[lit=true]"
   },
   "layout": [
     [" ", "c", " "],
     ["c", " ", "c"],
     [" ", "c", " "]
   ],
-  "particle": "minecraft:scrape",
+  "particle": "minecraft:wax_on",
   "particle_settings": {
-    "cycles": 2
+    "cycles": 2,
+    "arm_speed": 2
   }
 }

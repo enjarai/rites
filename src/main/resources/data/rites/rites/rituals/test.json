@@ -1,7 +1,7 @@
 {
   "circles": [
-    "rites:fire/small",
-    "rites:normal/medium"
+    "rites:offensive/small",
+    "rites:common/medium"
   ],
   "ingredients": [
     {

@@ -20,11 +20,12 @@ import nl.enjarai.rites.type.ritual_effect.flow.loop.ForIEffect
 import nl.enjarai.rites.type.ritual_effect.item.DropItemEffect
 import nl.enjarai.rites.type.ritual_effect.item.DropItemRefEffect
 import nl.enjarai.rites.type.ritual_effect.item.MergeItemNbtEffect
+import nl.enjarai.rites.type.ritual_effect.special.focus.InternalizeFocusEffect
 import nl.enjarai.rites.type.ritual_effect.visual.PlaySoundEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnMovingParticlesEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnParticlesEffect
-import nl.enjarai.rites.type.ritual_effect.waystone.BindWaystoneEffect
-import nl.enjarai.rites.type.ritual_effect.waystone.UseWaystoneEffect
+import nl.enjarai.rites.type.ritual_effect.special.waystone.BindWaystoneEffect
+import nl.enjarai.rites.type.ritual_effect.special.waystone.UseWaystoneEffect
 import java.lang.reflect.ParameterizedType
 import java.util.*
 
@@ -75,6 +76,7 @@ abstract class RitualEffect {
             // effects that actually do stuff
             Registry.register(REGISTRY, RitesMod.id("bind_waystone"), BindWaystoneEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("use_waystone"), UseWaystoneEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("internalize_focus"), InternalizeFocusEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("play_sound"), PlaySoundEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("spawn_particles"), SpawnParticlesEffect::class.java)
             Registry.register(REGISTRY, RitesMod.id("spawn_moving_particles"), SpawnMovingParticlesEffect::class.java)

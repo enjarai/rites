@@ -1,0 +1,20 @@
+{
+  "circles": [
+    "rites:reflective/large"
+  ],
+  "ingredients": [
+    {
+      "item": "rites:rite_focus",
+      "ref": "focus"
+    },
+    {
+      "item": "minecraft:glowstone_dust"
+    }
+  ],
+  "effects": [
+    {
+      "type": "rites:internalize_focus",
+      "focus_ref": "focus"
+    }
+  ]
+}

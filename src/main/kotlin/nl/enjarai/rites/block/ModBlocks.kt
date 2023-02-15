@@ -7,10 +7,11 @@ import net.minecraft.block.Material
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.RitesMod
+import nl.enjarai.rites.item.ModItems
 
 object ModBlocks {
     val RITE_CENTER = RiteCenterBlock(FabricBlockSettings.of(Material.DECORATION).noCollision().breakInstantly())
-    val RITE_FOCUS = RiteFocusBlock(FabricBlockSettings.of(Material.DECORATION))
+    val RITE_FOCUS = RiteFocusBlock(FabricBlockSettings.of(Material.DECORATION), ModItems.RITE_FOCUS.defaultStack)
     val RITE_CENTER_ENTITY: BlockEntityType<RiteCenterBlockEntity> =
         FabricBlockEntityTypeBuilder.create(::RiteCenterBlockEntity, RITE_CENTER).build()
     val RITE_FOCUS_ENTITY: BlockEntityType<RiteFocusBlockEntity> =

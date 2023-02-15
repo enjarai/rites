@@ -16,7 +16,7 @@ object Rituals : JsonResource<Ritual>("rituals") {
         val ritualFile = ResourceLoader.GSON.fromJson(fileReader, RitualFile::class.java) ?:
             throw IllegalArgumentException("File format invalid")
 
-        values[identifier] = ritualFile.convert()
+        values[identifier] = ritualFile.convert().apply { id = identifier }
     }
 
     class RitualFile : ResourceLoader.TypeFile<Ritual> {

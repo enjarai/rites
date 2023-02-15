@@ -51,7 +51,7 @@ abstract class RiteRunningBlockEntity(type: BlockEntityType<*>, pos: BlockPos, s
         if (ritualContext != null) nbt.put("ritualContext", ritualContext!!.toNbt())
     }
 
-    fun tick() {
+    open fun tick() {
         if (getWorld() is ServerWorld && ritualContext != null) {
             ritualContext!!.drawParticleEffects()
             Visuals.hum(
@@ -91,14 +91,17 @@ abstract class RiteRunningBlockEntity(type: BlockEntityType<*>, pos: BlockPos, s
 
     protected fun startRitual(ritual: Ritual, circles: List<CircleType> = listOf()) {
         initContext()
-        this.ritualContext?.appendRitual(ritual)
-        this.ritualContext?.appendCircles(circles)
+        ritualContext?.appendRitual(ritual)
+        ritualContext?.appendCircles(circles)
         tickCooldown = RiteCenterBlockEntity.COOLDOWN
     }
 
     open fun endAllRituals(success: Boolean) {
         // Stop rituals and store results
         storedItems = ritualContext?.stopAllRituals(success) ?: arrayOf()
+
+        // Reset all state
+        ritualContext = null
 
         // Save the fact that the rituals have stopped
         markDirty()

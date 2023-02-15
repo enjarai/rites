@@ -1,6 +1,6 @@
 {
   "alternatives": [
-    "rites:fire/large"
+    "rites:offensive/large"
   ],
   "keys": {
     "c": "minecraft:red_candle[lit=true]"

@@ -125,9 +125,6 @@ open class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) : RiteRunning
 
         setPower(0)
 
-        // Reset all state
-        ritualContext = null
-
         // Drop currently stored items, if available
         val pos = Vec3d.ofBottomCenter(getPos())
         storedItems.forEach {

@@ -1,6 +1,6 @@
 {
   "keys": {
-    "c": "minecraft:blue_candle[lit=true]"
+    "c": "minecraft:yellow_candle[lit=true]"
   },
   "layout": [
     [" ", " ", " ", "c", "c", "c", "c", "c", "c", "c", " ", " ", " "],
@@ -17,10 +17,10 @@
     [" ", " ", "c", " ", " ", " ", " ", " ", " ", " ", "c", " ", " "],
     [" ", " ", " ", "c", "c", "c", "c", "c", "c", "c", " ", " ", " "]
   ],
-  "particle": "minecraft:scrape",
+  "particle": "minecraft:wax_on",
   "particle_settings": {
     "cycles": 7,
     "arm_angle": -0.20,
-    "arm_speed": 0.04
+    "arm_speed": 0.8
   }
 }

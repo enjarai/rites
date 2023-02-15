@@ -1,9 +1,9 @@
 {
   "alternatives": [
-    "rites:fire/medium"
+    "rites:reflective/medium"
   ],
   "keys": {
-    "c": "minecraft:red_candle[lit=true]"
+    "c": "minecraft:yellow_candle[lit=true]"
   },
   "layout": [
     [" ", "c", "c", "c", " "],
@@ -12,8 +12,8 @@
     ["c", " ", " ", " ", "c"],
     [" ", "c", "c", "c", " "]
   ],
-  "particle": "minecraft:flame",
+  "particle": "minecraft:wax_on",
   "particle_settings": {
-    "cycles": 4
+    "arm_speed": 2
   }
 }

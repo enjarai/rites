@@ -5,10 +5,12 @@ import net.minecraft.block.BlockState
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList
 import net.minecraft.nbt.NbtString
+import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.RitualResult
+import nl.enjarai.rites.util.Visuals
 
 class RiteFocusBlockEntity(pos: BlockPos, state: BlockState) : RiteRunningBlockEntity(ModBlocks.RITE_FOCUS_ENTITY, pos, state), PolymerObject {
     var rituals = listOf<Identifier>()
@@ -49,8 +51,16 @@ class RiteFocusBlockEntity(pos: BlockPos, state: BlockState) : RiteRunningBlockE
         }
 
         // Deactivate right away if the ritual we just activated isn't ticking
-        if (!ritualContext!!.getSelectedRitual()!!.ritual.shouldKeepRunning) {
+        if (ritualContext!!.getSelectedRitual()?.ritual?.shouldKeepRunning != true) {
             endAllRituals(true)
         }
+    }
+
+    override fun tick() {
+        val world = getWorld()
+        if (world is ServerWorld) {
+            if (cachedState.get(RiteFocusBlock.ACTIVE)) Visuals.runningFocus(world, pos)
+        }
+        super.tick()
     }
 }

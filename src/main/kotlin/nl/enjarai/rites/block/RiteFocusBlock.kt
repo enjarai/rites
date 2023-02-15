@@ -12,9 +12,11 @@ import net.minecraft.fluid.FluidState
 import net.minecraft.fluid.Fluids
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
+import net.minecraft.loot.context.LootContext
+import net.minecraft.loot.context.LootContextParameters
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList
-import net.minecraft.server.world.ServerWorld
+import net.minecraft.nbt.NbtString
 import net.minecraft.state.StateManager
 import net.minecraft.state.property.BooleanProperty
 import net.minecraft.state.property.Properties
@@ -29,10 +31,9 @@ import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
-import nl.enjarai.rites.util.Visuals
-import java.util.*
+import nl.enjarai.rites.item.ModItems
 
-class RiteFocusBlock(settings: Settings) : BlockWithEntity(settings), Waterloggable, PolymerBlock {
+class RiteFocusBlock(settings: Settings, private val defaultItemStack: ItemStack) : BlockWithEntity(settings), Waterloggable, PolymerBlock {
     companion object {
         val WATERLOGGED: BooleanProperty = Properties.WATERLOGGED
         val ACTIVE: BooleanProperty = Properties.ENABLED
@@ -74,6 +75,31 @@ class RiteFocusBlock(settings: Settings) : BlockWithEntity(settings), Waterlogga
         }
     }
 
+    override fun getDroppedStacks(state: BlockState, builder: LootContext.Builder): MutableList<ItemStack> {
+        return super.getDroppedStacks(state, builder).apply {
+            val blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY) as? RiteFocusBlockEntity
+            if (blockEntity != null) {
+                val riteData = NbtCompound()
+
+                riteData.put("storedItems", NbtList().apply {
+                    blockEntity.storedItems.forEach {
+                        add(it.writeNbt(NbtCompound()))
+                    }
+                })
+
+                riteData.put("rituals", NbtList().apply {
+                    blockEntity.rituals.forEach {
+                        add(NbtString.of(it.toString()))
+                    }
+                })
+
+                add(defaultItemStack.copy().apply {
+                    orCreateNbt.put("riteData", riteData)
+                })
+            }
+        }
+    }
+
     override fun onUse(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockHitResult): ActionResult {
         val blockEntity = world.getBlockEntity(pos) as? RiteFocusBlockEntity
         if (blockEntity != null) {
@@ -86,14 +112,6 @@ class RiteFocusBlock(settings: Settings) : BlockWithEntity(settings), Waterlogga
             }
         }
         return super.onUse(state, world, pos, player, hand, hit)
-    }
-
-    override fun hasRandomTicks(state: BlockState): Boolean {
-        return true
-    }
-
-    override fun randomTick(state: BlockState, world: ServerWorld, pos: BlockPos, random: Random) {
-        Visuals.runningFocus(world, pos)
     }
 
     override fun getPolymerBlock(state: BlockState): Block {
