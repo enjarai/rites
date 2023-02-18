@@ -4,11 +4,11 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import com.mojang.serialization.Lifecycle
+import net.minecraft.registry.Registry
+import net.minecraft.registry.RegistryKey
+import net.minecraft.registry.SimpleRegistry
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.registry.Registry
-import net.minecraft.util.registry.RegistryKey
-import net.minecraft.util.registry.SimpleRegistry
 import nl.enjarai.rites.RitesMod
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
@@ -21,11 +21,11 @@ import nl.enjarai.rites.type.ritual_effect.item.DropItemEffect
 import nl.enjarai.rites.type.ritual_effect.item.DropItemRefEffect
 import nl.enjarai.rites.type.ritual_effect.item.MergeItemNbtEffect
 import nl.enjarai.rites.type.ritual_effect.special.focus.InternalizeFocusEffect
+import nl.enjarai.rites.type.ritual_effect.special.waystone.BindWaystoneEffect
+import nl.enjarai.rites.type.ritual_effect.special.waystone.UseWaystoneEffect
 import nl.enjarai.rites.type.ritual_effect.visual.PlaySoundEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnMovingParticlesEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnParticlesEffect
-import nl.enjarai.rites.type.ritual_effect.special.waystone.BindWaystoneEffect
-import nl.enjarai.rites.type.ritual_effect.special.waystone.UseWaystoneEffect
 import java.lang.reflect.ParameterizedType
 import java.util.*
 
@@ -56,8 +56,7 @@ abstract class RitualEffect {
     companion object {
         val REGISTRY = SimpleRegistry<Class<out RitualEffect>>(
             RegistryKey.ofRegistry(RitesMod.id("ritual_effects")),
-            Lifecycle.stable(),
-            null
+            Lifecycle.stable()
         )
 
         fun registerAll() {

@@ -1,6 +1,6 @@
 package nl.enjarai.rites.block
 
-import eu.pb4.polymer.api.utils.PolymerObject
+import eu.pb4.polymer.core.api.utils.PolymerObject
 import net.minecraft.block.BlockState
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList

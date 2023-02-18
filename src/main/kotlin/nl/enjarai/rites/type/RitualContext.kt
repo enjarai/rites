@@ -4,12 +4,12 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.ItemEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.*
+import net.minecraft.registry.Registries
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import net.minecraft.world.World
 import nl.enjarai.rites.resource.CircleTypes
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
@@ -153,7 +153,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         val ritual = getSelectedRitual()
         if (ritual?.active == false) {
             this.storedItems = storedItems
-            variables.putAll(storedItems.map { Registry.ITEM.getId(it.item).toString() to it.count.toDouble() })
+            variables.putAll(storedItems.map { Registries.ITEM.getId(it.item).toString() to it.count.toDouble() })
             loadAddressableItems(storedItems)
             val success = ritual.activate(this)
             if (success) {

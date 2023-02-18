@@ -1,10 +1,10 @@
 package nl.enjarai.rites.type.ritual_effect.visual
 
+import net.minecraft.registry.Registries
 import net.minecraft.sound.SoundCategory
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.interpreted_value.ConstantNumber
@@ -23,7 +23,7 @@ class PlaySoundEffect : RitualEffect() {
         val sPos = Vec3d.ofBottomCenter(pos)
         ctx.world.playSound(
             null, sPos.x, sPos.y, sPos.z,
-            Registry.SOUND_EVENT.get(sound) ?: return false,
+            Registries.SOUND_EVENT.get(sound) ?: return false,
             SoundCategory.BLOCKS,
             volume.interpret(ctx).toFloat(), pitch.interpret(ctx).toFloat() - 0.2f + ctx.world.getRandom().nextFloat() * 0.4f
         )

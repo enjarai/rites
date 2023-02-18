@@ -1,7 +1,6 @@
 package nl.enjarai.rites.resource
 
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.type.ritual_effect.RitualEffect

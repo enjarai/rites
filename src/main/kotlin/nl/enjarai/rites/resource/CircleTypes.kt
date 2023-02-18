@@ -1,8 +1,8 @@
 package nl.enjarai.rites.resource
 
 import net.minecraft.particle.ParticleTypes
+import net.minecraft.registry.Registries
 import net.minecraft.util.Identifier
-import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.CircleType
 import nl.enjarai.rites.type.predicate.BlockStatePredicate
 import java.io.BufferedReader
@@ -15,8 +15,8 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
 
     override fun processStream(identifier: Identifier, stream: InputStream) {
         val fileReader = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8))
-        val circleTypeFile = ResourceLoader.GSON.fromJson(fileReader, CircleTypeFile::class.java) ?:
-        throw IllegalArgumentException("File format invalid")
+        val circleTypeFile = ResourceLoader.GSON.fromJson(fileReader, CircleTypeFile::class.java)
+            ?: throw IllegalArgumentException("File format invalid")
 
         if (circleTypeFile.layout.size % 2 == 0) {
             throw IllegalArgumentException("Circle type height is an even number")
@@ -43,7 +43,7 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
     class CircleTypeFile : ResourceLoader.TypeFile<CircleType> {
         val layout = arrayOf<Array<String>>()
         val keys = hashMapOf<String, BlockStatePredicate>()
-        val particle: Identifier = Registry.PARTICLE_TYPE.getId(ParticleTypes.SOUL_FIRE_FLAME)!!
+        val particle: Identifier = Registries.PARTICLE_TYPE.getId(ParticleTypes.SOUL_FIRE_FLAME)!!
         val particle_settings = ParticleSettings()
         val alternatives = listOf<Identifier>()
 
@@ -55,8 +55,7 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
                         keys[block]
                     }
                 },
-                Registry.PARTICLE_TYPE.get(particle) ?:
-                    throw IllegalArgumentException("Invalid particle: $particle"),
+                Registries.PARTICLE_TYPE.get(particle) ?: throw IllegalArgumentException("Invalid particle: $particle"),
                 particle_settings
             )
         }

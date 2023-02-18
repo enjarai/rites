@@ -1,14 +1,14 @@
 package nl.enjarai.rites.item
 
-import eu.pb4.polymer.api.item.PolymerItem
+import eu.pb4.polymer.core.api.item.PolymerItem
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
+import net.minecraft.client.item.TooltipContext
 import net.minecraft.item.Item
-import net.minecraft.item.ItemGroup
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
 import net.minecraft.server.network.ServerPlayerEntity
 
-class WayStoneItem : Item(FabricItemSettings().group(ItemGroup.MISC)), PolymerItem {
+class WayStoneItem : Item(FabricItemSettings()), PolymerItem {
     companion object {
         const val LINKED_KEY = "linked"
         const val LINKED_POS_KEY = "linkedPos"
@@ -19,8 +19,8 @@ class WayStoneItem : Item(FabricItemSettings().group(ItemGroup.MISC)), PolymerIt
         return Items.FIREWORK_STAR
     }
 
-    override fun getPolymerItemStack(itemStack: ItemStack, player: ServerPlayerEntity?): ItemStack {
-        val stack = super.getPolymerItemStack(itemStack, player)
+    override fun getPolymerItemStack(itemStack: ItemStack, context: TooltipContext, player: ServerPlayerEntity?): ItemStack {
+        val stack = super.getPolymerItemStack(itemStack, context, player)
         if (isLinked(itemStack)) {
             val nbt = stack.getOrCreateSubNbt("Explosion")
             nbt.putIntArray("Colors", listOf(0xffffff))

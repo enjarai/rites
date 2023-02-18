@@ -1,23 +1,16 @@
 package nl.enjarai.rites.block
 
-import eu.pb4.polymer.api.utils.PolymerObject
+import eu.pb4.polymer.core.api.utils.PolymerObject
 import net.minecraft.block.BlockState
-import net.minecraft.block.entity.BlockEntity
 import net.minecraft.entity.ItemEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.item.Item
-import net.minecraft.item.ItemStack
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.nbt.NbtList
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.resource.Rituals
-import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.RitualResult
 import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.util.Visuals
-import java.util.function.Predicate
 
 open class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) : RiteRunningBlockEntity(ModBlocks.RITE_CENTER_ENTITY, pos, state), PolymerObject {
     companion object {

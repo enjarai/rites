@@ -4,16 +4,16 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
-import net.minecraft.util.registry.Registry
+import net.minecraft.registry.Registries
 import nl.enjarai.rites.type.predicate.Ingredient
 import java.lang.reflect.Type
-import kotlin.math.min
 
 object IngredientDeserializer : JsonDeserializer<Ingredient> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Ingredient {
         val jsonObject = json.asJsonObject
-        val item = Registry.ITEM.getOrEmpty(IdentifierDeserializer.deserialize(jsonObject.get("item"), typeOfT, context))
-            .orElse(null) ?: throw JsonParseException("Invalid item: ${jsonObject.get("item")}")
+        val item =
+            Registries.ITEM.getOrEmpty(IdentifierDeserializer.deserialize(jsonObject.get("item"), typeOfT, context))
+                .orElse(null) ?: throw JsonParseException("Invalid item: ${jsonObject.get("item")}")
         val count = jsonObject.get("count")?.asInt ?: 1
         val ref = jsonObject.get("ref")?.asString
 

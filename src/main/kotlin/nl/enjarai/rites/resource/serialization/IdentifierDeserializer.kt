@@ -7,7 +7,6 @@ import net.minecraft.util.Identifier
 import java.lang.reflect.Type
 
 object IdentifierDeserializer : JsonDeserializer<Identifier> {
-
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Identifier {
         return Identifier(json.asString)
     }

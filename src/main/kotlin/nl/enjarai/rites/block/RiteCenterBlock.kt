@@ -1,6 +1,6 @@
 package nl.enjarai.rites.block
 
-import eu.pb4.polymer.api.block.PolymerBlock
+import eu.pb4.polymer.core.api.block.PolymerBlock
 import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
@@ -58,14 +58,7 @@ class RiteCenterBlock(settings: Settings) : BlockWithEntity(settings), PolymerBl
         return RiteCenterBlockEntity(pos, state)
     }
 
-    override fun onUse(
-        state: BlockState,
-        world: World,
-        pos: BlockPos,
-        player: PlayerEntity,
-        hand: Hand,
-        hit: BlockHitResult
-    ): ActionResult {
+    override fun onUse(state: BlockState, world: World, pos: BlockPos, player: PlayerEntity, hand: Hand, hit: BlockHitResult): ActionResult {
         if (hand == Hand.MAIN_HAND) {
             (world.getBlockEntity(pos) as? RiteCenterBlockEntity)?.onUse(player)
             return ActionResult.success(true)
@@ -87,10 +80,7 @@ class RiteCenterBlock(settings: Settings) : BlockWithEntity(settings), PolymerBl
         }
     }
 
-    override fun getOutlineShape(
-        state: BlockState, world: BlockView,
-        pos: BlockPos, context: ShapeContext
-    ): VoxelShape {
+    override fun getOutlineShape(state: BlockState, world: BlockView, pos: BlockPos, context: ShapeContext): VoxelShape {
         return SHAPE
     }
 

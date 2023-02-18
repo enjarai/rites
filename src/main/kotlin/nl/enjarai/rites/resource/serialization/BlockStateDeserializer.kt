@@ -4,16 +4,15 @@ import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
-import com.mojang.brigadier.StringReader
 import net.minecraft.block.BlockState
 import net.minecraft.command.argument.BlockArgumentParser
+import net.minecraft.registry.Registries
 import java.lang.reflect.Type
 
 object BlockStateDeserializer : JsonDeserializer<BlockState> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BlockState {
-        val stringReader = StringReader(json.asString)
-        val parser = BlockArgumentParser(stringReader, false).parse(false)
+        val blockResult = BlockArgumentParser.block(Registries.BLOCK.readOnlyWrapper, json.asString, false)
 
-        return parser.blockState ?: throw JsonParseException("Invalid block state: ${json.asString}")
+        return blockResult.blockState ?: throw JsonParseException("Invalid block state: ${json.asString}")
     }
 }

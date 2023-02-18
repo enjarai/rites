@@ -1,11 +1,11 @@
 package nl.enjarai.rites.type.ritual_effect.visual
 
 import net.minecraft.particle.ParticleEffect
+import net.minecraft.registry.Registries
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
-import net.minecraft.util.registry.Registry
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.interpreted_value.ConstantNumber
@@ -30,7 +30,7 @@ class SpawnParticlesEffect : RitualEffect() {
         val dPos = Vec3d.ofBottomCenter(pos)
 
         (ctx.world as ServerWorld).spawnParticles(
-            (Registry.PARTICLE_TYPE.get(particle) as? ParticleEffect) ?: return false,
+            (Registries.PARTICLE_TYPE.get(particle) as? ParticleEffect) ?: return false,
             dPos.getX() + pos_offset[0].interpret(ctx),
             dPos.getY() + pos_offset[1].interpret(ctx),
             dPos.getZ() + pos_offset[2].interpret(ctx),
