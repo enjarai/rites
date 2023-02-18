@@ -1,6 +1,6 @@
 {
   "alternatives": [
-    "rites:normal/medium"
+    "rites:common/medium"
   ],
   "keys": {
     "c": "#minecraft:candles[lit=true]"

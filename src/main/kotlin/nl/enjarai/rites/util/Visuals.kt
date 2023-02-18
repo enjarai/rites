@@ -148,7 +148,7 @@ object Visuals {
     }
 
     fun runningFocus(world: ServerWorld, pos: BlockPos) {
-        val sPos = Vec3d.ofBottomCenter(pos)
+        val sPos = Vec3d.ofCenter(pos)
         world.spawnParticles(
             ParticleTypes.SCRAPE,
             sPos.getX(), sPos.getY(), sPos.getZ(),

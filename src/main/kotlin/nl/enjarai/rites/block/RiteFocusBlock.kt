@@ -5,6 +5,7 @@ import net.minecraft.block.*
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityTicker
 import net.minecraft.block.entity.BlockEntityType
+import net.minecraft.block.enums.DoubleBlockHalf
 import net.minecraft.entity.LivingEntity
 import net.minecraft.entity.ai.pathing.NavigationType
 import net.minecraft.entity.player.PlayerEntity
@@ -31,9 +32,9 @@ import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.BlockView
 import net.minecraft.world.World
 import net.minecraft.world.WorldAccess
-import nl.enjarai.rites.item.ModItems
+import net.minecraft.world.event.GameEvent
 
-class RiteFocusBlock(settings: Settings, private val defaultItemStack: ItemStack) : BlockWithEntity(settings), Waterloggable, PolymerBlock {
+class RiteFocusBlock(settings: Settings, private val defaultItemStack: () -> ItemStack) : BlockWithEntity(settings), Waterloggable, PolymerBlock {
     companion object {
         val WATERLOGGED: BooleanProperty = Properties.WATERLOGGED
         val ACTIVE: BooleanProperty = Properties.ENABLED
@@ -78,7 +79,7 @@ class RiteFocusBlock(settings: Settings, private val defaultItemStack: ItemStack
     override fun getDroppedStacks(state: BlockState, builder: LootContext.Builder): MutableList<ItemStack> {
         return super.getDroppedStacks(state, builder).apply {
             val blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY) as? RiteFocusBlockEntity
-            if (blockEntity != null) {
+            if (blockEntity != null && (blockEntity.storedItems.isNotEmpty() || blockEntity.rituals.isNotEmpty())) {
                 val riteData = NbtCompound()
 
                 riteData.put("storedItems", NbtList().apply {
@@ -93,7 +94,7 @@ class RiteFocusBlock(settings: Settings, private val defaultItemStack: ItemStack
                     }
                 })
 
-                add(defaultItemStack.copy().apply {
+                add(defaultItemStack().apply {
                     orCreateNbt.put("riteData", riteData)
                 })
             }
@@ -112,6 +113,19 @@ class RiteFocusBlock(settings: Settings, private val defaultItemStack: ItemStack
             }
         }
         return super.onUse(state, world, pos, player, hand, hit)
+    }
+
+    override fun neighborUpdate(state: BlockState, world: World, pos: BlockPos, block: Block, fromPos: BlockPos, notify: Boolean) {
+        val blockEntity = world.getBlockEntity(pos) as? RiteFocusBlockEntity
+        if (blockEntity != null) {
+            val powered = world.isReceivingRedstonePower(pos);
+            val active = state.get(ACTIVE)
+            if (powered && !active) {
+                blockEntity.tryStartRituals()
+            } else if (!powered && active) {
+                blockEntity.endAllRituals(true)
+            }
+        }
     }
 
     override fun getPolymerBlock(state: BlockState): Block {

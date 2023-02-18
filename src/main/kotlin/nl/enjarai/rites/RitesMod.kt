@@ -21,7 +21,7 @@ object RitesMod : ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(this::onServerStarting)
 
         ModBlocks.register()
-        ModItems.register()
+        ModItems.init()
         RitualEffect.registerAll()
         ResourceLoader.register()
         Commands.register()

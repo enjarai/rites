@@ -11,7 +11,8 @@ import nl.enjarai.rites.item.ModItems
 
 object ModBlocks {
     val RITE_CENTER = RiteCenterBlock(FabricBlockSettings.of(Material.DECORATION).noCollision().breakInstantly())
-    val RITE_FOCUS = RiteFocusBlock(FabricBlockSettings.of(Material.DECORATION), ModItems.RITE_FOCUS.defaultStack)
+    val RITE_FOCUS = RiteFocusBlock(FabricBlockSettings
+        .of(Material.DECORATION).strength(3.0f).luminance { 15 }.nonOpaque()) { ModItems.RITE_FOCUS.defaultStack }
     val RITE_CENTER_ENTITY: BlockEntityType<RiteCenterBlockEntity> =
         FabricBlockEntityTypeBuilder.create(::RiteCenterBlockEntity, RITE_CENTER).build()
     val RITE_FOCUS_ENTITY: BlockEntityType<RiteFocusBlockEntity> =
