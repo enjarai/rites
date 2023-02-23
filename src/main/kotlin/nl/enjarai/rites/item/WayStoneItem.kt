@@ -6,7 +6,11 @@ import net.minecraft.client.item.TooltipContext
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
+import net.minecraft.nbt.NbtHelper
 import net.minecraft.server.network.ServerPlayerEntity
+import net.minecraft.text.Text
+import net.minecraft.util.Formatting
+import net.minecraft.world.World
 
 class WayStoneItem : Item(FabricItemSettings()), PolymerItem {
     companion object {
@@ -30,5 +34,14 @@ class WayStoneItem : Item(FabricItemSettings()), PolymerItem {
 
     private fun isLinked(stack: ItemStack): Boolean {
         return stack.nbt?.getBoolean(LINKED_KEY) == true
+    }
+
+    override fun appendTooltip(stack: ItemStack, world: World?, tooltip: MutableList<Text>, context: TooltipContext) {
+        if (isLinked(stack)) {
+            stack.nbt?.getCompound(LINKED_POS_KEY).let { NbtHelper.toBlockPos(it) }.let {
+                tooltip.add(Text.translatable("item.rites.waystone.tooltip", it.x, it.y, it.z).formatted(Formatting.GRAY))
+            }
+        }
+        super.appendTooltip(stack, world, tooltip, context)
     }
 }
