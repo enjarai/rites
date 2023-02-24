@@ -3,6 +3,7 @@ package nl.enjarai.rites.type.ritual_effect
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
+import com.mojang.serialization.Codec
 import com.mojang.serialization.Lifecycle
 import net.minecraft.registry.Registry
 import net.minecraft.registry.RegistryKey
@@ -38,6 +39,8 @@ abstract class RitualEffect {
 
     abstract fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean
 
+    abstract fun getCodec(): Codec<out RitualEffect>
+
     open fun isTicking(): Boolean {
         return false
     }
@@ -58,6 +61,7 @@ abstract class RitualEffect {
             RegistryKey.ofRegistry(RitesMod.id("ritual_effects")),
             Lifecycle.stable()
         )
+        val CODEC: Codec<RitualEffect> = REGISTRY.codec.dispatch()
 
         fun registerAll() {
             // control flow effects

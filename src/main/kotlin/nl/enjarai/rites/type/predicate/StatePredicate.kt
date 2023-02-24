@@ -15,4 +15,8 @@ class StatePredicate(private val state: BlockState, private val properties: Set<
         }
         return true
     }
+
+    override fun toString(): String {
+        return state.toString()
+    }
 }
