@@ -1,27 +1,38 @@
 package nl.enjarai.rites.type.ritual_effect
 
+import com.mojang.serialization.Codec
+import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.block.BlockState
 import net.minecraft.util.math.BlockPos
+import nl.enjarai.rites.resource.serialization.Codecs
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
-import nl.enjarai.rites.type.interpreted_value.ConstantNumber
-import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
+import nl.enjarai.rites.type.interpreted_value.ConstantVec3
+import nl.enjarai.rites.type.interpreted_value.InterpretedVec3
 
-class SetBlockEffect : RitualEffect() {
-    @FromJson
-    private lateinit var block: BlockState
-    @FromJson
-    private val pos_offset: List<InterpretedNumber> = listOf(ConstantNumber(.0), ConstantNumber(.0), ConstantNumber(.0))
-    @FromJson
-    private val drop_items: Boolean = false
-    @FromJson
-    private val show_particles: Boolean = true
+class SetBlockEffect(
+    val block: BlockState,
+    val posOffset: InterpretedVec3,
+    val dropItems: Boolean,
+    val showParticles: Boolean
+) : RitualEffect(CODEC) {
+    companion object {
+        val CODEC: Codec<SetBlockEffect> = RecordCodecBuilder.create { instance ->
+            instance.group(
+                Codecs.BLOCK_STATE.fieldOf("block").forGetter { it.block },
+                InterpretedVec3.CODEC.optionalFieldOf("pos_offset", ConstantVec3(.0, .0, .0))
+                    .forGetter { it.posOffset },
+                Codec.BOOL.optionalFieldOf("drop_items", false).forGetter { it.dropItems },
+                Codec.BOOL.optionalFieldOf("show_particles", true).forGetter { it.showParticles }
+            ).apply(instance, ::SetBlockEffect)
+        }
+    }
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val world = ctx.world
-        val blockPos = pos.add(pos_offset[0].interpretAsInt(ctx), pos_offset[1].interpretAsInt(ctx), pos_offset[2].interpretAsInt(ctx))
+        val blockPos = pos.add(posOffset.interpretAsBlockPos(ctx))
 
-        if (show_particles) world.breakBlock(blockPos, drop_items)
+        if (showParticles) world.breakBlock(blockPos, dropItems)
         world.setBlockState(blockPos, block)
 
         return true

@@ -1,5 +1,6 @@
 package nl.enjarai.rites.type.ritual_effect.special.waystone
 
+import com.mojang.serialization.Codec
 import net.minecraft.nbt.NbtElement
 import net.minecraft.nbt.NbtHelper
 import net.minecraft.nbt.NbtOps
@@ -12,7 +13,11 @@ import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class BindWaystoneEffect : RitualEffect() {
+class BindWaystoneEffect : RitualEffect(CODEC) {
+    companion object {
+        val CODEC: Codec<BindWaystoneEffect> = Codec.unit(::BindWaystoneEffect)
+    }
+
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val waystoneStack = ctx.storedItems.firstOrNull {
             it.isOf(ModItems.WAYSTONE)

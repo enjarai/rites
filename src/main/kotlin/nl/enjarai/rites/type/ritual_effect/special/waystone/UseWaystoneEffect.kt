@@ -1,5 +1,6 @@
 package nl.enjarai.rites.type.ritual_effect.special.waystone
 
+import com.mojang.serialization.Codec
 import net.minecraft.nbt.NbtHelper
 import net.minecraft.nbt.NbtOps
 import net.minecraft.util.math.BlockPos
@@ -10,7 +11,11 @@ import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class UseWaystoneEffect : RitualEffect() {
+class UseWaystoneEffect : RitualEffect(CODEC) {
+    companion object {
+        val CODEC: Codec<UseWaystoneEffect> = Codec.unit(::UseWaystoneEffect)
+    }
+
     override fun shouldKeepRitualRunning(): Boolean {
         return true
     }

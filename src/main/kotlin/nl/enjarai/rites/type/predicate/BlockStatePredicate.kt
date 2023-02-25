@@ -3,34 +3,23 @@ package nl.enjarai.rites.type.predicate
 import com.mojang.serialization.Codec
 import com.mojang.serialization.DataResult
 import net.minecraft.block.BlockState
-import net.minecraft.command.argument.BlockArgumentParser
-import net.minecraft.registry.Registries
+import net.minecraft.util.Identifier
+import nl.enjarai.rites.util.BlockStatePredicateParser
 import java.util.function.Predicate
 
-interface BlockStatePredicate : Predicate<BlockState> {
+abstract class BlockStatePredicate(val id: Identifier, val states: Map<String, String>) : Predicate<BlockState> {
     companion object {
         val CODEC: Codec<BlockStatePredicate> = Codec.STRING.comapFlatMap({ blockStateString ->
-            val result = BlockArgumentParser.blockOrTag(Registries.BLOCK.readOnlyWrapper, blockStateString, true)
-
-            val predicate = result.mapRight {
-                val tag = it.tag.tagKey
-                if (tag.isEmpty) {
-                    DataResult.error("Invalid block: $blockStateString")
-                } else {
-                    DataResult.success(TagPredicate(tag.get(), it.vagueProperties))
-                }
-            }.mapLeft {
-                if (it.blockState == null) {
-                    DataResult.error("Invalid block: $blockStateString")
-                } else {
-                    DataResult.success(StatePredicate(it.blockState, it.properties.keys))
-                }
+            val parser = BlockStatePredicateParser(blockStateString)
+            try {
+                DataResult.success(parser.parse())
+            } catch (e: Exception) {
+                DataResult.error("Invalid block state: $blockStateString")
             }
-
-            predicate.left().orElse(null) ?: predicate.right().orElse(null)
-            ?: DataResult.error("Invalid block: $blockStateString")
         }, { blockStatePredicate ->
             blockStatePredicate.toString()
         })
     }
+
+    abstract fun finalize()
 }

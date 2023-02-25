@@ -5,18 +5,13 @@ import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
-import nl.enjarai.rites.type.ritual_effect.entity.SummonEntityEffect
 
-class FalseEffect : RitualEffect() {
+class FalseEffect : RitualEffect(CODEC) {
     companion object {
-        val CODEC: Codec<FalseEffect> = Codec.unit(FalseEffect())
+        val CODEC: Codec<FalseEffect> = Codec.unit(::FalseEffect)
     }
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         return false
-    }
-
-    override fun getCodec(): Codec<out RitualEffect> {
-        return CODEC
     }
 }

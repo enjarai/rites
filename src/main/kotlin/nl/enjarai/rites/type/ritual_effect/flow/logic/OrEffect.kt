@@ -6,7 +6,7 @@ import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class OrEffect(val effects: List<RitualEffect>) : RitualEffect() {
+class OrEffect(val effects: List<RitualEffect>) : RitualEffect(CODEC) {
     companion object {
         val CODEC: Codec<OrEffect> = RitualEffect.CODEC.listOf()
             .xmap({ OrEffect(it) }, { it.effects }).fieldOf("effects").codec()
@@ -14,9 +14,5 @@ class OrEffect(val effects: List<RitualEffect>) : RitualEffect() {
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         return effects.any { it.activate(pos, ritual, ctx) }
-    }
-
-    override fun getCodec(): Codec<out RitualEffect> {
-        return CODEC
     }
 }

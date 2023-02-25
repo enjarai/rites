@@ -1,5 +1,6 @@
 package nl.enjarai.rites.type.ritual_effect.special.focus
 
+import com.mojang.serialization.Codec
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList
 import net.minecraft.nbt.NbtString
@@ -8,12 +9,14 @@ import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class InternalizeFocusEffect : RitualEffect() {
-    @FromJson
-    private lateinit var focus_ref: String
+class InternalizeFocusEffect(val focusRef: String) : RitualEffect(CODEC) {
+    companion object {
+        val CODEC: Codec<InternalizeFocusEffect> = Codec.STRING
+            .xmap(::InternalizeFocusEffect, InternalizeFocusEffect::focusRef).fieldOf("focus_ref").codec()
+    }
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
-        val focus = ctx.addressableItems[focus_ref]?.copy() ?: return false
+        val focus = ctx.addressableItems[focusRef]?.copy() ?: return false
         val nbt = focus.orCreateNbt
         if (nbt.contains("riteData")) return false
 

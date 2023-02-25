@@ -13,7 +13,7 @@ class Ingredient(val item: Item, val amount: Int, val ref: String?) : Predicate<
         val CODEC: Codec<Ingredient> = RecordCodecBuilder.create { instance ->
             instance.group(
                 Registries.ITEM.codec.fieldOf("item").forGetter { it.item },
-                Codec.INT.fieldOf("count").forGetter { it.amount },
+                Codec.INT.optionalFieldOf("count", 1).forGetter { it.amount },
                 Codec.STRING.optionalFieldOf("ref").forGetter { Optional.ofNullable(it.ref) }
             ).apply(instance, ::Ingredient)
         }

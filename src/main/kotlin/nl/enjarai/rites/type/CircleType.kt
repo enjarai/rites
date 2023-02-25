@@ -1,6 +1,10 @@
 package nl.enjarai.rites.type
 
+import com.mojang.serialization.Codec
+import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.particle.ParticleType
+import net.minecraft.particle.ParticleTypes
+import net.minecraft.registry.Registries
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
@@ -11,20 +15,46 @@ import nl.enjarai.rites.type.predicate.BlockStatePredicate
 import nl.enjarai.rites.util.Visuals
 
 class CircleType(
-    private val layout: List<List<BlockStatePredicate?>>,
-    private val particle: ParticleType<*>,
-    private val particleSettings: CircleTypes.ParticleSettings
+    private val rawLayout: List<List<String>>,
+    private val keys: Map<String, BlockStatePredicate>,
+    val particle: ParticleType<*>,
+    val particleSettings: CircleTypes.ParticleSettings
 ) {
+    val layout: List<List<BlockStatePredicate?>> = rawLayout.map { row ->
+        row.map mapRow@{ block ->
+            if (block.isBlank()) return@mapRow null
+            keys[block] ?: throw IllegalArgumentException("Unknown block: $block")
+        }
+    }
     var alternatives = listOf<CircleType>()
     val size get() = layout.size / 2
 
-    val id: Identifier? get() {
-        CircleTypes.values.entries.forEach {
-            if (it.value === this) {
-                return it.key
-            }
+    companion object {
+        val CODEC: Codec<CircleType> = RecordCodecBuilder.create { instance ->
+            instance.group(
+                Codec.STRING.listOf().listOf().fieldOf("layout").forGetter { it.rawLayout },
+                Codec.unboundedMap(Codec.STRING, BlockStatePredicate.CODEC).fieldOf("keys").forGetter { it.keys },
+                Registries.PARTICLE_TYPE.codec.optionalFieldOf("particle", ParticleTypes.SOUL_FIRE_FLAME)
+                    .forGetter { it.particle },
+                CircleTypes.ParticleSettings.CODEC
+                    .optionalFieldOf("particle_settings", CircleTypes.ParticleSettings())
+                    .forGetter { it.particleSettings }
+            ).apply(instance, ::CircleType)
         }
-        return null
+    }
+
+    val id: Identifier?
+        get() {
+            CircleTypes.values.entries.forEach {
+                if (it.value === this) {
+                    return it.key
+                }
+            }
+            return null
+        }
+
+    fun finalize() {
+        keys.values.forEach { it.finalize() }
     }
 
     fun isValid(world: World, pos: BlockPos, ctx: RitualContext?): CircleType? {
@@ -62,8 +92,12 @@ class CircleType(
         val cycle = size * 30
         for (i in 1..particleSettings.cycles) {
             Visuals.drawParticleCircleArm(
-                world, Vec3d.ofBottomCenter(pos).add(0.0, 0.2, 0.0), cycle,
-                ((1.0 / particleSettings.cycles) * i), size.toDouble(), particle,
+                world,
+                Vec3d.ofBottomCenter(pos).add(0.0, 0.2, 0.0),
+                cycle,
+                ((1.0 / particleSettings.cycles) * i),
+                size.toDouble(),
+                particle,
                 particleSettings
             )
         }

@@ -6,7 +6,7 @@ import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class NotEffect(val effect: RitualEffect) : RitualEffect() {
+class NotEffect(val effect: RitualEffect) : RitualEffect(CODEC) {
     companion object {
         val CODEC: Codec<NotEffect> = RitualEffect.CODEC
             .xmap({ NotEffect(it) }, { it.effect }).fieldOf("effect").codec()
@@ -14,9 +14,5 @@ class NotEffect(val effect: RitualEffect) : RitualEffect() {
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         return !effect.activate(pos, ritual, ctx)
-    }
-
-    override fun getCodec(): Codec<out RitualEffect> {
-        return CODEC
     }
 }

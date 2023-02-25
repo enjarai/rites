@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
-import nl.enjarai.rites.type.interpreted_value.InterpretedPosition
+import nl.enjarai.rites.type.interpreted_value.InterpretedVec3
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import kotlin.math.max
 import kotlin.math.min
@@ -14,9 +14,9 @@ class ForAreaEffect(
     val effects: List<RitualEffect>,
     val counterVariable: String,
     val offsetVariables: List<String>,
-    val firstCornerOffset: InterpretedPosition,
-    val secondCornerOffset: InterpretedPosition
-) : RitualEffect() {
+    val firstCornerOffset: InterpretedVec3,
+    val secondCornerOffset: InterpretedVec3
+) : RitualEffect(CODEC) {
     companion object {
         val CODEC: Codec<ForAreaEffect> = RecordCodecBuilder.create { instance ->
             instance.group(
@@ -24,8 +24,8 @@ class ForAreaEffect(
                 Codec.STRING.optionalFieldOf("counter_variable", "i").forGetter { it.counterVariable },
                 Codec.STRING.listOf().optionalFieldOf("offset_variables", listOf("x", "y", "z"))
                     .forGetter { it.offsetVariables },
-                InterpretedPosition.CODEC.fieldOf("first_corner_offset").forGetter { it.firstCornerOffset },
-                InterpretedPosition.CODEC.fieldOf("second_corner_offset").forGetter { it.secondCornerOffset }
+                InterpretedVec3.CODEC.fieldOf("first_corner_offset").forGetter { it.firstCornerOffset },
+                InterpretedVec3.CODEC.fieldOf("second_corner_offset").forGetter { it.secondCornerOffset }
             ).apply(instance, ::ForAreaEffect)
         }
     }
@@ -60,9 +60,5 @@ class ForAreaEffect(
             }
         }
         return true
-    }
-
-    override fun getCodec(): Codec<out RitualEffect> {
-        return CODEC
     }
 }

@@ -1,12 +1,14 @@
 package nl.enjarai.rites.type
 
+import com.mojang.serialization.Codec
+import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
 import nl.enjarai.rites.RitesMod.LOGGER
-import nl.enjarai.rites.resource.Rituals
+import nl.enjarai.rites.resource.CircleTypes
 import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.Visuals
@@ -18,6 +20,16 @@ class Ritual(val circleTypes: List<CircleType>,
     @Transient private val tickingEffects = effects.filter { ritualEffect -> ritualEffect.isTicking() }
     @Transient val shouldKeepRunning = effects.any { ritualEffect -> ritualEffect.shouldKeepRitualRunning() }
     @Transient lateinit var id: Identifier
+
+    companion object {
+        val CODEC: Codec<Ritual> = RecordCodecBuilder.create { instance ->
+            instance.group(
+                CircleTypes.CODEC.listOf().fieldOf("circles").forGetter { it.circleTypes },
+                Ingredient.CODEC.listOf().fieldOf("ingredients").forGetter { it.ingredients },
+                RitualEffect.CODEC.listOf().fieldOf("effects").forGetter { it.effects }
+            ).apply(instance, ::Ritual)
+        }
+    }
 
     fun getPickupRange(circles: List<CircleType>): Int {
         return circles.maxOf { it.size }

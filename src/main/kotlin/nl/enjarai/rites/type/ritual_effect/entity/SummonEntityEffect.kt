@@ -10,20 +10,23 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
-import nl.enjarai.rites.type.interpreted_value.*
+import nl.enjarai.rites.type.interpreted_value.ConstantString
+import nl.enjarai.rites.type.interpreted_value.ConstantVec3
+import nl.enjarai.rites.type.interpreted_value.InterpretedString
+import nl.enjarai.rites.type.interpreted_value.InterpretedVec3
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
 class SummonEntityEffect(
     val entity: Identifier,
     val nbt: InterpretedString,
-    val posOffset: InterpretedPosition
-) : RitualEffect() {
+    val posOffset: InterpretedVec3
+) : RitualEffect(CODEC) {
     companion object {
         val CODEC: Codec<SummonEntityEffect> = RecordCodecBuilder.create { instance ->
             instance.group(
                 Identifier.CODEC.fieldOf("entity").forGetter { it.entity },
                 InterpretedString.CODEC.optionalFieldOf("nbt", ConstantString("{}")).forGetter { it.nbt },
-                InterpretedPosition.CODEC.optionalFieldOf("pos_offset", ConstantPosition(Vec3d.ZERO)).forGetter { it.posOffset }
+                InterpretedVec3.CODEC.optionalFieldOf("pos_offset", ConstantVec3(Vec3d.ZERO)).forGetter { it.posOffset }
             ).apply(instance, ::SummonEntityEffect)
         }
     }
@@ -47,9 +50,5 @@ class SummonEntityEffect(
         entityObj.setPos(entityPos.getX(), entityPos.getY(), entityPos.getZ())
 
         return (ctx.world as ServerWorld).spawnNewEntityAndPassengers(entityObj)
-    }
-
-    override fun getCodec(): Codec<out RitualEffect> {
-        return CODEC
     }
 }

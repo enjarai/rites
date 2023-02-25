@@ -31,7 +31,7 @@ class RiteFocusBlockEntity(pos: BlockPos, state: BlockState) : RiteRunningBlockE
 
     fun tryStartRituals() {
         rituals.forEach {
-            Rituals.getById(it)?.let { it1 -> startRitual(it1) }
+            Rituals.get(it)?.let { it1 -> startRitual(it1) }
         }
         if (rituals.isNotEmpty()) RiteFocusBlock.setActive(world!!, pos, true)
     }

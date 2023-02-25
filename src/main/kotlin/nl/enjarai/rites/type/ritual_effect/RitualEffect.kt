@@ -1,8 +1,5 @@
 package nl.enjarai.rites.type.ritual_effect
 
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonObject
-import com.google.gson.JsonParseException
 import com.mojang.serialization.Codec
 import com.mojang.serialization.Lifecycle
 import net.minecraft.registry.Registry
@@ -27,19 +24,16 @@ import nl.enjarai.rites.type.ritual_effect.special.waystone.UseWaystoneEffect
 import nl.enjarai.rites.type.ritual_effect.visual.PlaySoundEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnMovingParticlesEffect
 import nl.enjarai.rites.type.ritual_effect.visual.SpawnParticlesEffect
-import java.lang.reflect.ParameterizedType
 import java.util.*
 
-abstract class RitualEffect {
+abstract class RitualEffect(val codec: Codec<out RitualEffect>) {
     val uuid: UUID = UUID.randomUUID()
 
     val id: Identifier? get() {
-        return REGISTRY.getId(this.javaClass)
+        return REGISTRY.getId(codec)
     }
 
     abstract fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean
-
-    abstract fun getCodec(): Codec<out RitualEffect>
 
     open fun isTicking(): Boolean {
         return false
@@ -57,77 +51,44 @@ abstract class RitualEffect {
     annotation class FromJson
 
     companion object {
-        val REGISTRY = SimpleRegistry<Class<out RitualEffect>>(
+        val REGISTRY = SimpleRegistry<Codec<out RitualEffect>>(
             RegistryKey.ofRegistry(RitesMod.id("ritual_effects")),
             Lifecycle.stable()
         )
-        val CODEC: Codec<RitualEffect> = REGISTRY.codec.dispatch()
+        val CODEC: Codec<RitualEffect> = REGISTRY.codec.dispatch(
+            "type",
+            { it.codec },
+            { it }
+        )
 
         fun registerAll() {
             // control flow effects
-            Registry.register(REGISTRY, RitesMod.id("tick"), TickingEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("for_i"), ForIEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("for_area"), ForAreaEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("if"), IfEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("true"), TrueEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("false"), FalseEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("and"), AndEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("or"), OrEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("not"), NotEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("variable"), VariableEffect::class.java)
+            Registry.register(REGISTRY, RitesMod.id("tick"), TickingEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("for_i"), ForIEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("for_area"), ForAreaEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("if"), IfEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("true"), TrueEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("false"), FalseEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("and"), AndEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("or"), OrEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("not"), NotEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("variable"), VariableEffect.CODEC)
 
             // effects that actually do stuff
-            Registry.register(REGISTRY, RitesMod.id("bind_waystone"), BindWaystoneEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("use_waystone"), UseWaystoneEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("internalize_focus"), InternalizeFocusEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("play_sound"), PlaySoundEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("spawn_particles"), SpawnParticlesEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("spawn_moving_particles"), SpawnMovingParticlesEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("drop_item"), DropItemEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("drop_item_ref"), DropItemRefEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("merge_item_nbt"), MergeItemNbtEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("summon_entity"), SummonEntityEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("give_potion"), GivePotionEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("match_block"), MatchBlockEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("set_block"), SetBlockEffect::class.java)
-            Registry.register(REGISTRY, RitesMod.id("run_function"), RunFunctionEffect::class.java)
-        }
-
-        fun deserialize(id: Identifier, json: JsonObject, context: JsonDeserializationContext): RitualEffect {
-            val clazz = REGISTRY.get(id) ?: throw JsonParseException("Unknown ritual effect $id")
-            val instance = clazz.getConstructor().newInstance()
-
-            // fill in fields from the json object
-            for (field in clazz.declaredFields) {
-                if (field.isAnnotationPresent(FromJson::class.java)) {
-                    val annotation = field.getAnnotation(FromJson::class.java)
-                    val name = field.name
-
-                    field.isAccessible = true
-                    try {
-                        val jsonValue = json.get(name)
-
-                        // manual array handling to make sure everything gets deserialized correctly
-                        if (jsonValue?.isJsonArray == true) {
-                            val jsonArray = jsonValue.asJsonArray
-                            val arrayType = field.genericType as ParameterizedType
-                            val array = jsonArray.map { context.deserialize<Any>(it, arrayType.actualTypeArguments[0]) }
-                            field.set(instance, array)
-                            continue
-                        }
-
-                        context.deserialize<Any>(jsonValue, field.type)?.let { field.set(instance, it) }
-                    } catch (e: Exception) {
-                        throw JsonParseException("Error deserializing field $name in $clazz", e)
-                    }
-
-                    if (field.get(instance) == null) {
-                        throw JsonParseException("Missing required property $name for ritual effect $id")
-                    }
-                }
-            }
-
-            return instance
+            Registry.register(REGISTRY, RitesMod.id("bind_waystone"), BindWaystoneEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("use_waystone"), UseWaystoneEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("internalize_focus"), InternalizeFocusEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("play_sound"), PlaySoundEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("spawn_particles"), SpawnParticlesEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("spawn_moving_particles"), SpawnMovingParticlesEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("drop_item"), DropItemEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("drop_item_ref"), DropItemRefEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("merge_item_nbt"), MergeItemNbtEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("summon_entity"), SummonEntityEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("give_potion"), GivePotionEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("match_block"), MatchBlockEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("set_block"), SetBlockEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("run_function"), RunFunctionEffect.CODEC)
         }
     }
 }

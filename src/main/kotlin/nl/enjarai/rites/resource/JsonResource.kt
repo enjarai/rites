@@ -13,11 +13,11 @@ abstract class JsonResource<T>(private val resource: String) : SimpleSynchronous
     val values = hashMapOf<Identifier, T>()
     private val resourceLocation = "rites/$resource"
 
-    fun getById(id: Identifier): T? {
+    fun get(id: Identifier): T? {
         return values[id]
     }
 
-    fun getIdOf(value: T): Identifier? {
+    fun getId(value: T): Identifier? {
         return values.entries.firstOrNull { it.value == value }?.key
     }
 
@@ -26,6 +26,7 @@ abstract class JsonResource<T>(private val resource: String) : SimpleSynchronous
     }
 
     override fun reload(manager: ResourceManager) {
+        val startTime = System.currentTimeMillis()
         values.clear()
         for (entry in manager.findResources(resourceLocation) { path -> path.path.endsWith(fileSuffix) }) {
             try {
@@ -48,10 +49,12 @@ abstract class JsonResource<T>(private val resource: String) : SimpleSynchronous
         } catch (e: Exception) {
             RitesMod.LOGGER.error("Error occurred while finalizing resource jsons", e)
         }
-        RitesMod.LOGGER.info("Loaded ${values.size} $resource")
+        RitesMod.LOGGER.info("Loaded ${values.size} $resource, took ${System.currentTimeMillis() - startTime}ms")
     }
 
     abstract fun processStream(identifier: Identifier, stream: InputStream)
 
-    open fun after() {}
+    protected open fun after() {}
+
+    open fun finalize() {}
 }

@@ -1,5 +1,6 @@
 package nl.enjarai.rites.type.ritual_effect
 
+import com.mojang.serialization.Codec
 import net.minecraft.server.command.ServerCommandSource
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.text.Text
@@ -10,9 +11,11 @@ import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 
-class RunFunctionEffect : RitualEffect() {
-    @FromJson
-    private lateinit var function: Identifier
+class RunFunctionEffect(val function: Identifier) : RitualEffect(CODEC) {
+    companion object {
+        val CODEC: Codec<RunFunctionEffect> = Identifier.CODEC
+            .xmap(::RunFunctionEffect) { it.function }.fieldOf("function").codec()
+    }
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val funManager = ctx.world.server!!.commandFunctionManager

@@ -6,13 +6,12 @@ import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
-import nl.enjarai.rites.type.ritual_effect.entity.SummonEntityEffect
 
 class IfEffect(
     val condition: RitualEffect,
     val then: List<RitualEffect>,
     val `else`: List<RitualEffect>
-) : RitualEffect() {
+) : RitualEffect(CODEC) {
     companion object {
         val CODEC: Codec<IfEffect> = RecordCodecBuilder.create { instance ->
             instance.group(
@@ -29,9 +28,5 @@ class IfEffect(
         } else {
             `else`.all { it.activate(pos, ritual, ctx) }
         }
-    }
-
-    override fun getCodec(): Codec<out RitualEffect> {
-        return CODEC
     }
 }

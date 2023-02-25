@@ -6,13 +6,21 @@ import net.minecraft.nbt.NbtElement
 import net.minecraft.nbt.NbtOps
 import net.minecraft.registry.Registries
 import net.minecraft.registry.tag.TagKey
+import net.minecraft.util.Identifier
 
-class TagPredicate(private val tag: TagKey<Block>, private val properties: Map<String, String>) : BlockStatePredicate {
+class TagPredicate(id: Identifier, states: Map<String, String>) : BlockStatePredicate(id, states) {
+    private lateinit var tag: TagKey<Block>
+
+    override fun finalize() {
+        tag = Registries.BLOCK.streamTags().filter { it.id == id }.findFirst().orElse(null)
+            ?: throw IllegalArgumentException("Invalid block tag: $id")
+    }
+
     override fun test(blockState: BlockState): Boolean {
         if (!blockState.isIn(tag)) {
             return false
         }
-        for ((key, value) in properties) {
+        for ((key, value) in states) {
             val property = blockState.block.stateManager.getProperty(key) ?: return false
             val comparable = property.parse(value).orElse(null) ?: return false
             if (blockState[property] === comparable) continue
@@ -22,21 +30,9 @@ class TagPredicate(private val tag: TagKey<Block>, private val properties: Map<S
     }
 
     override fun toString(): String {
-        return TagKey.codec(Registries.BLOCK.key)
-            .encodeStart(NbtOps.INSTANCE, tag)
-            .result().map(NbtElement::asString)
-            .orElse("#unknown") +
-                "[" + properties
-                    .map { entry -> stateEntryToString(entry) }
+        return "#" + id +
+                "[" + states
+                    .map { entry -> "${entry.key}=${entry.value}" }
                     .reduce { a, b -> "$a,$b" } + "]"
-    }
-
-    private fun stateEntryToString(entry: Map.Entry<String, String>?): String {
-        return if (entry == null) {
-            "<NULL>"
-        } else {
-            val property = entry.key
-            property + "=" + entry.value
-        }
     }
 }

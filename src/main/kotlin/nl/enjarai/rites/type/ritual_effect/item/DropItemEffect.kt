@@ -1,6 +1,9 @@
 package nl.enjarai.rites.type.ritual_effect.item
 
+import com.mojang.serialization.Codec
+import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.entity.ItemEntity
+import net.minecraft.item.Item
 import net.minecraft.item.Items
 import net.minecraft.registry.Registries
 import net.minecraft.util.Identifier
@@ -14,19 +17,23 @@ import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.interpreted_value.InterpretedString
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class DropItemEffect : RitualEffect() {
-    @FromJson
-    private lateinit var item: Identifier
-
-    @FromJson
-    private val count: InterpretedNumber = ConstantNumber(1)
-
-    @FromJson
-    private val nbt: InterpretedString = ConstantString("{}")
+class DropItemEffect(
+    val item: Item,
+    val count: InterpretedNumber,
+    val nbt: InterpretedString
+) : RitualEffect(CODEC) {
+    companion object {
+        val CODEC: Codec<DropItemEffect> = RecordCodecBuilder.create { instance ->
+            instance.group(
+                Registries.ITEM.codec.fieldOf("item").forGetter { it.item },
+                InterpretedNumber.CODEC.optionalFieldOf("count", ConstantNumber(1)).forGetter { it.count },
+                InterpretedString.CODEC.optionalFieldOf("nbt", ConstantString("{}")).forGetter { it.nbt }
+            ).apply(instance, ::DropItemEffect)
+        }
+    }
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val spawnPos = Vec3d.ofBottomCenter(pos)
-        val item = Registries.ITEM.get(item)
         val itemStack = if (item != Items.AIR) item.defaultStack else return false
 
         itemStack.count = count.interpretAsInt(ctx)

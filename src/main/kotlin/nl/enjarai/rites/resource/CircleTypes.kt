@@ -1,71 +1,75 @@
 package nl.enjarai.rites.resource
 
-import net.minecraft.particle.ParticleTypes
-import net.minecraft.registry.Registries
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
+import com.mojang.serialization.Codec
+import com.mojang.serialization.DataResult
+import com.mojang.serialization.JsonOps
+import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.util.Identifier
 import nl.enjarai.rites.type.CircleType
-import nl.enjarai.rites.type.predicate.BlockStatePredicate
 import java.io.BufferedReader
 import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 object CircleTypes : JsonResource<CircleType>("circle_types") {
-    val tempValues = hashMapOf<Identifier, CircleTypeFile>()
+    val CODEC: Codec<CircleType> = Identifier.CODEC.comapFlatMap({ id ->
+        values[id].let { if (it != null) DataResult.success(it) else DataResult.error("Unknown circle type: $id") }
+    }, { it.id })
+    private val ALTERNATIVES_CODEC: Codec<List<CircleType>> = CODEC.listOf()
+        .optionalFieldOf("alternatives", listOf()).codec()
+    private val tempValues = hashMapOf<Identifier, JsonElement>()
 
     override fun processStream(identifier: Identifier, stream: InputStream) {
         val fileReader = BufferedReader(InputStreamReader(stream, StandardCharsets.UTF_8))
-        val circleTypeFile = ResourceLoader.GSON.fromJson(fileReader, CircleTypeFile::class.java)
-            ?: throw IllegalArgumentException("File format invalid")
+        val circleResult = CircleType.CODEC.decode(JsonOps.INSTANCE, JsonParser.parseReader(fileReader))
+            .resultOrPartial { throw IllegalArgumentException("Invalid circle type: $it") }.get()
+        val circleType = circleResult.first
 
-        if (circleTypeFile.layout.size % 2 == 0) {
+        if (circleType.layout.size % 2 == 0) {
             throw IllegalArgumentException("Circle type height is an even number")
         }
 
-        for (a in circleTypeFile.layout) {
-            if (a.size != circleTypeFile.layout.size) {
+        for (a in circleType.layout) {
+            if (a.size != circleType.layout.size) {
                 throw IllegalArgumentException("Height and width of circle type are not the same")
             }
         }
 
-        tempValues[identifier] = circleTypeFile
-        values[identifier] = circleTypeFile.convert()
+        tempValues[identifier] = circleResult.second
+        values[identifier] = circleType
     }
 
     override fun after() {
-        for ((id, circle) in tempValues) {
-            values[id]?.alternatives = circle.alternatives.map {
-                values[it] ?: throw IllegalArgumentException("Invalid alternative: $it")
+        for ((id, jsonElement) in tempValues) {
+            values[id]?.alternatives = ALTERNATIVES_CODEC.decode(JsonOps.INSTANCE, jsonElement)
+                .resultOrPartial { throw IllegalArgumentException("Invalid alternative: $it") }.get().first
+        }
+        tempValues.clear()
+    }
+
+    override fun finalize() {
+        for (circleType in values.values) {
+            circleType.finalize()
+        }
+    }
+
+    class ParticleSettings(
+        val cycles: Int = 3,
+        val armAngle: Double = -0.05,
+        val armSpeed: Double = 0.2,
+        val reverseRotation: Boolean = false
+    ) {
+        companion object {
+            val CODEC: Codec<ParticleSettings> = RecordCodecBuilder.create { instance ->
+                instance.group(
+                    Codec.INT.optionalFieldOf("cycles", 3).forGetter { it.cycles },
+                    Codec.DOUBLE.optionalFieldOf("arm_angle", -0.05).forGetter { it.armAngle },
+                    Codec.DOUBLE.optionalFieldOf("arm_speed", 0.2).forGetter { it.armSpeed },
+                    Codec.BOOL.optionalFieldOf("reverse_rotation", false).forGetter { it.reverseRotation }
+                ).apply(instance, ::ParticleSettings)
             }
         }
     }
-
-    class CircleTypeFile : ResourceLoader.TypeFile<CircleType> {
-        val layout = arrayOf<Array<String>>()
-        val keys = hashMapOf<String, BlockStatePredicate>()
-        val particle: Identifier = Registries.PARTICLE_TYPE.getId(ParticleTypes.SOUL_FIRE_FLAME)!!
-        val particle_settings = ParticleSettings()
-        val alternatives = listOf<Identifier>()
-
-        override fun convert(): CircleType {
-            return CircleType(
-                layout.map { row ->
-                    row.map mapRow@{ block ->
-                        if (block.isBlank()) return@mapRow null
-                        keys[block]
-                    }
-                },
-                Registries.PARTICLE_TYPE.get(particle) ?: throw IllegalArgumentException("Invalid particle: $particle"),
-                particle_settings
-            )
-        }
-    }
-
-    class ParticleSettings {
-        val cycles = 3
-        val arm_angle = -0.05
-        val arm_speed = 0.2
-        val reverse_rotation = false
-    }
-
 }
