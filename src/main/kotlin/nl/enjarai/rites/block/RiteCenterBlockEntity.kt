@@ -1,21 +1,31 @@
 package nl.enjarai.rites.block
 
 import eu.pb4.polymer.core.api.utils.PolymerObject
+import net.minecraft.block.Block
 import net.minecraft.block.BlockState
+import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.entity.ItemEntity
 import net.minecraft.entity.player.PlayerEntity
+import net.minecraft.nbt.NbtCompound
+import net.minecraft.nbt.NbtElement
+import net.minecraft.nbt.NbtHelper
+import net.minecraft.nbt.NbtList
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.resource.Rituals
+import nl.enjarai.rites.type.CircleType
+import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualResult
 import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.util.Visuals
 
-open class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) : RiteRunningBlockEntity(ModBlocks.RITE_CENTER_ENTITY, pos, state), PolymerObject {
+open class RiteCenterBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: BlockState) : RiteRunningBlockEntity(type, pos, state), PolymerObject {
     companion object {
         const val COOLDOWN = 30
     }
+
+    constructor(pos: BlockPos, state: BlockState) : this(ModBlocks.RITE_CENTER_ENTITY, pos, state)
 
     fun onUse(player: PlayerEntity) {
         if (player.isSneaking) {
@@ -46,7 +56,7 @@ open class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) : RiteRunning
 //                if (this.ritualContext?.canAddCircle(it.size) == false) return@forEach
 //            }
 
-            if (circles.isNotEmpty() && ritual.requiredItemsNearby(getWorld()!!, getPos(), circles)) {
+            if (circles.isNotEmpty() && ritual.requiredItemsNearby(getWorld()!!, getPos(), circles) && canRunRitual(ritual, circles)) {
                 startRitual(ritual, circles)
                 return true
             }
@@ -113,6 +123,61 @@ open class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) : RiteRunning
         return false
     }
 
+    /**
+     * Finds the centers of all circles that intersect with this circle
+     */
+    private fun findIntersectingSubCircles(centerType: Block): List<RiteCenterBlockEntity> {
+        val subCenters = mutableListOf<RiteCenterBlockEntity>()
+
+        val circlePos = getPos()
+        val circleRadius = ritualContext?.range ?: return subCenters
+
+        val minX = circlePos.x - circleRadius * 2
+        val maxX = circlePos.x + circleRadius * 2
+        val minZ = circlePos.z - circleRadius * 2
+        val maxZ = circlePos.z + circleRadius * 2
+
+        val world = getWorld() ?: return subCenters
+
+        for (x in minX..maxX) {
+            for (z in minZ..maxZ) {
+                if (x == circlePos.x && z == circlePos.z) continue
+                val pos = BlockPos(x, circlePos.y, z)
+                val state = world.getBlockState(pos)
+                if (state.isOf(centerType)) {
+                    val entity = world.getBlockEntity(pos) as? RiteCenterBlockEntity
+                    if (entity?.ritualContext?.overlapsWith(ritualContext!!) == true) {
+                        subCenters.add(entity)
+                    }
+                }
+            }
+        }
+
+        return subCenters
+    }
+
+    private fun grabVariablesFromSubCircles() {
+        findIntersectingSubCircles(ModBlocks.RITE_SUBCENTER).forEach {
+            val subCenter = it as? RiteSubCenterBlockEntity ?: return@forEach
+            if (subCenter.linkedCenter != null) return@forEach
+            subCenter.linkedCenter = getPos()
+            if (it.ritualContext?.hasActivating() != false) return@forEach
+            ritualContext!!.variables += it.ritualContext?.variables ?: return@forEach
+        }
+    }
+
+    override fun startRitual(ritual: Ritual, circles: List<CircleType>) {
+        super.startRitual(ritual, circles)
+
+        grabVariablesFromSubCircles()
+    }
+
+    override fun slowTick(world: ServerWorld) {
+        if (ritualContext != null) {
+            grabVariablesFromSubCircles()
+        }
+    }
+
     override fun endAllRituals(success: Boolean) {
         super.endAllRituals(success)
 
@@ -126,6 +191,10 @@ open class RiteCenterBlockEntity(pos: BlockPos, state: BlockState) : RiteRunning
         storedItems = arrayOf()
 
         markDirty()
+    }
+
+    open fun canRunRitual(ritual: Ritual, circles: List<CircleType>): Boolean {
+        return true
     }
 
     private fun setPower(value: Int) {

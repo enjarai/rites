@@ -19,25 +19,29 @@ object Visuals {
         return 0.6f + world.getRandom().nextFloat() * 0.4f
     }
 
-    fun drawParticleCircleArm(
+    fun drawParticleCircle(
         world: ServerWorld, pos: Vec3d, cycleTicks: Int,
         cycleOffset: Double, radius: Double, particle: ParticleType<*>,
-        particleSettings: CircleTypes.ParticleSettings
+        particleSettings: CircleTypes.ParticleSettings?
     ) {
-        val directionModifier = if (particleSettings.reverseRotation) -1 else 1
+        val directionModifier = if (particleSettings?.reverseRotation == true) -1 else 1
         val currentTick = world.server.ticks
         val animationPos = ((currentTick % cycleTicks / cycleTicks.toDouble()) + cycleOffset) *
                 (2 * Math.PI) * directionModifier
-        val animationPosTo = ((currentTick % cycleTicks / cycleTicks.toDouble()) + cycleOffset + particleSettings.armAngle) *
-                (2 * Math.PI) * directionModifier
         val particlePos = pos.add(radius * cos(animationPos), 0.0, radius * sin(animationPos))
-        val particlePosTo = pos.add(radius / 2 * cos(animationPosTo), 0.0, radius / 2 * sin(animationPosTo))
-        val movementVector = particlePosTo.subtract(particlePos).multiply(particleSettings.armSpeed)
-        world.spawnParticles(
-            particle as ParticleEffect,
-            particlePos.getX(), particlePos.getY(), particlePos.getZ(), 0,
-            movementVector.getX(), movementVector.getY(), movementVector.getZ(), 1.0
-        )
+
+        if (particleSettings != null) {
+            val animationPosTo = ((currentTick % cycleTicks / cycleTicks.toDouble()) + cycleOffset + particleSettings.armAngle) *
+                    (2 * Math.PI) * directionModifier
+            val particlePosTo = pos.add(radius / 2 * cos(animationPosTo), 0.0, radius / 2 * sin(animationPosTo))
+            val movementVector = particlePosTo.subtract(particlePos).multiply(particleSettings.armSpeed)
+            world.spawnParticles(
+                particle as ParticleEffect,
+                particlePos.getX(), particlePos.getY(), particlePos.getZ(), 0,
+                movementVector.getX(), movementVector.getY(), movementVector.getZ(), 1.0
+            )
+        }
+
         world.spawnParticles(
             particle as ParticleEffect,
             particlePos.getX(), particlePos.getY(), particlePos.getZ(), 0,

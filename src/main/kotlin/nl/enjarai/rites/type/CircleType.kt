@@ -28,6 +28,12 @@ class CircleType(
     }
     var alternatives = listOf<CircleType>()
     val size get() = layout.size / 2
+    val dependentBlocks: List<BlockPos> = layout.flatMapIndexed { y, row ->
+        row.mapIndexedNotNull { x, block ->
+            if (block == null) return@mapIndexedNotNull null
+            BlockPos(x - size, 0, y - size)
+        }
+    }
 
     companion object {
         val CODEC: Codec<CircleType> = RecordCodecBuilder.create { instance ->
@@ -91,7 +97,7 @@ class CircleType(
     fun drawParticleCircle(world: ServerWorld, pos: BlockPos) {
         val cycle = size * 30
         for (i in 1..particleSettings.cycles) {
-            Visuals.drawParticleCircleArm(
+            Visuals.drawParticleCircle(
                 world,
                 Vec3d.ofBottomCenter(pos).add(0.0, 0.2, 0.0),
                 cycle,

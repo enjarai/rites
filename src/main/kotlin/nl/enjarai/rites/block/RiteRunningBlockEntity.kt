@@ -3,14 +3,11 @@ package nl.enjarai.rites.block
 import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntity
 import net.minecraft.block.entity.BlockEntityType
-import net.minecraft.entity.ItemEntity
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
-import net.minecraft.util.math.Vec3d
-import nl.enjarai.rites.resource.Rituals
 import nl.enjarai.rites.type.CircleType
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
@@ -52,44 +49,55 @@ abstract class RiteRunningBlockEntity(type: BlockEntityType<*>, pos: BlockPos, s
     }
 
     open fun tick() {
-        if (getWorld() is ServerWorld && ritualContext != null) {
-            ritualContext!!.drawParticleEffects()
-            Visuals.hum(
-                getWorld()!! as ServerWorld, getPos(),
-                if (ritualContext!!.hasActivating()) 0.8f else 0.2f
-            )
-
+        if (getWorld() is ServerWorld) {
             tickCooldown -= 1
             if (tickCooldown < 0) {
-                tickCooldown = RiteCenterBlockEntity.COOLDOWN
+                slowTick(getWorld() as ServerWorld)
+            }
 
-                // Make sure we get saved properly
-                markDirty()
+            if (ritualContext != null) {
+                ritualContext!!.drawParticleEffects()
+                Visuals.hum(
+                    getWorld()!! as ServerWorld, getPos(),
+                    if (ritualContext!!.hasActivating()) 0.8f else 0.2f
+                )
 
-                // Check validity of ritual circle
-                if (!ritualContext!!.canMaintain()) {
+                if (tickCooldown < 0) {
+                    tickCooldown = RiteCenterBlockEntity.COOLDOWN
+
+                    // Make sure we get saved properly
+                    markDirty()
+
+                    // Check validity of ritual circle
+                    if (!ritualContext!!.canMaintain()) {
+                        endAllRituals(false)
+                        return
+                    }
+
+                    // If ritual hasn't activated yet, try absorbing new items
+                    if (ritualContext!!.hasActivating()) {
+                        ritualActivatingTick()
+                        return
+                    }
+                }
+
+                // Tick rituals with lasting effects
+                if (!ritualContext!!.hasActivating() && ritualContext!!.tickAll() == RitualResult.FAIL) {
                     endAllRituals(false)
                     return
                 }
-
-                // If ritual hasn't activated yet, try absorbing new items
-                if (ritualContext!!.hasActivating()) {
-                    ritualActivatingTick()
-                    return
-                }
             }
 
-            // Tick rituals with lasting effects
-            if (!ritualContext!!.hasActivating() && ritualContext!!.tickAll() == RitualResult.FAIL) {
-                endAllRituals(false)
-                return
-            }
+            // We reset the cooldown here too, in case a ritual wasn't running
+            if (tickCooldown < 0) tickCooldown = RiteCenterBlockEntity.COOLDOWN
         }
     }
 
+    open fun slowTick(world: ServerWorld) {}
+
     abstract fun ritualActivatingTick()
 
-    protected fun startRitual(ritual: Ritual, circles: List<CircleType> = listOf()) {
+    open fun startRitual(ritual: Ritual, circles: List<CircleType> = listOf()) {
         initContext()
         ritualContext?.appendRitual(ritual)
         ritualContext?.appendCircles(circles)

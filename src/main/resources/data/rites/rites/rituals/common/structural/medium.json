@@ -1,0 +1,17 @@
+{
+  "circles": [
+    "rites:common/medium"
+  ],
+  "ingredients": [
+    {
+      "item": "minecraft:gold_nugget",
+      "count": 2
+    }
+  ],
+  "effects": [
+    {
+      "type": "rites:tick",
+      "effects": []
+    }
+  ]
+}

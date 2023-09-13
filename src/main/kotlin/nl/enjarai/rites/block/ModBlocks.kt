@@ -12,19 +12,25 @@ import nl.enjarai.rites.item.ModItems
 
 object ModBlocks {
     val RITE_CENTER = RiteCenterBlock(FabricBlockSettings.of(Material.DECORATION).noCollision().breakInstantly())
+    val RITE_SUBCENTER = RiteSubCenterBlock(FabricBlockSettings.of(Material.DECORATION).noCollision().breakInstantly())
     val RITE_FOCUS = RiteFocusBlock(FabricBlockSettings
         .of(Material.DECORATION).strength(3.0f).luminance { 15 }.nonOpaque()) { ModItems.RITE_FOCUS.defaultStack }
     val RITE_CENTER_ENTITY: BlockEntityType<RiteCenterBlockEntity> =
         FabricBlockEntityTypeBuilder.create(::RiteCenterBlockEntity, RITE_CENTER).build()
+    val RITE_SUBCENTER_ENTITY: BlockEntityType<RiteSubCenterBlockEntity> =
+        FabricBlockEntityTypeBuilder.create(::RiteSubCenterBlockEntity, RITE_SUBCENTER).build()
     val RITE_FOCUS_ENTITY: BlockEntityType<RiteFocusBlockEntity> =
         FabricBlockEntityTypeBuilder.create(::RiteFocusBlockEntity, RITE_FOCUS).build()
 
     fun register() {
         Registry.register(Registries.BLOCK, RitesMod.id("rite_center"), RITE_CENTER)
         Registry.register(Registries.BLOCK_ENTITY_TYPE, RitesMod.id("rite_center"), RITE_CENTER_ENTITY)
+        Registry.register(Registries.BLOCK, RitesMod.id("rite_subcenter"), RITE_SUBCENTER)
+        Registry.register(Registries.BLOCK_ENTITY_TYPE, RitesMod.id("rite_subcenter"), RITE_SUBCENTER_ENTITY)
         Registry.register(Registries.BLOCK, RitesMod.id("rite_focus"), RITE_FOCUS)
         Registry.register(Registries.BLOCK_ENTITY_TYPE, RitesMod.id("rite_focus"), RITE_FOCUS_ENTITY)
         PolymerBlockUtils.registerBlockEntity(RITE_CENTER_ENTITY)
+        PolymerBlockUtils.registerBlockEntity(RITE_SUBCENTER_ENTITY)
         PolymerBlockUtils.registerBlockEntity(RITE_FOCUS_ENTITY)
     }
 }

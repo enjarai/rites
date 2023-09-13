@@ -20,7 +20,7 @@ import net.minecraft.util.shape.VoxelShape
 import net.minecraft.world.BlockView
 import net.minecraft.world.World
 
-class RiteCenterBlock(settings: Settings) : BlockWithEntity(settings), PolymerBlock {
+open class RiteCenterBlock(settings: Settings) : BlockWithEntity(settings), PolymerBlock {
     companion object {
         val POWER: IntProperty = Properties.POWER
         val SHAPE: VoxelShape = createCuboidShape(3.0, 0.0, 3.0, 13.0, 1.0, 13.0)
@@ -89,7 +89,7 @@ class RiteCenterBlock(settings: Settings) : BlockWithEntity(settings), PolymerBl
     }
 
     override fun getPolymerBlockState(state: BlockState): BlockState {
-        return Blocks.LIGHT_WEIGHTED_PRESSURE_PLATE.defaultState
+        return getPolymerBlock(state).defaultState
             .with(WeightedPressurePlateBlock.POWER, state.get(POWER))
     }
 }

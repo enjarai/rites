@@ -1,0 +1,17 @@
+{
+  "circles": [
+    "rites:common/large"
+  ],
+  "ingredients": [
+    {
+      "item": "minecraft:gold_nugget",
+      "count": 1
+    }
+  ],
+  "effects": [
+    {
+      "type": "rites:tick",
+      "effects": []
+    }
+  ]
+}

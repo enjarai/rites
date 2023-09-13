@@ -18,16 +18,26 @@ import java.util.*
 
 class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
     val world: World get() = worldGetter()
-    var pos: BlockPos = realPos.mutableCopy()
+    var pos: BlockPos
+        get() = BlockPos(
+            variables["x"]!!.toInt(),
+            variables["y"]!!.toInt(),
+            variables["z"]!!.toInt()
+        )
+        set(value) {
+            variables["x"] = value.x.toDouble()
+            variables["y"] = value.y.toDouble()
+            variables["z"] = value.z.toDouble()
+        }
     var storedItems = arrayOf<ItemStack>()
     var addressableItems: MutableMap<String, ItemStack> = hashMapOf()
     var returnableItems = arrayOf<ItemStack>()
     val variables = hashMapOf(
         "pi" to Math.PI,
         "e" to Math.E,
-        "x" to pos.x.toDouble(),
-        "y" to pos.y.toDouble(),
-        "z" to pos.z.toDouble(),
+        "x" to realPos.x.toDouble(),
+        "y" to realPos.y.toDouble(),
+        "z" to realPos.z.toDouble(),
     )
     val tickCooldown = hashMapOf<UUID, Int>()
     private var selectedRitual = 0
@@ -36,6 +46,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
 
     val hasTickingEffects: Boolean get() = rituals.any { it.ritual.shouldKeepRunning }
     val range: Int get() = circles.maxOf { it.size }
+    val dependentBlocks: List<BlockPos> get() = circles.flatMap { it.dependentBlocks }.map { it.add(realPos) }
 
     constructor(worldGetter: () -> World, pos: BlockPos, nbtCompound: NbtCompound) : this(worldGetter, pos) {
         storedItems = nbtCompound.getList("storedItems", NbtList.COMPOUND_TYPE.toInt()).map {
@@ -47,9 +58,9 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         returnableItems = nbtCompound.getList("returnableItems", NbtList.COMPOUND_TYPE.toInt()).map {
             ItemStack.fromNbt(it as NbtCompound)
         }.toTypedArray()
-        nbtCompound.getCompound("variables").keys.forEach {
-            variables[it] = nbtCompound.getDouble(it)
-        }
+        nbtCompound.getCompound("variables").let { vars -> vars.keys.forEach {
+            variables[it] = vars.getDouble(it)
+        }}
         val cooldowns = nbtCompound.getCompound("tickCooldown")
         cooldowns.keys.forEach {
             tickCooldown[UUID.fromString(it)] = cooldowns.getInt(it)
@@ -89,7 +100,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
 
         val varsNbt = NbtCompound()
         variables.forEach {
-            nbt.put(it.key, NbtDouble.of(it.value))
+            varsNbt.put(it.key, NbtDouble.of(it.value))
         }
         nbt.put("variables", varsNbt)
 
@@ -137,6 +148,14 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
             if (circle.size == size) return false
         }
         return true
+    }
+
+    fun overlapsWith(other: RitualContext): Boolean {
+        val blocks1 = dependentBlocks
+        val blocks2 = other.dependentBlocks
+        return blocks1.any { block ->
+            blocks2.any { it == block }
+        }
     }
 
     fun drawParticleEffects() {
