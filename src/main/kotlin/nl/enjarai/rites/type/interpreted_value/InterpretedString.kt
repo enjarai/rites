@@ -13,7 +13,7 @@ interface InterpretedString : InterpretedValue<String> {
             try {
                 DataResult.success(InterpolatedString(string))
             } catch (e: RuntimeException) {
-                DataResult.error("Invalid expression: '$string', ${e.message}")
+                DataResult.error { "Invalid expression: '$string', ${e.message}" }
             }
         }, { interpretedString ->
             when (interpretedString) {
@@ -24,7 +24,7 @@ interface InterpretedString : InterpretedValue<String> {
                     DataResult.success(interpretedString.inputString)
                 }
                 else -> {
-                    DataResult.error("Invalid interpreted string: $interpretedString")
+                    DataResult.error { "Invalid interpreted string: $interpretedString" }
                 }
             }
         })

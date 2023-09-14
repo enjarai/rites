@@ -32,7 +32,7 @@
 
   "depends": {
     "fabric": "*",
-    "minecraft": "1.19.3",
+    "minecraft": "1.20.x",
     "fabric-language-kotlin": ">=1.9.1+kotlin.1.8.10"
   }
 }

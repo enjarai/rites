@@ -12,7 +12,7 @@ interface InterpretedVec3 : InterpretedValue<Vec3d> {
             if (list.size == 3) {
                 DataResult.success(ExpressionVec3(list[0], list[1], list[2]))
             } else {
-                DataResult.error("Invalid position: '$list', expected 3 expressions")
+                DataResult.error { "Invalid position: '$list', expected 3 expressions" }
             }
         }, { interpretedPosition ->
             when (interpretedPosition) {
@@ -20,7 +20,7 @@ interface InterpretedVec3 : InterpretedValue<Vec3d> {
                     DataResult.success(listOf(interpretedPosition.x, interpretedPosition.y, interpretedPosition.z))
                 }
                 else -> {
-                    DataResult.error("Invalid interpreted position: $interpretedPosition")
+                    DataResult.error { "Invalid interpreted position: $interpretedPosition" }
                 }
             }
         })
@@ -28,6 +28,6 @@ interface InterpretedVec3 : InterpretedValue<Vec3d> {
 
     fun interpretAsBlockPos(ctx: RitualContext): BlockPos {
         val pos = interpret(ctx)
-        return BlockPos(pos)
+        return BlockPos(pos.x.toInt(), pos.y.toInt(), pos.z.toInt())
     }
 }

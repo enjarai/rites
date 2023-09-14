@@ -15,7 +15,7 @@ object Codecs {
         if (blockResult.blockState != null) {
             DataResult.success(blockResult.blockState)
         } else {
-            DataResult.error("Invalid block state: $blockStateString")
+            DataResult.error { "Invalid block state: $blockStateString" }
         }
     }, { blockState ->
         blockState.toString()

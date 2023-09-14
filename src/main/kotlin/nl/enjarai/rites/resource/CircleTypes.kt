@@ -15,7 +15,7 @@ import java.nio.charset.StandardCharsets
 
 object CircleTypes : JsonResource<CircleType>("circle_types") {
     val CODEC: Codec<CircleType> = Identifier.CODEC.comapFlatMap({ id ->
-        values[id].let { if (it != null) DataResult.success(it) else DataResult.error("Unknown circle type: $id") }
+        values[id].let { if (it != null) DataResult.success(it) else DataResult.error { "Unknown circle type: $id" } }
     }, { it.id })
     private val ALTERNATIVES_CODEC: Codec<List<CircleType>> = CODEC.listOf()
         .optionalFieldOf("alternatives", listOf()).codec()

@@ -32,7 +32,7 @@ dependencies {
 	modImplementation "net.fabricmc:fabric-language-kotlin:${project.kotlin_version}"
 
 	modImplementation include("eu.pb4:polymer-core:${project.polymer_version}")
-	modImplementation include("fr.catcore:server-translations-api:${project.translation_api_version}")
+	modImplementation include("xyz.nucleoid:server-translations-api:${project.translation_api_version}")
 	modImplementation include("eu.pb4:sgui:${project.sgui_version}")
 	modImplementation include("eu.pb4:placeholder-api:${project.placeholder_api_version}")
 

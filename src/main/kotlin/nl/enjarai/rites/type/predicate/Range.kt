@@ -17,7 +17,7 @@ class Range(val min: Int, val max: Int) : IntPredicate {
                     val max = range[1].toInt()
                     DataResult.success(Range(min, max))
                 } else {
-                    DataResult.error("Invalid int range: $single")
+                    DataResult.error { "Invalid int range: $single" }
                 }
             }
         }, { range ->

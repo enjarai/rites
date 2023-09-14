@@ -14,7 +14,7 @@ abstract class BlockStatePredicate(val id: Identifier, val states: Map<String, S
             try {
                 DataResult.success(parser.parse())
             } catch (e: Exception) {
-                DataResult.error("Invalid block state: $blockStateString")
+                DataResult.error { "Invalid block state: $blockStateString" }
             }
         }, { blockStatePredicate ->
             blockStatePredicate.toString()

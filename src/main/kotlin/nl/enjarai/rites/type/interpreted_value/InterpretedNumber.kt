@@ -12,7 +12,7 @@ interface InterpretedNumber : InterpretedValue<Double> {
                 try {
                     DataResult.success(ConstantNumber(string.left().get()))
                 } catch (e: RuntimeException) {
-                    DataResult.error("Invalid expression: '$string', ${e.message}")
+                    DataResult.error { "Invalid expression: '$string', ${e.message}" }
                 }
             } else {
                 DataResult.success(ExpressionNumber(string.right().get()))
@@ -26,7 +26,7 @@ interface InterpretedNumber : InterpretedValue<Double> {
                     DataResult.success(Either.right(interpretedNumber.inputString))
                 }
                 else -> {
-                    DataResult.error("Invalid interpreted number: $interpretedNumber")
+                    DataResult.error { "Invalid interpreted number: $interpretedNumber" }
                 }
             }
         })

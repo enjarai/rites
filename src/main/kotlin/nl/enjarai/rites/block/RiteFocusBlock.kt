@@ -13,6 +13,7 @@ import net.minecraft.fluid.Fluids
 import net.minecraft.item.ItemPlacementContext
 import net.minecraft.item.ItemStack
 import net.minecraft.loot.context.LootContext
+import net.minecraft.loot.context.LootContextParameterSet
 import net.minecraft.loot.context.LootContextParameters
 import net.minecraft.nbt.NbtCompound
 import net.minecraft.nbt.NbtList
@@ -74,9 +75,10 @@ class RiteFocusBlock(settings: Settings, private val defaultItemStack: () -> Ite
         }
     }
 
-    override fun getDroppedStacks(state: BlockState, builder: LootContext.Builder): MutableList<ItemStack> {
+    @Suppress("OVERRIDE_DEPRECATION")
+    override fun getDroppedStacks(state: BlockState, builder: LootContextParameterSet.Builder): MutableList<ItemStack> {
         return super.getDroppedStacks(state, builder).apply {
-            val blockEntity = builder.getNullable(LootContextParameters.BLOCK_ENTITY) as? RiteFocusBlockEntity
+            val blockEntity = builder.getOptional(LootContextParameters.BLOCK_ENTITY) as? RiteFocusBlockEntity
             if (blockEntity != null && (blockEntity.storedItems.isNotEmpty() || blockEntity.rituals.isNotEmpty())) {
                 val riteData = NbtCompound()
 
