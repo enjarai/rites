@@ -3,7 +3,10 @@
     "rites:common/large"
   ],
   "keys": {
-    "c": "#minecraft:candles[lit=true]"
+    "c": {
+      "predicate": "#minecraft:candles[lit=true]",
+      "color": "555555"
+    }
   },
   "layout": [
     [" ", " ", "c", "c", "c", "c", "c", " ", " "],

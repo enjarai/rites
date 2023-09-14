@@ -3,7 +3,10 @@
     "rites:planeshifting/large"
   ],
   "keys": {
-    "c": "minecraft:purple_candle[lit=true]"
+    "c": {
+      "predicate": "minecraft:purple_candle[lit=true]",
+      "color": "aa00aa"
+    }
   },
   "layout": [
     [" ", " ", "c", "c", "c", "c", "c", " ", " "],

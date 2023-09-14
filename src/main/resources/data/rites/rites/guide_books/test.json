@@ -11,6 +11,14 @@
     {
       "type": "rites:ritual",
       "ritual": "rites:airstrike"
+    },
+    {
+      "type": "rites:ritual",
+      "ritual": "rites:cobblegen"
+    },
+    {
+      "type": "rites:ritual",
+      "ritual": "rites:necromancy"
     }
   ]
 }

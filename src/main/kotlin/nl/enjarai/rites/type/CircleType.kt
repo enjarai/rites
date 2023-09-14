@@ -1,5 +1,6 @@
 package nl.enjarai.rites.type
 
+import com.mojang.datafixers.util.Either
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.particle.ParticleType
@@ -16,11 +17,11 @@ import nl.enjarai.rites.util.Visuals
 
 class CircleType(
     private val rawLayout: List<List<String>>,
-    private val keys: Map<String, BlockStatePredicate>,
+    private val keys: Map<String, LayoutKey>,
     val particle: ParticleType<*>,
     val particleSettings: CircleTypes.ParticleSettings
 ) {
-    val layout: List<List<BlockStatePredicate?>> = rawLayout.map { row ->
+    val layout: List<List<LayoutKey?>> = rawLayout.map { row ->
         row.map mapRow@{ block ->
             if (block.isBlank()) return@mapRow null
             keys[block] ?: throw IllegalArgumentException("Unknown block: $block")
@@ -39,7 +40,7 @@ class CircleType(
         val CODEC: Codec<CircleType> = RecordCodecBuilder.create { instance ->
             instance.group(
                 Codec.STRING.listOf().listOf().fieldOf("layout").forGetter { it.rawLayout },
-                Codec.unboundedMap(Codec.STRING, BlockStatePredicate.CODEC).fieldOf("keys").forGetter { it.keys },
+                Codec.unboundedMap(Codec.STRING, LayoutKey.CODEC).fieldOf("keys").forGetter { it.keys },
                 Registries.PARTICLE_TYPE.codec.optionalFieldOf("particle", ParticleTypes.SOUL_FIRE_FLAME)
                     .forGetter { it.particle },
                 CircleTypes.ParticleSettings.CODEC
@@ -60,7 +61,7 @@ class CircleType(
         }
 
     fun finalize() {
-        keys.values.forEach { it.finalize() }
+        keys.values.forEach { it.predicate.finalize() }
     }
 
     fun isValid(world: World, pos: BlockPos, ctx: RitualContext?): CircleType? {
@@ -84,8 +85,8 @@ class CircleType(
         val offset = size
         val offsetPos = pos.add(-offset, 0, -offset)
         for ((x, row) in layout.withIndex()) {
-            for ((z, predicate) in row.withIndex()) {
-                if (predicate != null && !predicate.test(world.getBlockState(offsetPos.add(x, 0, z)))) {
+            for ((z, key) in row.withIndex()) {
+                if (key != null && !key.predicate.test(world.getBlockState(offsetPos.add(x, 0, z)))) {
                     return false
                 }
             }
@@ -105,6 +106,25 @@ class CircleType(
                 size.toDouble(),
                 particle,
                 particleSettings
+            )
+        }
+    }
+
+    class LayoutKey(val predicate: BlockStatePredicate, val color: Int) {
+        companion object {
+            @Suppress("RemoveExplicitTypeArguments")
+            val CODEC: Codec<LayoutKey> = Codec.either(
+                RecordCodecBuilder.create<LayoutKey> { instance ->
+                    instance.group(
+                        BlockStatePredicate.CODEC.fieldOf("predicate").forGetter { it.predicate },
+                        Codec.STRING.xmap({ Integer.valueOf(it, 16) }, { Integer.toHexString(it) })
+                            .fieldOf("color").forGetter { it.color }
+                    ).apply(instance, ::LayoutKey)
+                },
+                BlockStatePredicate.CODEC.xmap({ LayoutKey(it, 0) }, { it.predicate })
+            ).xmap(
+                { it.left().orElseGet { it.right().get() } },
+                { if (it.color == 0) Either.right(it) else Either.left(it) }
             )
         }
     }

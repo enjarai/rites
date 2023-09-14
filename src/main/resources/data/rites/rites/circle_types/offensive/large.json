@@ -1,6 +1,9 @@
 {
   "keys": {
-    "c": "minecraft:red_candle[lit=true]"
+    "c": {
+      "predicate": "minecraft:red_candle[lit=true]",
+      "color": "aa0000"
+    }
   },
   "layout": [
     [" ", " ", " ", "c", "c", "c", "c", "c", "c", "c", " ", " ", " "],

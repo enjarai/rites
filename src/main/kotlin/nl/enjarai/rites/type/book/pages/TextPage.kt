@@ -2,7 +2,9 @@ package nl.enjarai.rites.type.book.pages
 
 import com.mojang.datafixers.util.Either
 import com.mojang.serialization.Codec
+import net.minecraft.text.Style
 import net.minecraft.text.Text
+import net.minecraft.util.Identifier
 import nl.enjarai.rites.resource.serialization.Codecs.TEXT_CODEC
 import nl.enjarai.rites.type.book.GuideBookPage
 
@@ -18,6 +20,7 @@ class TextPage(val paragraphs: List<Text>) : GuideBookPage(CODEC) {
     }
 
     override fun getLines(): List<Text> {
-        return paragraphs.flatMap { listOf(it, Text.empty()) }
+//        return paragraphs.flatMap { listOf(it, Text.empty()) }
+        return paragraphs.flatMap { listOf(it.getWithStyle(Style.EMPTY.withFont(Identifier("uniform")))[0], Text.empty()) }
     }
 }

@@ -35,7 +35,8 @@ class GuideBookItem : Item(FabricItemSettings().maxCount(1)), PolymerItem {
     }
 
     override fun getName(stack: ItemStack): Text {
-        return getBook(stack)?.let { Text.of(it.title) } ?: super.getName(stack)
+        return getBook(stack)?.let { Text.translatableWithFallback(
+            getTranslationKey(stack) + ".book.${it.id.namespace}.${it.id.path}", it.title) } ?: super.getName(stack)
     }
 
     override fun appendTooltip(stack: ItemStack, world: World?, tooltip: MutableList<Text>, context: TooltipContext) {
