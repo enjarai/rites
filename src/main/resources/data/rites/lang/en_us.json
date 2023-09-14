@@ -2,6 +2,8 @@
   "block.rites.rite_center": "Ritual Core",
   "block.rites.rite_subcenter": "Ritual Sub-Core",
   "block.rites.rite_focus": "Ritual Focus",
+  "item.rites.guide_book": "Unknown Tome",
+  "item.rites.guide_book.tooltip": "by %s",
   "item.rites.waystone": "Waystone",
   "item.rites.waystone.tooltip": "Bound to %d, %d, %d",
   "item.rites.disruptive_ointment": "Disruptive Ointment",

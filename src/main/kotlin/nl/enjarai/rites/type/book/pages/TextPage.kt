@@ -18,6 +18,6 @@ class TextPage(val paragraphs: List<Text>) : GuideBookPage(CODEC) {
     }
 
     override fun getLines(): List<Text> {
-        return paragraphs
+        return paragraphs.flatMap { listOf(it, Text.empty()) }
     }
 }

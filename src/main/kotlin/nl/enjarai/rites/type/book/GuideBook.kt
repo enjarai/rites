@@ -4,12 +4,14 @@ import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import eu.pb4.sgui.api.elements.BookElementBuilder
 import eu.pb4.sgui.api.gui.BookGui
+import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.item.Items
+import net.minecraft.registry.Registries
 import net.minecraft.server.network.ServerPlayerEntity
 import net.minecraft.util.Identifier
 
-class GuideBook(val title: String, val author: String, val pages: List<GuideBookPage>) {
+class GuideBook(val title: String, val author: String, val pages: List<GuideBookPage>, val polymerItem: Item) {
     @Transient lateinit var id: Identifier
 
     companion object {
@@ -17,7 +19,8 @@ class GuideBook(val title: String, val author: String, val pages: List<GuideBook
             instance.group(
                 Codec.STRING.fieldOf("title").forGetter { it.title },
                 Codec.STRING.fieldOf("author").forGetter { it.author },
-                GuideBookPage.CODEC.listOf().fieldOf("pages").forGetter { it.pages }
+                GuideBookPage.CODEC.listOf().fieldOf("pages").forGetter { it.pages },
+                Registries.ITEM.codec.optionalFieldOf("polymer_item", Items.BOOK).forGetter { it.polymerItem }
             ).apply(instance, ::GuideBook)
         }
     }
