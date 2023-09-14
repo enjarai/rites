@@ -1,6 +1,7 @@
 package nl.enjarai.rites.item
 
 import eu.pb4.polymer.core.api.item.PolymerBlockItem
+import eu.pb4.sgui.api.elements.BookElementBuilder
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.minecraft.item.*
@@ -14,7 +15,18 @@ import nl.enjarai.rites.block.ModBlocks
 object ModItems {
     val RITE_CENTER: BlockItem = register("rite_center", object : PolymerBlockItem(
         ModBlocks.RITE_CENTER,
-        FabricItemSettings(), Items.SUNFLOWER
+        FabricItemSettings(), Items.LIGHT_WEIGHTED_PRESSURE_PLATE
+    ) {
+        override fun place(context: ItemPlacementContext): ActionResult {
+            val result = super.place(context)
+            if (result != ActionResult.FAIL)
+                context.player?.swingHand(context.hand, true)
+            return result
+        }
+    })
+    val RITE_SUBCENTER: BlockItem = register("rite_subcenter", object : PolymerBlockItem(
+        ModBlocks.RITE_SUBCENTER,
+        FabricItemSettings(), Items.HEAVY_WEIGHTED_PRESSURE_PLATE
     ) {
         override fun place(context: ItemPlacementContext): ActionResult {
             val result = super.place(context)
@@ -31,6 +43,7 @@ object ModItems {
             return stack.nbt?.contains("riteData") ?: false
         }
     })
+    val GUIDE_BOOK: Item = register("guide_book", GuideBookItem())
     val WAYSTONE: Item = register("waystone", WayStoneItem())
 
     // Custom ingredients
@@ -45,7 +58,9 @@ object ModItems {
     fun init() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register {
             it.add(ItemStack(RITE_CENTER))
+            it.add(ItemStack(RITE_SUBCENTER))
             it.add(ItemStack(RITE_FOCUS))
+            it.add(ItemStack(GUIDE_BOOK))
             it.add(ItemStack(WAYSTONE))
         }
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register {

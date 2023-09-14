@@ -7,6 +7,7 @@ import net.minecraft.util.Identifier
 import nl.enjarai.rites.block.ModBlocks
 import nl.enjarai.rites.item.ModItems
 import nl.enjarai.rites.resource.ResourceLoader
+import nl.enjarai.rites.type.book.GuideBookPage
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,6 +24,7 @@ object RitesMod : ModInitializer {
         ModBlocks.register()
         ModItems.init()
         RitualEffect.registerAll()
+        GuideBookPage.registerAll()
         ResourceLoader.register()
         Commands.register()
 

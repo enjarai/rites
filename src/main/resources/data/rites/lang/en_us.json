@@ -1,5 +1,6 @@
 {
   "block.rites.rite_center": "Ritual Core",
+  "block.rites.rite_subcenter": "Ritual Sub-Core",
   "block.rites.rite_focus": "Ritual Focus",
   "item.rites.waystone": "Waystone",
   "item.rites.waystone.tooltip": "Bound to %d, %d, %d",
@@ -8,7 +9,7 @@
   "item.rites.emulsion_of_conjoinment": "Emulsion of Conjoinment",
   "item.rites.emulsion_of_conjoinment.tooltip": "You want to touch it.",
   "item.rites.ever_changing_extract": "Ever-Changing Extract",
-  "item.rites.ever_changing_extract.tooltip": "It's never quite the same.",
+  "item.rites.ever_changing_extract.tooltip": "It seems to move in the periphery of your vision.",
   "item.rites.essence_of_passions": "Essence of Passions",
   "item.rites.essence_of_passions.tooltip": "You feel very strongly about it.",
   "item.rites.deathly_panacea": "Deathly Panacea",
@@ -16,5 +17,5 @@
   "item.rites.tenebrous_marrow": "Tenebrous Marrow",
   "item.rites.tenebrous_marrow.tooltip": "It stares at you.",
   "item.rites.kernel_of_industry": "Kernel of Industry",
-  "item.rites.kernel_of_industry.tooltip": "It suddenly makes a lot of sense."
+  "item.rites.kernel_of_industry.tooltip": "It's trying to tell you something."
 }

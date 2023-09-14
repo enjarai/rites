@@ -1,0 +1,16 @@
+{
+  "title": "Test Book",
+  "author": "Your Mother",
+  "pages": [
+    "test1",
+    "test2 test2 test2 test2 test2 test2 test2 test2 test2",
+    [
+      "test3",
+      "test4"
+    ],
+    {
+      "type": "rites:ritual",
+      "ritual": "rites:airstrike"
+    }
+  ]
+}

@@ -8,5 +8,6 @@ object ResourceLoader {
         val manager = ResourceManagerHelper.get(ResourceType.SERVER_DATA)
         manager.registerReloadListener(CircleTypes)
         manager.registerReloadListener(Rituals)
+        manager.registerReloadListener(GuideBooks)
     }
 }

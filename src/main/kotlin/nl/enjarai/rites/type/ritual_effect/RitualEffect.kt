@@ -47,9 +47,6 @@ abstract class RitualEffect(val codec: Codec<out RitualEffect>) {
         return isTicking()
     }
 
-    @Target(AnnotationTarget.FIELD)
-    annotation class FromJson
-
     companion object {
         val REGISTRY = SimpleRegistry<Codec<out RitualEffect>>(
             RegistryKey.ofRegistry(RitesMod.id("ritual_effects")),

@@ -1,5 +1,6 @@
 package nl.enjarai.rites.resource
 
+import com.mojang.serialization.Codec
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener
 import net.minecraft.resource.ResourceManager
 import net.minecraft.util.Identifier
@@ -57,4 +58,8 @@ abstract class JsonResource<T>(private val resource: String) : SimpleSynchronous
     protected open fun after() {}
 
     open fun finalize() {}
+
+    fun getCodec(): Codec<T> {
+        return Identifier.CODEC.xmap(::get, ::getId)
+    }
 }

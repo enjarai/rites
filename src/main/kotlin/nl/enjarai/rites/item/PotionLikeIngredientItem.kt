@@ -24,7 +24,7 @@ class PotionLikeIngredientItem(private val color: Int, rarity: Rarity = Rarity.C
     }
 
     override fun appendTooltip(stack: ItemStack, world: World?, tooltip: MutableList<Text>, context: TooltipContext) {
-//        tooltip.add(Text.translatable(getTranslationKey(stack) + ".tooltip").formatted(Formatting.GRAY))
+        tooltip.add(Text.translatable(getTranslationKey(stack) + ".tooltip").formatted(Formatting.GRAY))
         super.appendTooltip(stack, world, tooltip, context)
     }
 }
