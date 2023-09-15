@@ -2,6 +2,7 @@ package nl.enjarai.rites.type
 
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
+import net.minecraft.entity.ItemEntity
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
@@ -29,6 +30,35 @@ class Ritual(val circleTypes: List<CircleType>,
                 RitualEffect.CODEC.listOf().fieldOf("effects").forGetter { it.effects }
             ).apply(instance, ::Ritual)
         }
+
+        fun requiredItemsNearby(requiredItems: Map<Ingredient, Int>, inCircle: List<ItemEntity>): Map<Ingredient, ItemEntity>? {
+            val usedItems = mutableSetOf<ItemEntity>()
+            val matchingMap = mutableMapOf<Ingredient, ItemEntity>()
+            val ingredients = requiredItems.keys.toList()
+
+            fun backtrack(index: Int): Boolean {
+                if (index == ingredients.size) {
+                    return true // All criteria matched successfully
+                }
+
+                val criterion = ingredients[index]
+                for (item in inCircle) {
+                    if (criterion.test(item.stack) && item.stack.count >= requiredItems[criterion]!! && item !in usedItems) {
+                        usedItems.add(item) // Mark the item as used
+                        matchingMap[criterion] = item
+                        if (backtrack(index + 1)) {
+                            return true // Move to the next criterion
+                        }
+                        usedItems.remove(item) // Backtrack if unsuccessful
+                        matchingMap.remove(criterion)
+                    }
+                }
+
+                return false
+            }
+
+            return if (backtrack(0)) matchingMap else null
+        }
     }
 
     fun getPickupRange(circles: List<CircleType>): Int {
@@ -52,16 +82,7 @@ class Ritual(val circleTypes: List<CircleType>,
      */
     fun requiredItemsNearby(world: World, pos: BlockPos, circles: List<CircleType>): Boolean {
         val inCircle = RitualContext.getItemsInRange(world, pos, circles)
-        return ingredients.map { entry ->
-            var requiredAmount = entry.amount
-            inCircle.forEach {
-                val stack = it.stack
-                if (entry.test(stack)) {
-                    requiredAmount -= stack.count
-                }
-            }
-            requiredAmount
-        }.none { entry -> entry > 0 }
+        return requiredItemsNearby(ingredients.associateWith { it.amount.min }, inCircle) != null
     }
 
     /**

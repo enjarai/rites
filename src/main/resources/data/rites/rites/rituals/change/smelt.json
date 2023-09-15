@@ -1,0 +1,47 @@
+{
+  "circles": [
+    "rites:offensive/medium"
+  ],
+  "ingredients": [
+    {
+      "item": "rites:ever_changing_extract",
+      "count": 1
+    },
+    {
+      "item": "minecraft:gunpowder",
+      "count": 1
+    }
+  ],
+  "effects": [
+    {
+      "type": "rites:if",
+      "condition": {
+          "type": "rites:smelt_item",
+          "ref": "slot/1"
+      },
+      "then": [
+        {
+          "type": "rites:if",
+          "condition": {
+              "type": "rites:smelt_item",
+              "ref": "slot/2"
+          },
+          "then": [
+            {
+              "type": "rites:if",
+              "condition": {
+                "type": "rites:smelt_item",
+                "ref": "slot/3"
+              }
+            }
+          ]
+        }
+      ],
+      "else": [
+        {
+          "type": "rites:false"
+        }
+      ]
+    }
+  ]
+}

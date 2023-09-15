@@ -29,7 +29,7 @@ abstract class RiteRunningBlockEntity(type: BlockEntityType<*>, pos: BlockPos, s
 
         val ritualNbt = nbt.getCompound("ritualContext")
         if (!ritualNbt.isEmpty) {
-            ritualContext = RitualContext({ getWorld()!! }, getPos(), ritualNbt)
+            ritualContext = RitualContext(this, getPos(), ritualNbt)
         }
     }
 
@@ -121,7 +121,7 @@ abstract class RiteRunningBlockEntity(type: BlockEntityType<*>, pos: BlockPos, s
 
     private fun initContext() {
         if (!hasContext()) {
-            ritualContext = RitualContext({ getWorld()!! }, getPos())
+            ritualContext = RitualContext(this, getPos())
         }
     }
 }

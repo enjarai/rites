@@ -1,0 +1,19 @@
+{
+  "alternatives": [
+    "rites:abyss/medium"
+  ],
+  "keys": {
+    "c": {
+      "predicate": "minecraft:black_candle[lit=true]",
+      "color": "000000"
+    }
+  },
+  "layout": [
+    [" ", "c", "c", "c", " "],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    [" ", "c", "c", "c", " "]
+  ],
+  "particle": "minecraft:sculk_soul"
+}

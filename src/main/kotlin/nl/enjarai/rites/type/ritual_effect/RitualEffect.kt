@@ -13,11 +13,15 @@ import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.entity.SummonEntityEffect
 import nl.enjarai.rites.type.ritual_effect.flow.*
 import nl.enjarai.rites.type.ritual_effect.flow.logic.*
+import nl.enjarai.rites.type.ritual_effect.flow.logic.comparison.EqualsEffect
+import nl.enjarai.rites.type.ritual_effect.flow.logic.comparison.GreaterThanEffect
+import nl.enjarai.rites.type.ritual_effect.flow.logic.comparison.LessThanEffect
 import nl.enjarai.rites.type.ritual_effect.flow.loop.ForAreaEffect
 import nl.enjarai.rites.type.ritual_effect.flow.loop.ForIEffect
 import nl.enjarai.rites.type.ritual_effect.item.DropItemEffect
 import nl.enjarai.rites.type.ritual_effect.item.DropItemRefEffect
 import nl.enjarai.rites.type.ritual_effect.item.MergeItemNbtEffect
+import nl.enjarai.rites.type.ritual_effect.item.SmeltItemEffect
 import nl.enjarai.rites.type.ritual_effect.special.focus.InternalizeFocusEffect
 import nl.enjarai.rites.type.ritual_effect.special.waystone.BindWaystoneEffect
 import nl.enjarai.rites.type.ritual_effect.special.waystone.UseWaystoneEffect
@@ -69,6 +73,9 @@ abstract class RitualEffect(val codec: Codec<out RitualEffect>) {
             Registry.register(REGISTRY, RitesMod.id("and"), AndEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("or"), OrEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("not"), NotEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("equals"), EqualsEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("greater_than"), GreaterThanEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("less_than"), LessThanEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("variable"), VariableEffect.CODEC)
 
             // effects that actually do stuff
@@ -86,6 +93,7 @@ abstract class RitualEffect(val codec: Codec<out RitualEffect>) {
             Registry.register(REGISTRY, RitesMod.id("match_block"), MatchBlockEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("set_block"), SetBlockEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("run_function"), RunFunctionEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("smelt_item"), SmeltItemEffect.CODEC)
         }
     }
 }

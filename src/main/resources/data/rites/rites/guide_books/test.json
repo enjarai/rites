@@ -3,22 +3,25 @@
   "author": "Your Mother",
   "pages": [
     "test1",
-    "test2 test2 test2 test2 test2 test2 test2 test2 test2",
+    "test2 <blue>test2</blue> test2 test2 test2 <rainbow>test2</rainbow> test2 test2 test2",
     [
       "test3",
       "test4"
     ],
     {
       "type": "rites:ritual",
-      "ritual": "rites:airstrike"
+      "ritual": "rites:airstrike",
+      "title": "<red>Airstrike"
     },
     {
       "type": "rites:ritual",
-      "ritual": "rites:cobblegen"
+      "ritual": "rites:cobblegen",
+      "title": "Cobblegen"
     },
     {
       "type": "rites:ritual",
-      "ritual": "rites:necromancy"
+      "ritual": "rites:necromancy",
+      "title": "Necromancy"
     }
   ]
 }

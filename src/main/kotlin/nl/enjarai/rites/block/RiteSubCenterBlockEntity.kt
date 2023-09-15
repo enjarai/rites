@@ -28,6 +28,13 @@ class RiteSubCenterBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: B
         if (linkedCenter != null) nbt.put("linkedCenter", NbtHelper.fromBlockPos(linkedCenter))
     }
 
+    fun getLinkedCenterEntity(): RiteCenterBlockEntity? {
+        if (linkedCenter == null) return null
+        val blockEntity = getWorld()?.getBlockEntity(linkedCenter)
+        if (blockEntity is RiteCenterBlockEntity) return blockEntity
+        return null
+    }
+
     override fun tick() {
         super.tick()
 
@@ -37,18 +44,18 @@ class RiteSubCenterBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: B
             val toPos = Vec3d.ofBottomCenter(linkedCenter!!).add(0.0, 0.2, 0.0)
             val deltaVec = toPos.subtract(fromPos)
             val deltaLength = deltaVec.length();
-            val iterations = (deltaLength / spacing).toInt()
+//            val iterations = (deltaLength / spacing).toInt()
             val offset = getWorld()?.time?.div(8.0) ?: 0.0
 //            for (i in 0..iterations) {
-                var delta = (offset) * spacing / deltaLength
-                delta %= 1.0
-                val pos = fromPos.add(deltaVec.multiply(delta))
-                val particleVelocity = deltaVec.multiply(0.0) // deltaVec.multiply((deltaLength - i * spacing) / deltaLength)
-                (getWorld() as ServerWorld).spawnParticles(
-                    ParticleTypes.WAX_OFF,
-                    pos.getX(), pos.getY(), pos.getZ(), 0,
-                    particleVelocity.getX(), particleVelocity.getY(), particleVelocity.getZ(), 1.0
-                )
+            var delta = (offset) * spacing / deltaLength
+            delta %= 1.0
+            val pos = fromPos.add(deltaVec.multiply(delta))
+            val particleVelocity = deltaVec.multiply(0.0) // deltaVec.multiply((deltaLength - i * spacing) / deltaLength)
+            (getWorld() as ServerWorld).spawnParticles(
+                ParticleTypes.WAX_OFF,
+                pos.getX(), pos.getY(), pos.getZ(), 0,
+                particleVelocity.getX(), particleVelocity.getY(), particleVelocity.getZ(), 1.0
+            )
 //            }
 //            (getWorld() as ServerWorld).spawnParticles(
 //                ParticleTypes.WAX_OFF,
@@ -63,8 +70,8 @@ class RiteSubCenterBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state: B
 
         // If the linked center is gone, unlink
         if (linkedCenter != null) {
-            val blockEntity = world.getBlockEntity(linkedCenter)
-            if (ritualContext == null || blockEntity !is RiteCenterBlockEntity || blockEntity.ritualContext == null) {
+            val blockEntity = getLinkedCenterEntity()
+            if (ritualContext == null || blockEntity?.ritualContext == null) {
                 linkedCenter = null
                 endAllRituals(!(ritualContext?.hasActivating() ?: false))
             }

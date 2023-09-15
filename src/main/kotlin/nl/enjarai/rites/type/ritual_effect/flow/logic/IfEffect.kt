@@ -16,7 +16,7 @@ class IfEffect(
         val CODEC: Codec<IfEffect> = RecordCodecBuilder.create { instance ->
             instance.group(
                 RitualEffect.CODEC.fieldOf("condition").forGetter { it.condition },
-                RitualEffect.CODEC.listOf().fieldOf("then").forGetter { it.then },
+                RitualEffect.CODEC.listOf().optionalFieldOf("then", listOf()).forGetter { it.then },
                 RitualEffect.CODEC.listOf().optionalFieldOf("else", listOf()).forGetter { it.`else` }
             ).apply(instance, ::IfEffect)
         }

@@ -6,10 +6,7 @@ import net.minecraft.block.BlockState
 import net.minecraft.block.entity.BlockEntityType
 import net.minecraft.entity.ItemEntity
 import net.minecraft.entity.player.PlayerEntity
-import net.minecraft.nbt.NbtCompound
-import net.minecraft.nbt.NbtElement
-import net.minecraft.nbt.NbtHelper
-import net.minecraft.nbt.NbtList
+import net.minecraft.nbt.*
 import net.minecraft.server.world.ServerWorld
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3d
@@ -25,7 +22,28 @@ open class RiteCenterBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state:
         const val COOLDOWN = 30
     }
 
+    private val ingredientsFullFilled = mutableListOf<Int>()
+
     constructor(pos: BlockPos, state: BlockState) : this(ModBlocks.RITE_CENTER_ENTITY, pos, state)
+
+    override fun writeNbt(nbt: NbtCompound) {
+        super.writeNbt(nbt)
+
+        val ingredientsFullFilled = NbtList()
+        for (ingredient in this.ingredientsFullFilled) {
+            ingredientsFullFilled.add(NbtInt.of(ingredient))
+        }
+        nbt.put("ingredientsFullFilled", ingredientsFullFilled)
+    }
+
+    override fun readNbt(nbt: NbtCompound) {
+        super.readNbt(nbt)
+
+        val ingredientsFullFilled = nbt.getList("ingredientsFullFilled", NbtElement.INT_TYPE.toInt())
+        for (ingredient in ingredientsFullFilled) {
+            this.ingredientsFullFilled.add((ingredient as NbtInt).intValue())
+        }
+    }
 
     fun onUse(player: PlayerEntity) {
         if (player.isSneaking) {
@@ -73,6 +91,8 @@ open class RiteCenterBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state:
             return
         }
 
+        ingredientsFullFilled.clear()
+
         // Deactivate the ritual after activation if activation fails, or ritual has no lasting effects
         if (ritualContext!!.activateRitual(storedItems) != RitualResult.FAIL) {
             storedItems = arrayOf()
@@ -88,38 +108,31 @@ open class RiteCenterBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state:
     }
 
     private fun getMissingItems(): Map<Ingredient, Int> {
-        return ritualContext?.getSelectedRitual()?.ritual?.ingredients?.associate {
-            it to it.amount
-        }?.mapValues { entry ->
-            var amountNeeded = entry.value
-            storedItems.forEach {
-                if (entry.key.test(it)) {
-                    amountNeeded -= it.count
-                }
-            }
-            return@mapValues amountNeeded
-        }?.filter { entry -> entry.value > 0 } ?: mapOf()
+        return ritualContext?.getSelectedRitual()?.ritual?.ingredients?.mapIndexedNotNull { i, ingredient ->
+            if (ingredientsFullFilled.contains(i)) return@mapIndexedNotNull null
+            ingredient to ingredient.amount.min
+        }?.associate { it } ?: mapOf()
     }
 
     private fun tryAbsorbMissing(missingItems: Map<Ingredient, Int>): Boolean {
-        // Find all item entities within the circle
-        ritualContext?.getItemsInRange()?.forEach { itemEntity ->
+        // Find all item entities within the circle, match them to ingredients and absorb one
+        ritualContext?.getItemsInRange()?.let {
+            Ritual.requiredItemsNearby(missingItems, it)?.entries?.toList()?.get(0)?.let { (ingredient, itemEntity) ->
+                Visuals.absorb(getWorld()!! as ServerWorld, itemEntity.pos)
 
-            // Absorb if possible
-            val stack = itemEntity.stack
-            missingItems.forEach {
-                if (it.key.test(stack)) {
-                    Visuals.absorb(getWorld()!! as ServerWorld, itemEntity.pos)
-
-                    val absorbAmount = it.value.coerceAtMost(stack.count)
-                    storedItems += stack.split(absorbAmount)
-                    if (stack.isEmpty) {
-                        itemEntity.discard()
-                    }
-                    return true
+                val stack = itemEntity.stack
+                val absorbAmount = ingredient.amount.max.coerceAtMost(stack.count)
+                val insertableStack = stack.split(absorbAmount);
+                storedItems += insertableStack
+                ritualContext?.maybeAddAddressableItem(ingredient, insertableStack)
+                if (stack.isEmpty) {
+                    itemEntity.discard()
                 }
+                ingredientsFullFilled.add(ritualContext!!.getSelectedRitual()!!.ritual.ingredients.indexOf(ingredient))
+                return true
             }
         }
+
         return false
     }
 
@@ -163,10 +176,24 @@ open class RiteCenterBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state:
             subCenter.linkedCenter = getPos()
             if (it.ritualContext?.hasActivating() != false) return@forEach
             ritualContext!!.variables += it.ritualContext?.variables ?: return@forEach
+
+            // Transfer ref items
+            val ownItems = ritualContext!!.rawAddressableItems
+            val otherItems = it.ritualContext!!.rawAddressableItems
+            val overlappingKeys = otherItems.keys.intersect(ownItems.keys)
+            it.ritualContext!!.rawAddressableItems = otherItems.filter { (key, stack) ->
+                if (key !in overlappingKeys) {
+                    ownItems[key] = stack
+                    return@filter false
+                }
+                return@filter true
+            }.toMutableMap()
         }
     }
 
     override fun startRitual(ritual: Ritual, circles: List<CircleType>) {
+        ingredientsFullFilled.clear()
+
         super.startRitual(ritual, circles)
 
         grabVariablesFromSubCircles()
@@ -182,6 +209,7 @@ open class RiteCenterBlockEntity(type: BlockEntityType<*>, pos: BlockPos, state:
         super.endAllRituals(success)
 
         setPower(0)
+        ingredientsFullFilled.clear()
 
         // Drop currently stored items, if available
         val pos = Vec3d.ofBottomCenter(getPos())

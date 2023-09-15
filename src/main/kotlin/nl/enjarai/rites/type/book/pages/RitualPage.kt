@@ -3,17 +3,20 @@ package nl.enjarai.rites.type.book.pages
 import com.mojang.serialization.Codec
 import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.text.HoverEvent
+import net.minecraft.text.MutableText
 import net.minecraft.text.Style
 import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import nl.enjarai.rites.resource.Rituals
+import nl.enjarai.rites.resource.serialization.Codecs
 import nl.enjarai.rites.type.CircleType
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.book.GuideBookPage
 
-class RitualPage(val ritual: Ritual) : GuideBookPage(CODEC) {
+class RitualPage(val ritual: Ritual, val title: Text) : GuideBookPage(CODEC) {
     private val pattern: List<Text> = run {
         val pattern = mutableListOf<Text>()
+        pattern.add(center(title).styled(FONT_STYLE))
         for (x in -MAX_SIZE..MAX_SIZE) {
             val line = Text.literal(" ")
             for (z in -MAX_SIZE..MAX_SIZE) {
@@ -45,7 +48,8 @@ class RitualPage(val ritual: Ritual) : GuideBookPage(CODEC) {
     companion object {
         val CODEC: Codec<RitualPage> = RecordCodecBuilder.create { instance ->
             instance.group(
-                Rituals.getCodec().fieldOf("ritual").forGetter { it.ritual }
+                Rituals.getCodec().fieldOf("ritual").forGetter { it.ritual },
+                Codecs.TEXT_CODEC.fieldOf("title").forGetter { it.title }
             ).apply(instance, ::RitualPage)
         }
         const val MAX_SIZE = 6

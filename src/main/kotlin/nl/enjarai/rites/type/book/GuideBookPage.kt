@@ -7,6 +7,8 @@ import eu.pb4.placeholders.api.TextParserUtils
 import net.minecraft.registry.Registry
 import net.minecraft.registry.RegistryKey
 import net.minecraft.registry.SimpleRegistry
+import net.minecraft.text.MutableText
+import net.minecraft.text.Style
 import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import nl.enjarai.rites.RitesMod
@@ -38,6 +40,17 @@ abstract class GuideBookPage(val codec: Codec<out GuideBookPage>) {
         fun registerAll() {
             Registry.register(REGISTRY, RitesMod.id("text"), TextPage.CODEC)
             Registry.register(REGISTRY, RitesMod.id("ritual"), RitualPage.CODEC)
+        }
+
+        val FONT_STYLE: (Style) -> Style = { it.withFont(Identifier("uniform")) }
+
+        fun center(text: Text): MutableText {
+            val spaces = 14 - text.string.length / 2
+            val mutable = Text.empty()
+            for (i in 0 until spaces) {
+                mutable.append(Text.of(" "))
+            }
+            return mutable.append(text)
         }
     }
 

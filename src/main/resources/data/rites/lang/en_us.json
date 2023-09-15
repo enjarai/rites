@@ -26,5 +26,7 @@
   "rites.tooltip.block_state.minecraft:light_blue_candle[lit=true]" : "Lit Light Blue Candle",
   "rites.tooltip.block_state.minecraft:red_candle[lit=true]" : "Lit Red Candle",
   "rites.tooltip.block_state.minecraft:purple_candle[lit=true]" : "Lit Purple Candle",
-  "rites.tooltip.block_state.minecraft:yellow_candle[lit=true]" : "Lit Yellow Candle"
+  "rites.tooltip.block_state.minecraft:yellow_candle[lit=true]" : "Lit Yellow Candle",
+  "rites.tooltip.block_state.minecraft:black_candle[lit=true]" : "Lit Black Candle",
+  "rites.tooltip.block_state.minecraft:blue_candle[lit=true]" : "Lit Blue Candle"
 }

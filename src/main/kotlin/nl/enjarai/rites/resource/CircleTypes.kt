@@ -59,7 +59,8 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
         val cycles: Int = 3,
         val armAngle: Double = -0.05,
         val armSpeed: Double = 0.2,
-        val reverseRotation: Boolean = false
+        val reverseRotation: Boolean = false,
+        val options: String = ""
     ) {
         companion object {
             val CODEC: Codec<ParticleSettings> = RecordCodecBuilder.create { instance ->
@@ -67,7 +68,8 @@ object CircleTypes : JsonResource<CircleType>("circle_types") {
                     Codec.INT.optionalFieldOf("cycles", 3).forGetter { it.cycles },
                     Codec.DOUBLE.optionalFieldOf("arm_angle", -0.05).forGetter { it.armAngle },
                     Codec.DOUBLE.optionalFieldOf("arm_speed", 0.2).forGetter { it.armSpeed },
-                    Codec.BOOL.optionalFieldOf("reverse_rotation", false).forGetter { it.reverseRotation }
+                    Codec.BOOL.optionalFieldOf("reverse_rotation", false).forGetter { it.reverseRotation },
+                    Codec.STRING.optionalFieldOf("options", "").forGetter { it.options }
                 ).apply(instance, ::ParticleSettings)
             }
         }

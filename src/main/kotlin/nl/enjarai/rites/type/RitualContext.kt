@@ -11,13 +11,16 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Box
 import net.minecraft.util.math.Vec3d
 import net.minecraft.world.World
+import nl.enjarai.rites.block.RiteRunningBlockEntity
+import nl.enjarai.rites.block.RiteSubCenterBlockEntity
 import nl.enjarai.rites.resource.CircleTypes
+import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.Visuals
 import java.util.*
 
-class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
-    val world: World get() = worldGetter()
+class RitualContext(private val blockEntity: RiteRunningBlockEntity, val realPos: BlockPos) {
+    val world: World get() = blockEntity.world!!
     var pos: BlockPos
         get() = BlockPos(
             variables["x"]!!.toInt(),
@@ -30,7 +33,16 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
             variables["z"] = value.z.toDouble()
         }
     var storedItems = arrayOf<ItemStack>()
-    var addressableItems: MutableMap<String, ItemStack> = hashMapOf()
+    var rawAddressableItems: MutableMap<String, ItemStack> = hashMapOf()
+    // When referencing addressableItems, use the getter to potentially
+    // use the parent's addressableItems if this is a sub-center
+    val addressableItems: MutableMap<String, ItemStack> get() {
+        var parentMap: MutableMap<String, ItemStack>? = null
+        if (blockEntity is RiteSubCenterBlockEntity) {
+            parentMap = blockEntity.getLinkedCenterEntity()?.ritualContext?.addressableItems
+        }
+        return parentMap ?: rawAddressableItems
+    }
     var returnableItems = arrayOf<ItemStack>()
     val variables = hashMapOf(
         "pi" to Math.PI,
@@ -45,14 +57,14 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
     var circles = arrayOf<CircleType>()
 
     val hasTickingEffects: Boolean get() = rituals.any { it.ritual.shouldKeepRunning }
-    val range: Int get() = circles.maxOf { it.size }
-    val dependentBlocks: List<BlockPos> get() = circles.flatMap { it.dependentBlocks }.map { it.add(realPos) }
+    val range: Int get() = try { circles.maxOf { it.size } } catch (e: NoSuchElementException) { 0 }
+    private val dependentBlocks: List<BlockPos> get() = circles.flatMap { it.dependentBlocks }.map { it.add(realPos) }
 
-    constructor(worldGetter: () -> World, pos: BlockPos, nbtCompound: NbtCompound) : this(worldGetter, pos) {
+    constructor(blockEntity: RiteRunningBlockEntity, pos: BlockPos, nbtCompound: NbtCompound) : this(blockEntity, pos) {
         storedItems = nbtCompound.getList("storedItems", NbtList.COMPOUND_TYPE.toInt()).map {
             ItemStack.fromNbt(it as NbtCompound)
         }.toTypedArray()
-        addressableItems = nbtCompound.getCompound("addressableItems").keys.associateWith {
+        rawAddressableItems = nbtCompound.getCompound("addressableItems").keys.associateWith {
             ItemStack.fromNbt(nbtCompound.getCompound("addressableItems").getCompound(it))
         }.toMutableMap()
         returnableItems = nbtCompound.getList("returnableItems", NbtList.COMPOUND_TYPE.toInt()).map {
@@ -86,7 +98,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         nbt.put("storedItems", items)
 
         val items1 = NbtCompound()
-        for (i in addressableItems.entries) {
+        for (i in rawAddressableItems.entries) {
             items1.put(i.key, i.value.writeNbt(NbtCompound()))
         }
         nbt.put("addressableItems", items1)
@@ -173,7 +185,6 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         if (ritual?.active == false) {
             this.storedItems = storedItems
             variables.putAll(storedItems.map { Registries.ITEM.getId(it.item).toString() to it.count.toDouble() })
-            loadAddressableItems(storedItems)
             val success = ritual.activate(this)
             if (success) {
                 Visuals.activate(world as ServerWorld, realPos)
@@ -183,17 +194,8 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         return RitualResult.PASS
     }
 
-    private fun loadAddressableItems(storedItems: Array<ItemStack>) {
-        val items = storedItems.toMutableList()
-        getSelectedRitual()?.ritual?.ingredients?.forEach { ingredient ->
-            if (ingredient.ref != null) {
-                val item = items.find { ingredient.test(it) && it.count == ingredient.amount }
-                if (item != null) {
-                    addressableItems[ingredient.ref] = item
-                    items.remove(item)
-                }
-            }
-        }
+    fun maybeAddAddressableItem(ingredient: Ingredient, stack: ItemStack) {
+        ingredient.ref?.let { rawAddressableItems[it] = stack }
     }
 
     /**
@@ -215,7 +217,7 @@ class RitualContext(val worldGetter: () -> World, val realPos: BlockPos) {
         rituals.forEach {
             stopRitual(it, success)
         }
-        return returnableItems
+        return returnableItems + addressableItems.values
     }
 
     fun tickAll(): RitualResult {

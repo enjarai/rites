@@ -1,0 +1,36 @@
+{
+  "circles": [
+    "rites:change/large"
+  ],
+  "ingredients": [
+    {
+      "item": "rites:emulsion_of_conjoinment",
+      "count": 1
+    },
+    {
+      "item": "minecraft:redstone",
+      "count": 3
+    },
+    {
+      "any": true,
+      "count": "1..64",
+      "ref": "slot/1"
+    },
+    {
+      "any": true,
+      "count": "1..64",
+      "ref": "slot/2"
+    },
+    {
+      "any": true,
+      "count": "1..64",
+      "ref": "slot/3"
+    }
+  ],
+  "effects": [
+    {
+      "type": "rites:tick",
+      "effects": []
+    }
+  ]
+}

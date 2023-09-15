@@ -20,7 +20,6 @@ class TextPage(val paragraphs: List<Text>) : GuideBookPage(CODEC) {
     }
 
     override fun getLines(): List<Text> {
-//        return paragraphs.flatMap { listOf(it, Text.empty()) }
-        return paragraphs.flatMap { listOf(it.getWithStyle(Style.EMPTY.withFont(Identifier("uniform")))[0], Text.empty()) }
+        return paragraphs.flatMap { listOf(it.copy().styled(FONT_STYLE), Text.empty()) }
     }
 }

@@ -1,0 +1,22 @@
+{
+  "alternatives": [
+    "rites:change/medium"
+  ],
+  "keys": {
+    "c": {
+      "predicate": "minecraft:blue_candle[lit=true]",
+      "color": "0000aa"
+    }
+  },
+  "layout": [
+    [" ", "c", "c", "c", " "],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    ["c", " ", " ", " ", "c"],
+    [" ", "c", "c", "c", " "]
+  ],
+  "particle": "minecraft:sculk_charge",
+  "particle_settings": {
+    "options": "0"
+  }
+}
