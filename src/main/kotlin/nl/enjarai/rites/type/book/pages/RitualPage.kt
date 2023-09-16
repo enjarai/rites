@@ -49,7 +49,7 @@ class RitualPage(val ritual: Ritual, val title: Text) : GuideBookPage(CODEC) {
         val CODEC: Codec<RitualPage> = RecordCodecBuilder.create { instance ->
             instance.group(
                 Rituals.getCodec().fieldOf("ritual").forGetter { it.ritual },
-                Codecs.TEXT_CODEC.fieldOf("title").forGetter { it.title }
+                Codecs.TEXT_CODEC.optionalFieldOf("title", Text.empty()).forGetter { it.title }
             ).apply(instance, ::RitualPage)
         }
         const val MAX_SIZE = 6

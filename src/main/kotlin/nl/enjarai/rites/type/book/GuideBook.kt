@@ -15,7 +15,7 @@ import net.minecraft.text.Text
 import net.minecraft.util.Formatting
 import net.minecraft.util.Identifier
 import nl.enjarai.rites.type.book.GuideBookPage.Companion.FONT_STYLE
-import nl.enjarai.rites.type.book.pages.ChapterPage
+import nl.enjarai.rites.type.book.pages.IndexedBookPage
 
 class GuideBook(val title: String, val author: String, val pages: List<GuideBookPage>, val polymerItem: Item) {
     @Transient lateinit var id: Identifier
@@ -40,12 +40,14 @@ class GuideBook(val title: String, val author: String, val pages: List<GuideBook
             Text.literal(title),
             Text.literal("By $author").styled { FONT_STYLE(it).withItalic(true) },
         ))
-        val chapterPages = pages.filterIsInstance<ChapterPage>()
+        val chapterPages = pages.filterIsInstance<IndexedBookPage>()
         val indexPageCount = (chapterPages.size + 2) / 14 + 1
         val indexEntries = chapterPages
             .map { page ->
                 val realIndex = pages.indexOf(page)
-                val text = Text.empty().append(Text.literal("${realIndex + indexPageCount + 2}").fillStyle(Style.EMPTY
+                val text = Text.empty()
+                for (i in 0 until page.indent) text.append(Text.literal(" "))
+                text.append(Text.literal("${realIndex + indexPageCount + 2}").fillStyle(FONT_STYLE(Style.EMPTY)
                     .withColor(Formatting.BLUE)
                     .withUnderline(true)
                     .withClickEvent(ClickEvent(ClickEvent.Action.CHANGE_PAGE, "${realIndex + indexPageCount + 2}")))
@@ -53,7 +55,6 @@ class GuideBook(val title: String, val author: String, val pages: List<GuideBook
                         .withColor(Formatting.BLACK)
                         .withUnderline(false)))
                 )
-                for (i in 0 until page.indent) text.append(Text.literal(" "))
                 text.append(page.title)
             }
         val indexPages = mutableListOf<MutableList<Text>>()

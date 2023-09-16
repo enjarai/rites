@@ -1,15 +1,27 @@
 package nl.enjarai.rites.type.ritual_effect
 
+import com.mojang.brigadier.StringReader
+import com.mojang.brigadier.exceptions.CommandSyntaxException
 import com.mojang.serialization.Codec
 import com.mojang.serialization.Lifecycle
+import net.minecraft.command.EntitySelectorReader
+import net.minecraft.entity.Entity
 import net.minecraft.registry.Registry
 import net.minecraft.registry.RegistryKey
 import net.minecraft.registry.SimpleRegistry
+import net.minecraft.server.command.CommandOutput
+import net.minecraft.server.command.ServerCommandSource
+import net.minecraft.server.world.ServerWorld
+import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import net.minecraft.util.math.BlockPos
+import net.minecraft.util.math.Vec2f
+import net.minecraft.util.math.Vec3d
 import nl.enjarai.rites.RitesMod
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.ritual_effect.entity.GivePotionEffect
+import nl.enjarai.rites.type.ritual_effect.entity.MergeEntityNbtEffect
 import nl.enjarai.rites.type.ritual_effect.entity.SummonEntityEffect
 import nl.enjarai.rites.type.ritual_effect.flow.*
 import nl.enjarai.rites.type.ritual_effect.flow.logic.*
@@ -85,15 +97,33 @@ abstract class RitualEffect(val codec: Codec<out RitualEffect>) {
             Registry.register(REGISTRY, RitesMod.id("drop_item"), DropItemEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("drop_item_ref"), DropItemRefEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("merge_item_nbt"), MergeItemNbtEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("merge_entity_nbt"), MergeEntityNbtEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("summon_entity"), SummonEntityEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("give_potion"), GivePotionEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("match_block"), MatchBlockEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("set_block"), SetBlockEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("run_function"), RunFunctionEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("run_command"), RunCommandEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("smelt_item"), SmeltItemEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("set_item"), SetItemEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("set_item_count"), SetItemCountEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("get_item_count"), GetItemCountEffect.CODEC)
+        }
+
+        fun selectEntities(ctx: RitualContext, selectorString: String): List<Entity>? {
+            return try {
+                val selector = EntitySelectorReader(StringReader(selectorString)).read()
+                selector.getEntities(getCommandSource(ctx))
+            } catch (e: CommandSyntaxException) {
+                null
+            }
+        }
+
+        fun getCommandSource(ctx: RitualContext): ServerCommandSource {
+            return ServerCommandSource(
+                CommandOutput.DUMMY, Vec3d.ofBottomCenter(ctx.pos), Vec2f.ZERO, ctx.world as ServerWorld,
+                3, "Rite", Text.of("Rite"), ctx.world.server, null
+            )
         }
     }
 }

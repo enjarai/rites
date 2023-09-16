@@ -9,7 +9,7 @@ import net.minecraft.util.Formatting
 import nl.enjarai.rites.resource.serialization.Codecs
 import nl.enjarai.rites.type.book.GuideBookPage
 
-class ChapterPage(val title: Text, val indent: Int, val paragraphs: List<Text>) : GuideBookPage(CODEC) {
+class ChapterPage(override val title: Text, override val indent: Int, val paragraphs: List<Text>) : IndexedBookPage(CODEC) {
     companion object {
         val CODEC: Codec<ChapterPage> = RecordCodecBuilder.create { instance ->
             instance.group(

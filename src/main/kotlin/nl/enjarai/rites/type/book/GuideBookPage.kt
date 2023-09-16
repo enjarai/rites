@@ -13,6 +13,7 @@ import net.minecraft.text.Text
 import net.minecraft.util.Identifier
 import nl.enjarai.rites.RitesMod
 import nl.enjarai.rites.type.book.pages.ChapterPage
+import nl.enjarai.rites.type.book.pages.RitualDetailsPage
 import nl.enjarai.rites.type.book.pages.RitualPage
 import nl.enjarai.rites.type.book.pages.TextPage
 
@@ -41,6 +42,7 @@ abstract class GuideBookPage(val codec: Codec<out GuideBookPage>) {
         fun registerAll() {
             Registry.register(REGISTRY, RitesMod.id("text"), TextPage.CODEC)
             Registry.register(REGISTRY, RitesMod.id("ritual"), RitualPage.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("ritual_details"), RitualDetailsPage.CODEC)
             Registry.register(REGISTRY, RitesMod.id("chapter"), ChapterPage.CODEC)
         }
 

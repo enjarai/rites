@@ -36,6 +36,6 @@ class Range(val min: Int, val max: Int) : IntPredicate {
     }
 
     override fun toString(): String {
-        return "$min..$max"
+        return if (min == max) "$min" else "$min..$max"
     }
 }

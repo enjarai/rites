@@ -1,0 +1,39 @@
+{
+  "title": "Ritualistic Transmutation",
+  "author": "Archmage Tervosh",
+  "polymer_item": "minecraft:shaper_armor_trim_smithing_template",
+  "pages": [
+    {
+      "type": "rites:chapter",
+      "title": "Introduction",
+      "paragraphs": [
+        "This book is a beginner's guide to the art of transmutation, as commissioned by the Epicentral University of Magic. It's not meant to be a complete manual but rather a starting point for students looking to grasp its basics."
+      ]
+    },
+    [
+      "It is highly recommended that you read this book in full before attempting any of the magics contained within."
+    ],
+    {
+      "type": "rites:chapter",
+      "title": "General Concepts",
+      "paragraphs": [
+        "To perform any kind of transmutation, one must first be able to convert physical matter to a more malleable form. This is usually achieved using a Rite of Shifting Strands."
+      ]
+    },
+    [
+      "This rite will convert any arbitrary stack of items into their ritualistic representation, allowing further rites performed on the same core to act upon them.",
+      "Only one such stack can be held by a Ritual Core at any given time, and attempts to perform the rite multiple times will not be successful."
+    ],
+    {
+      "type": "rites:ritual_details",
+      "ritual": "rites:io/accept_item_single",
+      "title": "Rite of Shifting Strands",
+      "indent": 1
+    },
+    {
+      "type": "rites:ritual",
+      "ritual": "rites:io/accept_item_single",
+      "title": "Circle Layout"
+    }
+  ]
+}
