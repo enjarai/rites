@@ -9,18 +9,20 @@ import net.minecraft.recipe.RecipeType
 import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.interpreted_value.InterpretedString
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class SmeltItemEffect(val ref: String) : RitualEffect(CODEC) {
+class SmeltItemEffect(val ref: InterpretedString) : RitualEffect(CODEC) {
     companion object {
         val CODEC: Codec<SmeltItemEffect> = RecordCodecBuilder.create { instance ->
             instance.group(
-                Codec.STRING.fieldOf("ref").forGetter { it.ref }
+                InterpretedString.CODEC.fieldOf("ref").forGetter { it.ref }
             ).apply(instance, ::SmeltItemEffect)
         }
     }
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
+        val ref = ref.interpret(ctx)
         val item = ctx.addressableItems[ref] ?: return false
         val tempInv = TemporaryInventory(item)
         val recipe = ctx.world.recipeManager.getFirstMatch(RecipeType.SMELTING, tempInv, ctx.world).orElse(null) ?: return false

@@ -5,29 +5,27 @@ import com.mojang.serialization.codecs.RecordCodecBuilder
 import net.minecraft.util.math.BlockPos
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
+import nl.enjarai.rites.type.interpreted_value.InterpretedNumber
 import nl.enjarai.rites.type.interpreted_value.InterpretedString
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class MergeItemNbtEffect(
+class SetItemCountEffect(
     val ref: InterpretedString,
-    val nbt: InterpretedString
+    val count: InterpretedNumber
 ) : RitualEffect(CODEC) {
     companion object {
-        val CODEC: Codec<MergeItemNbtEffect> = RecordCodecBuilder.create { instance ->
+        val CODEC: Codec<SetItemCountEffect> = RecordCodecBuilder.create { instance ->
             instance.group(
                 InterpretedString.CODEC.fieldOf("ref").forGetter { it.ref },
-                InterpretedString.CODEC.fieldOf("nbt").forGetter { it.nbt }
-            ).apply(instance, ::MergeItemNbtEffect)
+                InterpretedNumber.CODEC.fieldOf("count").forGetter { it.count }
+            ).apply(instance, ::SetItemCountEffect)
         }
     }
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val ref = ref.interpret(ctx)
         val item = ctx.addressableItems[ref] ?: return false
-        val nbt = nbt.interpretAsNbt(ctx) ?: return false
-        if (!nbt.isEmpty) {
-            item.orCreateNbt.copyFrom(nbt)
-        }
+        item.count = count.interpretAsInt(ctx)
         return true
     }
 }

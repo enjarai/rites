@@ -18,10 +18,7 @@ import nl.enjarai.rites.type.ritual_effect.flow.logic.comparison.GreaterThanEffe
 import nl.enjarai.rites.type.ritual_effect.flow.logic.comparison.LessThanEffect
 import nl.enjarai.rites.type.ritual_effect.flow.loop.ForAreaEffect
 import nl.enjarai.rites.type.ritual_effect.flow.loop.ForIEffect
-import nl.enjarai.rites.type.ritual_effect.item.DropItemEffect
-import nl.enjarai.rites.type.ritual_effect.item.DropItemRefEffect
-import nl.enjarai.rites.type.ritual_effect.item.MergeItemNbtEffect
-import nl.enjarai.rites.type.ritual_effect.item.SmeltItemEffect
+import nl.enjarai.rites.type.ritual_effect.item.*
 import nl.enjarai.rites.type.ritual_effect.special.focus.InternalizeFocusEffect
 import nl.enjarai.rites.type.ritual_effect.special.waystone.BindWaystoneEffect
 import nl.enjarai.rites.type.ritual_effect.special.waystone.UseWaystoneEffect
@@ -94,6 +91,9 @@ abstract class RitualEffect(val codec: Codec<out RitualEffect>) {
             Registry.register(REGISTRY, RitesMod.id("set_block"), SetBlockEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("run_function"), RunFunctionEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("smelt_item"), SmeltItemEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("set_item"), SetItemEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("set_item_count"), SetItemCountEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("get_item_count"), GetItemCountEffect.CODEC)
         }
     }
 }

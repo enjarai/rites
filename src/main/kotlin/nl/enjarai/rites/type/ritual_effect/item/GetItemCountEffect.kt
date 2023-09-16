@@ -8,26 +8,23 @@ import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.interpreted_value.InterpretedString
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 
-class MergeItemNbtEffect(
+class GetItemCountEffect(
     val ref: InterpretedString,
-    val nbt: InterpretedString
+    val variable: String
 ) : RitualEffect(CODEC) {
     companion object {
-        val CODEC: Codec<MergeItemNbtEffect> = RecordCodecBuilder.create { instance ->
+        val CODEC: Codec<GetItemCountEffect> = RecordCodecBuilder.create { instance ->
             instance.group(
                 InterpretedString.CODEC.fieldOf("ref").forGetter { it.ref },
-                InterpretedString.CODEC.fieldOf("nbt").forGetter { it.nbt }
-            ).apply(instance, ::MergeItemNbtEffect)
+                Codec.STRING.fieldOf("variable").forGetter { it.variable }
+            ).apply(instance, ::GetItemCountEffect)
         }
     }
 
     override fun activate(pos: BlockPos, ritual: Ritual, ctx: RitualContext): Boolean {
         val ref = ref.interpret(ctx)
         val item = ctx.addressableItems[ref] ?: return false
-        val nbt = nbt.interpretAsNbt(ctx) ?: return false
-        if (!nbt.isEmpty) {
-            item.orCreateNbt.copyFrom(nbt)
-        }
+        ctx.variables[variable] = item.count.toDouble()
         return true
     }
 }

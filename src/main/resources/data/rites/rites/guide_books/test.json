@@ -1,6 +1,7 @@
 {
   "title": "Test Book",
   "author": "Your Mother",
+  "polymer_item": "minecraft:wayfinder_armor_trim_smithing_template",
   "pages": [
     "test1",
     "test2 <blue>test2</blue> test2 test2 test2 <rainbow>test2</rainbow> test2 test2 test2",
@@ -14,14 +15,104 @@
       "title": "<red>Airstrike"
     },
     {
+      "type": "rites:chapter",
+      "indent": 0,
+      "title": "Beans",
+      "paragraphs": [
+        "Beans are good for you",
+        "Beans are tasty",
+        "I like beans"
+      ]
+    },
+    {
       "type": "rites:ritual",
       "ritual": "rites:cobblegen",
       "title": "Cobblegen"
     },
     {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls"
+    },
+    {
       "type": "rites:ritual",
       "ritual": "rites:necromancy",
       "title": "Necromancy"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls1"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls2"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls3"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls4"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls5"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls6"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls7"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls8"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls9"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls10"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls11"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls12"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls13"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls14"
+    },
+    {
+      "type": "rites:chapter",
+      "indent": 1,
+      "title": "balls15"
     }
   ]
 }

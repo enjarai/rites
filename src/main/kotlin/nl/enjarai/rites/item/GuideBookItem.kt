@@ -46,7 +46,7 @@ class GuideBookItem : Item(FabricItemSettings().maxCount(1)), PolymerItem {
     }
 
     override fun hasGlint(stack: ItemStack): Boolean {
-        return false
+        return true
     }
 
     override fun getPolymerItem(itemStack: ItemStack, player: ServerPlayerEntity?): Item {
