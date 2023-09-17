@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smoking",
+  "cookingtime": 50,
+  "experience": 0.15,
+  "ingredient": {
+    "tag": "minecraft:leaves"
+  },
+  "result": "rites:ash"
+}

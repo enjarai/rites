@@ -15,7 +15,7 @@ public abstract class DataPackContentsMixin {
             method = "refresh",
             at = @At("TAIL")
     )
-    private void rites$afterTagsLoaded(CallbackInfo ci) {
+    private void afterTagsLoaded(CallbackInfo ci) {
         CircleTypes.INSTANCE.finalize();
         Rituals.INSTANCE.finalize();
     }

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smoking",
+  "cookingtime": 50,
+  "experience": 0.25,
+  "ingredient": {
+    "tag": "rites:nether_fungi"
+  },
+  "result": "rites:scorched_ash"
+}

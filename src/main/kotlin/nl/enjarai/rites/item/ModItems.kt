@@ -47,13 +47,24 @@ object ModItems {
     val WAYSTONE: Item = register("waystone", WayStoneItem())
 
     // Custom ingredients
+    // Low grade ingredients
     val DISRUPTIVE_OINTMENT = register("disruptive_ointment", PotionLikeIngredientItem(0x993b3c))
     val EMULSION_OF_CONJOINMENT = register("emulsion_of_conjoinment", PotionLikeIngredientItem(0xe0a243))
     val EVER_CHANGING_EXTRACT = register("ever_changing_extract", PotionLikeIngredientItem(0x3c7b99))
     val ESSENCE_OF_PASSIONS = register("essence_of_passions", PotionLikeIngredientItem(0xac64ae))
+    val SUPPLE_DEW = register("supple_dew", PotionLikeIngredientItem(0x3c9940))
+    val OIL_OF_VITRIOL = register("oil_of_vitriol", PotionLikeIngredientItem(0x979914))
+
+    // Mid grade ingredients
     val DEATHLY_PANACEA = register("deathly_panacea", PotionLikeIngredientItem(0x185c16, Rarity.RARE))
-    val TENEBROUS_MARROW = register("tenebrous_marrow", PotionLikeIngredientItem(0x1c1c1c, Rarity.RARE))
-    val KERNEL_OF_INDUSTRY = register("kernel_of_industry", PotionLikeIngredientItem(0x567641, Rarity.RARE))
+
+    // High grade ingredients
+    val TENEBROUS_MARROW = register("tenebrous_marrow", PotionLikeIngredientItem(0x1c1c1c, Rarity.EPIC))
+//    val KERNEL_OF_INDUSTRY = register("kernel_of_industry", PotionLikeIngredientItem(0x567641, Rarity.RARE))
+
+    val ASH = register("ash", IngredientItem(Items.GUNPOWDER))
+    val SCORCHED_ASH = register("scorched_ash", IngredientItem(Items.REDSTONE, Rarity.RARE))
+    val LEVITATING_ASH = register("levitating_ash", IngredientItem(Items.SUGAR, Rarity.EPIC, true))
 
     fun init() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register {
@@ -64,13 +75,21 @@ object ModItems {
             it.add(ItemStack(WAYSTONE))
         }
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register {
+            it.add(ItemStack(ASH))
+            it.add(ItemStack(SCORCHED_ASH))
+            it.add(ItemStack(LEVITATING_ASH))
+
             it.add(ItemStack(DISRUPTIVE_OINTMENT))
             it.add(ItemStack(EMULSION_OF_CONJOINMENT))
             it.add(ItemStack(EVER_CHANGING_EXTRACT))
             it.add(ItemStack(ESSENCE_OF_PASSIONS))
+            it.add(ItemStack(SUPPLE_DEW))
+            it.add(ItemStack(OIL_OF_VITRIOL))
+
             it.add(ItemStack(DEATHLY_PANACEA))
+
             it.add(ItemStack(TENEBROUS_MARROW))
-            it.add(ItemStack(KERNEL_OF_INDUSTRY))
+//            it.add(ItemStack(KERNEL_OF_INDUSTRY))
         }
     }
 

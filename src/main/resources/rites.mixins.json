@@ -4,8 +4,10 @@
   "package": "nl.enjarai.rites.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "AbstractFurnaceBlockEntityMixin",
     "CandleBlockMixin",
-    "DataPackContentsMixin"
+    "DataPackContentsMixin",
+    "FurnaceFuelSlotMixin"
   ],
   "injectors": {
     "defaultRequire": 1

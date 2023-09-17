@@ -33,7 +33,7 @@ public abstract class CandleBlockMixin extends AbstractCandleBlock {
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private void rites$modifyLitState(ItemPlacementContext ctx, CallbackInfoReturnable<BlockState> cir) {
+    private void modifyLitState(ItemPlacementContext ctx, CallbackInfoReturnable<BlockState> cir) {
         if (
             ctx.getHand() == Hand.MAIN_HAND &&
             ctx.getPlayer() != null
@@ -73,7 +73,7 @@ public abstract class CandleBlockMixin extends AbstractCandleBlock {
             at = @At(value = "HEAD"),
             cancellable = true
     )
-    private void rites$changeCandleColor(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
+    private void changeCandleColor(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
         // TODO
     }
 }

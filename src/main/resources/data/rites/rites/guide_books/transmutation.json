@@ -24,6 +24,13 @@
       "This rite will convert any arbitrary stack of items into their ritualistic representation, allowing further rites performed on the same core to act upon them.",
       "Only one such stack can be held by a Ritual Core at any given time, and attempts to perform the rite multiple times will not be successful."
     ],
+    [
+      "After performing a Rite of Shifting Strands, the ritual circle will enter a stable state to hold the provided stack indefinitely. While in this state, it is possible to perform another rite on the same core to apply a transformation to the stack.",
+      "It merits to be noted that after one such transformation is applied, the stable state"
+    ],
+    [
+      "will unravel and the stack will be converted back to its physical form. This will also happen if the ritual core is disrupted by other means."
+    ],
     {
       "type": "rites:ritual_details",
       "ritual": "rites:io/accept_item_single",
@@ -34,6 +41,17 @@
       "type": "rites:ritual",
       "ritual": "rites:io/accept_item_single",
       "title": "Circle Layout"
-    }
+    },
+    {
+      "type": "rites:chapter",
+      "title": "Basic Transmutations",
+      "paragraphs": [
+        "The most basic transmutation is the conversion of one item type into another. This chapter contains a few notable examples of such transmutations.",
+        "Keep in mind that a larger ritual circle of the same color can always be used in"
+      ]
+    },
+    [
+      "place of the one shown, making it possible to combine any of the rites illustrated in this book with the Rite of Shifting Strands, even if it may not appear so at first glance."
+    ]
   ]
 }

@@ -2,10 +2,12 @@
   "block.rites.rite_center": "Ritual Core",
   "block.rites.rite_subcenter": "Ritual Sub-Core",
   "block.rites.rite_focus": "Ritual Focus",
+
   "item.rites.guide_book": "Unknown Tome",
   "item.rites.guide_book.tooltip": "by %s",
   "item.rites.waystone": "Waystone",
   "item.rites.waystone.tooltip": "Bound to %d, %d, %d",
+
   "item.rites.disruptive_ointment": "Disruptive Ointment",
   "item.rites.disruptive_ointment.tooltip": "It gives off a strong scent.",
   "item.rites.emulsion_of_conjoinment": "Emulsion of Conjoinment",
@@ -20,6 +22,10 @@
   "item.rites.tenebrous_marrow.tooltip": "It stares at you.",
   "item.rites.kernel_of_industry": "Kernel of Industry",
   "item.rites.kernel_of_industry.tooltip": "It's trying to tell you something.",
+
+  "item.rites.ash": "Pile of Ash",
+  "item.rites.scorched_ash": "Scorched Ash",
+  "item.rites.levitating_ash": "Levitating Ash",
 
   "rites.tooltip.center": "Ritual Core",
   "rites.tooltip.block_state.#minecraft:candles[lit=true]": "Any Lit Candle",
