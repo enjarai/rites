@@ -9,13 +9,19 @@ import net.minecraft.util.Formatting
 import nl.enjarai.rites.resource.serialization.Codecs
 import nl.enjarai.rites.type.book.GuideBookPage
 
-class ChapterPage(override val title: Text, override val indent: Int, val paragraphs: List<Text>) : IndexedBookPage(CODEC) {
+class ChapterPage(
+    override val title: Text,
+    override val indent: Int,
+    val paragraphs: List<Text>,
+    override val lines: Int
+) : IndexedBookPage(CODEC) {
     companion object {
         val CODEC: Codec<ChapterPage> = RecordCodecBuilder.create { instance ->
             instance.group(
                 Codecs.TEXT_CODEC.fieldOf("title").forGetter { it.title },
                 Codec.INT.optionalFieldOf("indent", 0).forGetter { it.indent },
-                Codecs.TEXT_CODEC.listOf().optionalFieldOf("paragraphs", listOf()).forGetter { it.paragraphs }
+                Codecs.TEXT_CODEC.listOf().optionalFieldOf("paragraphs", listOf()).forGetter { it.paragraphs },
+                Codec.INT.optionalFieldOf("lines", 1).forGetter { it.lines }
             ).apply(instance, ::ChapterPage)
         }
     }

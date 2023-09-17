@@ -1,0 +1,109 @@
+{
+  "circles": [
+    "rites:change/small",
+    "rites:offensive/medium"
+  ],
+  "ingredients": [
+    {
+      "item": "rites:ever_changing_extract",
+      "count": 1
+    },
+    {
+      "item": "rites:supple_dew",
+      "count": 1
+    },
+    {
+      "item": "minecraft:gold_ingot",
+      "count": 1
+    }
+  ],
+  "effects": [
+    {
+      "type": "rites:if",
+      "condition": {
+        "type": "rites:transmutation",
+        "ref": "slot/1",
+        "transmutations": {
+          "minecraft:iron_ingot": "minecraft:gold_ingot",
+          "minecraft:iron_nugger": "minecraft:gold_nugget",
+          "minecraft:iron_block": "minecraft:gold_block",
+          "minecraft:iron_ore": "minecraft:gold_ore",
+          "minecraft:deepslate_iron_ore": "minecraft:deepslate_gold_ore",
+          "minecraft:raw_iron": "minecraft:raw_gold",
+          "minecraft:raw_iron_block": "minecraft:raw_gold_block",
+          "minecraft:iron_helmet": "minecraft:golden_helmet",
+          "minecraft:iron_chestplate": "minecraft:golden_chestplate",
+          "minecraft:iron_leggings": "minecraft:golden_leggings",
+          "minecraft:iron_boots": "minecraft:golden_boots",
+          "minecraft:iron_sword": "minecraft:golden_sword",
+          "minecraft:iron_shovel": "minecraft:golden_shovel",
+          "minecraft:iron_pickaxe": "minecraft:golden_pickaxe",
+          "minecraft:iron_axe": "minecraft:golden_axe",
+          "minecraft:iron_hoe": "minecraft:golden_hoe",
+          "minecraft:iron_horse_armor": "minecraft:golden_horse_armor"
+        }
+      },
+      "then": [
+        {
+          "type": "rites:if",
+          "condition": {
+            "type": "rites:transmutation",
+            "ref": "slot/2",
+            "transmutations": {
+              "minecraft:iron_ingot": "minecraft:gold_ingot",
+              "minecraft:iron_nugger": "minecraft:gold_nugget",
+              "minecraft:iron_block": "minecraft:gold_block",
+              "minecraft:iron_ore": "minecraft:gold_ore",
+              "minecraft:deepslate_iron_ore": "minecraft:deepslate_gold_ore",
+              "minecraft:raw_iron": "minecraft:raw_gold",
+              "minecraft:raw_iron_block": "minecraft:raw_gold_block",
+              "minecraft:iron_helmet": "minecraft:golden_helmet",
+              "minecraft:iron_chestplate": "minecraft:golden_chestplate",
+              "minecraft:iron_leggings": "minecraft:golden_leggings",
+              "minecraft:iron_boots": "minecraft:golden_boots",
+              "minecraft:iron_sword": "minecraft:golden_sword",
+              "minecraft:iron_shovel": "minecraft:golden_shovel",
+              "minecraft:iron_pickaxe": "minecraft:golden_pickaxe",
+              "minecraft:iron_axe": "minecraft:golden_axe",
+              "minecraft:iron_hoe": "minecraft:golden_hoe",
+              "minecraft:iron_horse_armor": "minecraft:golden_horse_armor"
+            }
+          },
+          "then": [
+            {
+              "type": "rites:if",
+              "condition": {
+                "type": "rites:transmutation",
+                "ref": "slot/3",
+                "transmutations": {
+                  "minecraft:iron_ingot": "minecraft:gold_ingot",
+                  "minecraft:iron_nugger": "minecraft:gold_nugget",
+                  "minecraft:iron_block": "minecraft:gold_block",
+                  "minecraft:iron_ore": "minecraft:gold_ore",
+                  "minecraft:deepslate_iron_ore": "minecraft:deepslate_gold_ore",
+                  "minecraft:raw_iron": "minecraft:raw_gold",
+                  "minecraft:raw_iron_block": "minecraft:raw_gold_block",
+                  "minecraft:iron_helmet": "minecraft:golden_helmet",
+                  "minecraft:iron_chestplate": "minecraft:golden_chestplate",
+                  "minecraft:iron_leggings": "minecraft:golden_leggings",
+                  "minecraft:iron_boots": "minecraft:golden_boots",
+                  "minecraft:iron_sword": "minecraft:golden_sword",
+                  "minecraft:iron_shovel": "minecraft:golden_shovel",
+                  "minecraft:iron_pickaxe": "minecraft:golden_pickaxe",
+                  "minecraft:iron_axe": "minecraft:golden_axe",
+                  "minecraft:iron_hoe": "minecraft:golden_hoe",
+                  "minecraft:iron_horse_armor": "minecraft:golden_horse_armor"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "else": [
+        {
+          "type": "rites:false"
+        }
+      ]
+    }
+  ]
+}

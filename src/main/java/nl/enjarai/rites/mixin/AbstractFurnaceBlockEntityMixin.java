@@ -23,9 +23,14 @@ public abstract class AbstractFurnaceBlockEntityMixin {
             Items.OAK_SAPLING, ModItems.INSTANCE.getEVER_CHANGING_EXTRACT(),
             Items.BIRCH_SAPLING, ModItems.INSTANCE.getEMULSION_OF_CONJOINMENT(),
             Items.SPRUCE_SAPLING, ModItems.INSTANCE.getDISRUPTIVE_OINTMENT(),
-            Items.JUNGLE_SAPLING, ModItems.INSTANCE.getESSENCE_OF_PASSIONS(),
-            Items.CRIMSON_FUNGUS, ModItems.INSTANCE.getDEATHLY_PANACEA(),
-//            Items.WARPED_FUNGUS, ModItems.INSTANCE.(), TODO
+            Items.JUNGLE_SAPLING, ModItems.INSTANCE.getSUPPLE_DEW(),
+            Items.ACACIA_SAPLING, ModItems.INSTANCE.getMOTIVE_CATALYST(),
+            Items.DARK_OAK_SAPLING, ModItems.INSTANCE.getOIL_OF_VITRIOL(),
+            Items.CHERRY_SAPLING, ModItems.INSTANCE.getESSENCE_OF_PASSIONS(),
+
+            Items.CRIMSON_FUNGUS, ModItems.INSTANCE.getBLOOD_OF_THE_EARTH(),
+            Items.WARPED_FUNGUS, ModItems.INSTANCE.getDEATHLY_PANACEA(),
+
             Items.CHORUS_FLOWER, ModItems.INSTANCE.getTENEBROUS_MARROW()
     );
 

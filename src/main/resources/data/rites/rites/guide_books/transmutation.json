@@ -44,7 +44,7 @@
     },
     {
       "type": "rites:chapter",
-      "title": "Basic Transmutations",
+      "title": "Basic Alterations",
       "paragraphs": [
         "The most basic transmutation is the conversion of one item type into another. This chapter contains a few notable examples of such transmutations.",
         "Keep in mind that a larger ritual circle of the same color can always be used in"
@@ -52,6 +52,68 @@
     },
     [
       "place of the one shown, making it possible to combine any of the rites illustrated in this book with the Rite of Shifting Strands, even if it may not appear so at first glance."
-    ]
+    ],
+    {
+      "type": "rites:chapter",
+      "title": "Iron to Gold",
+      "indent": 1,
+      "paragraphs": [
+        "Let us begin with a classic; the creation of gold. Classically, this would be attempted using lead as a base, but a common method using iron is covered here instead, as it is more readily available."
+      ]
+    },
+    [
+      "The ritual on the following page will convert any object made of iron into its golden equivalent, given it exists.",
+      "The amount of iron that can be converted in one attempt has proven to be limitless, so long as it can be contained within a single stack."
+    ],
+    {
+      "type": "rites:ritual_details",
+      "ritual": "rites:change/iron_to_gold",
+      "title": "Rite of Classical Transmutation",
+      "indent": 2,
+      "lines": 2
+    },
+    {
+      "type": "rites:ritual",
+      "ritual": "rites:change/iron_to_gold",
+      "title": "Circle Layout"
+    },
+    {
+      "type": "rites:chapter",
+      "title": "Other Metallurgy",
+      "indent": 1,
+      "paragraphs": [
+        ""
+      ]
+    },
+    [
+      "TODO"
+    ],
+    {
+      "type": "rites:ritual_details",
+      "ritual": "rites:change/smelt",
+      "title": "Rite of the Artificial Furnace",
+      "indent": 2,
+      "lines": 2
+    },
+    {
+      "type": "rites:ritual",
+      "ritual": "rites:change/smelt",
+      "title": "Circle Layout"
+    },
+    [
+      "TODO"
+    ],
+    {
+      "type": "rites:ritual_details",
+      "ritual": "rites:change/smelt",
+      "title": "Rite of the Artificial Furnace",
+      "indent": 2,
+      "lines": 2
+    },
+    {
+      "type": "rites:ritual",
+      "ritual": "rites:change/smelt",
+      "title": "Circle Layout"
+    }
   ]
 }

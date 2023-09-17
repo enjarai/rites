@@ -108,6 +108,7 @@ abstract class RitualEffect(val codec: Codec<out RitualEffect>) {
             Registry.register(REGISTRY, RitesMod.id("set_item"), SetItemEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("set_item_count"), SetItemCountEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("get_item_count"), GetItemCountEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("transmutation"), TransmutationEffect.CODEC)
         }
 
         fun selectEntities(ctx: RitualContext, selectorString: String): List<Entity>? {

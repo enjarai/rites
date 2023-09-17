@@ -1,10 +1,14 @@
 {
   "circles": [
-    "rites:offensive/medium"
+    "rites:offensive/small"
   ],
   "ingredients": [
     {
       "item": "rites:ever_changing_extract",
+      "count": 1
+    },
+    {
+      "item": "rites:oil_of_vitriol",
       "count": 1
     },
     {
@@ -16,15 +20,15 @@
     {
       "type": "rites:if",
       "condition": {
-          "type": "rites:smelt_item",
-          "ref": "slot/1"
+        "type": "rites:smelt_item",
+        "ref": "slot/1"
       },
       "then": [
         {
           "type": "rites:if",
           "condition": {
-              "type": "rites:smelt_item",
-              "ref": "slot/2"
+            "type": "rites:smelt_item",
+            "ref": "slot/2"
           },
           "then": [
             {

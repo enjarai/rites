@@ -54,9 +54,11 @@ object ModItems {
     val ESSENCE_OF_PASSIONS = register("essence_of_passions", PotionLikeIngredientItem(0xac64ae))
     val SUPPLE_DEW = register("supple_dew", PotionLikeIngredientItem(0x3c9940))
     val OIL_OF_VITRIOL = register("oil_of_vitriol", PotionLikeIngredientItem(0x979914))
+    val MOTIVE_CATALYST = register("motive_catalyst", PotionLikeIngredientItem(0x646464))
 
     // Mid grade ingredients
     val DEATHLY_PANACEA = register("deathly_panacea", PotionLikeIngredientItem(0x185c16, Rarity.RARE))
+    val BLOOD_OF_THE_EARTH = register("blood_of_the_earth", PotionLikeIngredientItem(0x671222, Rarity.RARE))
 
     // High grade ingredients
     val TENEBROUS_MARROW = register("tenebrous_marrow", PotionLikeIngredientItem(0x1c1c1c, Rarity.EPIC))
@@ -85,8 +87,10 @@ object ModItems {
             it.add(ItemStack(ESSENCE_OF_PASSIONS))
             it.add(ItemStack(SUPPLE_DEW))
             it.add(ItemStack(OIL_OF_VITRIOL))
+            it.add(ItemStack(MOTIVE_CATALYST))
 
             it.add(ItemStack(DEATHLY_PANACEA))
+            it.add(ItemStack(BLOOD_OF_THE_EARTH))
 
             it.add(ItemStack(TENEBROUS_MARROW))
 //            it.add(ItemStack(KERNEL_OF_INDUSTRY))

@@ -7,4 +7,5 @@ import nl.enjarai.rites.type.book.GuideBookPage
 abstract class IndexedBookPage(codec: Codec<out IndexedBookPage>) : GuideBookPage(codec) {
     abstract val title: Text
     abstract val indent: Int
+    abstract val lines: Int
 }

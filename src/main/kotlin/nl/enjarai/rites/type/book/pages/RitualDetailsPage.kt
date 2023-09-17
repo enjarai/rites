@@ -10,13 +10,19 @@ import nl.enjarai.rites.type.CircleType
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.book.GuideBookPage
 
-class RitualDetailsPage(val ritual: Ritual, override val title: Text, override val indent: Int) : IndexedBookPage(CODEC) {
+class RitualDetailsPage(
+    val ritual: Ritual,
+    override val title: Text,
+    override val indent: Int,
+    override val lines: Int
+) : IndexedBookPage(CODEC) {
     companion object {
         val CODEC: Codec<RitualDetailsPage> = RecordCodecBuilder.create { instance ->
             instance.group(
                 Rituals.getCodec().fieldOf("ritual").forGetter { it.ritual },
                 Codecs.TEXT_CODEC.fieldOf("title").forGetter { it.title },
-                Codec.INT.optionalFieldOf("indent", 0).forGetter { it.indent }
+                Codec.INT.optionalFieldOf("indent", 0).forGetter { it.indent },
+                Codec.INT.optionalFieldOf("lines", 1).forGetter { it.lines }
             ).apply(instance, ::RitualDetailsPage)
         }
     }

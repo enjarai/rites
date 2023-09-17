@@ -16,8 +16,18 @@
   "item.rites.ever_changing_extract.tooltip": "It seems to move in the periphery of your vision.",
   "item.rites.essence_of_passions": "Essence of Passions",
   "item.rites.essence_of_passions.tooltip": "You feel very strongly about it.",
+  "item.rites.supple_dew": "Supple Dew",
+  "item.rites.supple_dew.tooltip": "Touching it feels like a gentle caress.",
+  "item.rites.oil_of_vitriol": "Oil of Vitriol",
+  "item.rites.oil_of_vitriol.tooltip": "It seems to be acidic.",
+  "item.rites.motive_catalyst": "Motive Catalyst",
+  "item.rites.motive_catalyst.tooltip": "It moves on its own.",
+
   "item.rites.deathly_panacea": "Deathly Panacea",
   "item.rites.deathly_panacea.tooltip": "It's surprisingly minty.",
+  "item.rites.blood_of_the_earth": "Blood of the Earth",
+  "item.rites.blood_of_the_earth.tooltip": "It's warm to the touch.",
+
   "item.rites.tenebrous_marrow": "Tenebrous Marrow",
   "item.rites.tenebrous_marrow.tooltip": "It stares at you.",
   "item.rites.kernel_of_industry": "Kernel of Industry",
