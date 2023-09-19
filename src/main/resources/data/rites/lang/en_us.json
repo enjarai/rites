@@ -37,6 +37,8 @@
   "item.rites.scorched_ash": "Scorched Ash",
   "item.rites.levitating_ash": "Levitating Ash",
 
+  "enchantment.rites.soul_binding": "Soul Binding",
+
   "rites.tooltip.center": "Ritual Core",
   "rites.tooltip.block_state.#minecraft:candles[lit=true]": "Any Lit Candle",
   "rites.tooltip.block_state.minecraft:light_blue_candle[lit=true]" : "Lit Light Blue Candle",
