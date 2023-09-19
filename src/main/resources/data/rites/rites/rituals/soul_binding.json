@@ -1,0 +1,32 @@
+{
+  "circles": [
+    "rites:soul/large"
+  ],
+  "ingredients": [
+    {
+      "any": true,
+      "ref": "item",
+      "count": 1
+    },
+    {
+      "item": "minecraft:soul_sand",
+      "count": 5
+    },
+    {
+      "item": "minecraft:chain",
+      "count": 5
+    }
+
+  ],
+  "effects": [
+    {
+      "type": "rites:merge_item_nbt",
+      "ref": "item",
+      "nbt": "{Enchantments:[{id:\"rites:soul_binding\",lvl:5}]}"
+    },
+    {
+      "type": "rites:drop_item_ref",
+      "ref": "item"
+    }
+  ]
+}

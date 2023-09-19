@@ -4,6 +4,7 @@ import eu.pb4.polymer.core.api.item.PolymerBlockItem
 import eu.pb4.sgui.api.elements.BookElementBuilder
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
+import net.minecraft.enchantment.Enchantment
 import net.minecraft.item.*
 import net.minecraft.registry.Registries
 import net.minecraft.registry.Registry
@@ -68,6 +69,9 @@ object ModItems {
     val SCORCHED_ASH = register("scorched_ash", IngredientItem(Items.REDSTONE, Rarity.RARE))
     val LEVITATING_ASH = register("levitating_ash", IngredientItem(Items.SUGAR, Rarity.EPIC, true))
 
+    // Enchantments
+    val SOUL_BINDING = register("soul_binding", SoulBindingEnchantment());
+
     fun init() {
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.FUNCTIONAL).register {
             it.add(ItemStack(RITE_CENTER))
@@ -99,5 +103,9 @@ object ModItems {
 
     private fun <T : Item> register(id: String, item: T): T {
         return Registry.register(Registries.ITEM, RitesMod.id(id), item)
+    }
+
+    private fun <T : Enchantment> register(id: String, enchantment: T): T {
+        return Registry.register(Registries.ENCHANTMENT, RitesMod.id(id), enchantment)
     }
 }
