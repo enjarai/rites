@@ -27,4 +27,8 @@ class PotionLikeIngredientItem(private val color: Int, rarity: Rarity = Rarity.C
         tooltip.add(Text.translatable(getTranslationKey(stack) + ".tooltip").formatted(Formatting.GRAY))
         super.appendTooltip(stack, world, tooltip, context)
     }
+
+    override fun getRecipeRemainder(stack: ItemStack): ItemStack {
+        return Items.GLASS_BOTTLE.defaultStack
+    }
 }

@@ -106,7 +106,7 @@ abstract class RiteRunningBlockEntity(type: BlockEntityType<*>, pos: BlockPos, s
 
     open fun endAllRituals(success: Boolean) {
         // Stop rituals and store results
-        storedItems = ritualContext?.stopAllRituals(success) ?: arrayOf()
+        storedItems += ritualContext?.stopAllRituals(success) ?: arrayOf()
 
         // Reset all state
         ritualContext = null

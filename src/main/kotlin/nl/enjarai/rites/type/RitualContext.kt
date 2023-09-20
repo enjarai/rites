@@ -184,6 +184,7 @@ class RitualContext(private val blockEntity: RiteRunningBlockEntity, val realPos
         val ritual = getSelectedRitual()
         if (ritual?.active == false) {
             this.storedItems = storedItems
+            storedItems.forEach { returnableItems += it.recipeRemainder }
             variables.putAll(storedItems.map { Registries.ITEM.getId(it.item).toString() to it.count.toDouble() })
             val success = ritual.activate(this)
             if (success) {
