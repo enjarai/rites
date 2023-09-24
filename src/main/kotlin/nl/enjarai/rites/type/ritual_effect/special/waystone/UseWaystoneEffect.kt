@@ -10,6 +10,7 @@ import nl.enjarai.rites.item.WayStoneItem
 import nl.enjarai.rites.type.Ritual
 import nl.enjarai.rites.type.RitualContext
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
+import kotlin.math.pow
 
 class UseWaystoneEffect : RitualEffect(CODEC) {
     companion object {
@@ -36,6 +37,7 @@ class UseWaystoneEffect : RitualEffect(CODEC) {
             ?: return false
 
         if (dim != ctx.world.registryKey) return false
+        if (newPos.getSquaredDistance(pos) > 64.0.pow(2)) return false
         ctx.pos = newPos
 
         return true

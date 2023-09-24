@@ -1,0 +1,29 @@
+{
+  "circles": [
+    "rites:planeshifting/small",
+    "rites:soul/medium"
+  ],
+  "ingredients": [
+    {
+      "item": "rites:poppet",
+      "count": 1,
+      "ref": "poppet"
+    },
+    {
+      "item": "rites:emulsion_of_conjoinment"
+    },
+    {
+      "item": "rites:essence_of_passions"
+    },
+    {
+      "item": "rites:scorched_ash"
+    }
+  ],
+  "effects": [
+    {
+      "type": "rites:bind_poppet",
+      "ref": "poppet",
+      "target_entity": "@e[type=minecraft:player,limit=1,sort=nearest,distance=..$range]"
+    }
+  ]
+}

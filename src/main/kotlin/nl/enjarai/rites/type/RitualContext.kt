@@ -18,6 +18,7 @@ import nl.enjarai.rites.type.predicate.Ingredient
 import nl.enjarai.rites.type.ritual_effect.RitualEffect
 import nl.enjarai.rites.util.Visuals
 import java.util.*
+import kotlin.math.max
 
 class RitualContext(private val blockEntity: RiteRunningBlockEntity, val realPos: BlockPos) {
     val world: World get() = blockEntity.world!!
@@ -186,6 +187,7 @@ class RitualContext(private val blockEntity: RiteRunningBlockEntity, val realPos
             this.storedItems = storedItems
             storedItems.forEach { returnableItems += it.recipeRemainder }
             variables.putAll(storedItems.map { Registries.ITEM.getId(it.item).toString() to it.count.toDouble() })
+            variables["range"] = range.toDouble()
             val success = ritual.activate(this)
             if (success) {
                 Visuals.activate(world as ServerWorld, realPos)

@@ -32,6 +32,7 @@ import nl.enjarai.rites.type.ritual_effect.flow.loop.ForAreaEffect
 import nl.enjarai.rites.type.ritual_effect.flow.loop.ForIEffect
 import nl.enjarai.rites.type.ritual_effect.item.*
 import nl.enjarai.rites.type.ritual_effect.special.focus.InternalizeFocusEffect
+import nl.enjarai.rites.type.ritual_effect.special.poppet.BindPoppetEffect
 import nl.enjarai.rites.type.ritual_effect.special.waystone.BindWaystoneEffect
 import nl.enjarai.rites.type.ritual_effect.special.waystone.UseWaystoneEffect
 import nl.enjarai.rites.type.ritual_effect.visual.PlaySoundEffect
@@ -109,12 +110,22 @@ abstract class RitualEffect(val codec: Codec<out RitualEffect>) {
             Registry.register(REGISTRY, RitesMod.id("set_item_count"), SetItemCountEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("get_item_count"), GetItemCountEffect.CODEC)
             Registry.register(REGISTRY, RitesMod.id("transmutation"), TransmutationEffect.CODEC)
+            Registry.register(REGISTRY, RitesMod.id("bind_poppet"), BindPoppetEffect.CODEC)
         }
 
         fun selectEntities(ctx: RitualContext, selectorString: String): List<Entity>? {
             return try {
                 val selector = EntitySelectorReader(StringReader(selectorString)).read()
                 selector.getEntities(getCommandSource(ctx))
+            } catch (e: CommandSyntaxException) {
+                null
+            }
+        }
+
+        fun selectEntity(ctx: RitualContext, selectorString: String): Entity? {
+            return try {
+                val selector = EntitySelectorReader(StringReader(selectorString)).read()
+                selector.getEntity(getCommandSource(ctx))
             } catch (e: CommandSyntaxException) {
                 null
             }

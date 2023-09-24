@@ -7,6 +7,10 @@
   "item.rites.guide_book.tooltip": "by %s",
   "item.rites.waystone": "Waystone",
   "item.rites.waystone.tooltip": "Bound to %d, %d, %d",
+  "item.rites.poppet": "Poppet",
+  "item.rites.bound_poppet": "Unknown Bound Poppet",
+  "item.rites.bound_poppet.bound": "Bound Poppet (%s)",
+  "item.rites.bound_poppet.durability_tooltip": "Durability: %d/%d",
 
   "item.rites.disruptive_ointment": "Disruptive Ointment",
   "item.rites.disruptive_ointment.tooltip": "It gives off a strong scent.",

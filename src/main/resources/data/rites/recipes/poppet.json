@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "WAW",
+    "PWE",
+    " W "
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:wheat"
+    },
+    "A": {
+      "item": "rites:scorched_ash"
+    },
+    "P": {
+      "item": "rites:deathly_panacea"
+    },
+    "E": {
+      "item": "rites:essence_of_passions"
+    }
+  },
+  "result": {
+    "item": "rites:poppet"
+  }
+}

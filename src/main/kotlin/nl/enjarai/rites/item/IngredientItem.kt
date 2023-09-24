@@ -10,8 +10,9 @@ import net.minecraft.util.Rarity
 class IngredientItem(
     private val polymerItem: Item,
     rarity: Rarity = Rarity.COMMON,
-    private val enchanted: Boolean = false
-) : Item(FabricItemSettings().rarity(rarity)), PolymerItem {
+    private val enchanted: Boolean = false,
+    maxCount: Int = 64
+) : Item(FabricItemSettings().rarity(rarity).maxCount(maxCount)), PolymerItem {
     override fun getPolymerItem(itemStack: ItemStack, player: ServerPlayerEntity?): Item {
         return polymerItem
     }

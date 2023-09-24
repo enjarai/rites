@@ -1,7 +1,6 @@
 package nl.enjarai.rites.item
 
 import eu.pb4.polymer.core.api.item.PolymerBlockItem
-import eu.pb4.sgui.api.elements.BookElementBuilder
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents
 import net.minecraft.enchantment.Enchantment
@@ -46,6 +45,8 @@ object ModItems {
     })
     val GUIDE_BOOK: Item = register("guide_book", GuideBookItem())
     val WAYSTONE: Item = register("waystone", WayStoneItem())
+    val POPPET: Item = register("poppet", IngredientItem(Items.PLAYER_HEAD, maxCount = 16))
+    val BOUND_POPPET: Item = register("bound_poppet", BoundPoppetItem())
 
     // Custom ingredients
     // Low grade ingredients
@@ -79,6 +80,8 @@ object ModItems {
             it.add(ItemStack(RITE_FOCUS))
             it.add(ItemStack(GUIDE_BOOK))
             it.add(ItemStack(WAYSTONE))
+            it.add(ItemStack(POPPET))
+            it.add(ItemStack(BOUND_POPPET))
         }
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register {
             it.add(ItemStack(ASH))
